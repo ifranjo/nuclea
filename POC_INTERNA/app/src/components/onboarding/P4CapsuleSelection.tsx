@@ -1,13 +1,16 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Header } from '@/components/ui/Header'
 import { CapsuleTypeCard } from '@/components/ui/CapsuleTypeCard'
 import { CAPSULE_TYPES } from '@/types'
 import type { CapsuleTypeInfo } from '@/types'
 
 export function P4CapsuleSelection() {
+  const router = useRouter()
+
   const handleSelect = (capsuleType: CapsuleTypeInfo) => {
-    console.log('Selected capsule:', capsuleType.id, capsuleType.name)
+    router.push(`/onboarding/capsule/${capsuleType.id}`)
   }
 
   return (

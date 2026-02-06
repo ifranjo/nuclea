@@ -31,6 +31,8 @@ Open `http://localhost:3001`.
 | Production build | `npm run build` | Build app |
 | Production start | `npm run start` | Start built app on port `3001` |
 | Lint | `npm run lint` | Run Next.js lint checks |
+| PDF alignment only | `npm run autocheck:pdf` | Validate key copy against source PDFs |
+| Full autocheck | `npm run autocheck` | Lint + build + runtime flow check + PDF alignment |
 
 ## Current route map
 
@@ -38,6 +40,7 @@ Open `http://localhost:3001`.
 |-------|----------|
 | `/` | Redirects to `/onboarding` |
 | `/onboarding` | 4-step onboarding flow with Framer Motion fade transitions |
+| `/onboarding/capsule/[type]` | Placeholder detail page after selecting a capsule in P4 |
 
 Route sources:
 - `src/app/page.tsx`

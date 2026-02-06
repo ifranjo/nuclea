@@ -6,7 +6,9 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "lint": "next lint",
+    "autocheck": "node scripts/full-autocheck.mjs",
+    "autocheck:pdf": "python scripts/autocheck_pdf_alignment.py"
   },
   "dependencies": {
     "framer-motion": "^11.15.0",
