@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUCLEA - Capsulas Digitales del Tiempo | Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --accent-gold: #c9a962;
+            --accent-gold-light: #e8d5a3;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --gradient-gold: linear-gradient(135deg, #c9a962 0%, #e8d5a3 50%, #c9a962 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(201, 169, 98, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(201, 169, 98, 0.05) 0%, transparent 50%);
+            animation: slowRotate 60s linear infinite;
+        }
+
+        @keyframes slowRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        /* Main Content */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 600;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.3em;
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .tagline-main {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--accent-gold-light);
+            margin-bottom: 40px;
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            padding: 12px 40px;
+            background: var(--gradient-gold);
+            color: var(--bg-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            border-radius: 30px;
+            margin-bottom: 60px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(201, 169, 98, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(201, 169, 98, 0.5); }
+        }
+
+        /* Capsules Grid */
+        .capsules-section {
+            margin-bottom: 80px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--accent-gold-light);
+        }
+
+        .capsules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .capsule-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .capsule-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-gold);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .capsule-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(201, 169, 98, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .capsule-card:hover::before {
+            opacity: 1;
+        }
+
+        .capsule-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .capsule-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--accent-gold);
+            margin-bottom: 12px;
+        }
+
+        .capsule-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .capsule-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 5px 15px;
+            font-size: 0.75rem;
+            background: rgba(201, 169, 98, 0.15);
+            color: var(--accent-gold);
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* AI Avatar Section */
+        .ai-section {
+            background: linear-gradient(180deg, rgba(201, 169, 98, 0.05) 0%, transparent 100%);
+            border-radius: 30px;
+            padding: 60px 40px;
+            margin-bottom: 80px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .ai-section .section-title {
+            margin-bottom: 20px;
+        }
+
+        .ai-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .tech-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .tech-logo {
+            height: 40px;
+            margin-bottom: 15px;
+            filter: grayscale(100%) brightness(1.5);
+            transition: filter 0.3s ease;
+        }
+
+        .tech-card:hover .tech-logo {
+            filter: grayscale(0%) brightness(1);
+        }
+
+        .tech-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .tech-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .tech-status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-integrated {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-coming {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+
+        .status-research {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        /* Pricing Preview */
+        .pricing-section {
+            margin-bottom: 80px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 40px 30px;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent-gold);
+            background: rgba(201, 169, 98, 0.05);
+        }
+
+        .pricing-card.featured::before {
+            content: 'RECOMENDADO';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-gold);
+            color: var(--bg-dark);
+            padding: 5px 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            border-radius: 20px;
+        }
+
+        .pricing-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .pricing-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .pricing-features {
+            list-style: none;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent-gold);
+            margin-right: 10px;
+        }
+
+        /* Infrastructure Section */
+        .infra-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin-bottom: 80px;
+        }
+
+        .infra-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .infra-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .infra-card h3 {
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .infra-table {
+            width: 100%;
+            font-size: 0.85rem;
+        }
+
+        .infra-table tr {
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .infra-table td {
+            padding: 10px 0;
+        }
+
+        .infra-table td:first-child {
+            color: var(--text-muted);
+        }
+
+        .infra-table td:last-child {
+            color: var(--text-primary);
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* Waitlist Section */
+        .waitlist-section {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.05) 100%);
+            border-radius: 30px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 60px;
+        }
+
+        .waitlist-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--accent-gold-light);
+            margin-bottom: 15px;
+        }
+
+        .waitlist-desc {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .waitlist-form {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .waitlist-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 30px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .waitlist-input:focus {
+            border-color: var(--accent-gold);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .waitlist-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .waitlist-btn {
+            padding: 15px 35px;
+            background: var(--gradient-gold);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .waitlist-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(201, 169, 98, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            margin-top: 15px;
+        }
+
+        .footer-links a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.85rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo { font-size: 2.5rem; }
+            .tagline-main { font-size: 1.3rem; }
+            .section-title { font-size: 1.5rem; }
+            .ai-section, .infra-section { padding: 40px 20px; }
+        }
+
+        /* Consent Badge */
+        .consent-highlight {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .consent-highlight h4 {
+            color: #22c55e;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .consent-highlight p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 35%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 65%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 2.5s;"></div>
+    </div>
+
+    <div class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <h1 class="logo">NUCLEA</h1>
+            <p class="tagline">Capsulas Digitales del Tiempo</p>
+            <p class="tagline-main">"Somos las historias que recordamos. Haz que las tuyas permanezcan."</p>
+            <div class="coming-soon-badge">Proximamente 2026</div>
+        </section>
+
+        <!-- Capsules -->
+        <section class="capsules-section">
+            <h2 class="section-title">5 Tipos de Capsulas</h2>
+            <div class="capsules-grid">
+                <div class="capsule-card">
+                    <div class="capsule-icon">&#x1F31F;</div>
+                    <h3 class="capsule-name">EverLife</h3>
+                    <p class="capsule-desc">Legado post-mortem con avatar IA opcional. Tu esencia preservada para siempre.</p>
+                    <span class="capsule-badge">+ Avatar IA</span>
+                </div>
+                <div class="capsule-card">
+                    <div class="capsule-icon">&#x1F4D6;</div>
+                    <h3 class="capsule-name">Life Chapter</h3>
+                    <p class="capsule-desc">Documenta etapas vitales como regalos emocionales para tus seres queridos.</p>
+                    <span class="capsule-badge">Momentos</span>
+                </div>
+                <div class="capsule-card">
+                    <div class="capsule-icon">&#x1F465;</div>
+                    <h3 class="capsule-name">Social</h3>
+                    <p class="capsule-desc">Comparte tu dia a dia de forma privada con tu circulo mas cercano.</p>
+                    <span class="capsule-badge">Privado</span>
+                </div>
+                <div class="capsule-card">
+                    <div class="capsule-icon">&#x1F43E;</div>
+                    <h3 class="capsule-name">Pet</h3>
+                    <p class="capsule-desc">Tributos memoriales para tus companeros de vida. Sus recuerdos, eternos.</p>
+                    <span class="capsule-badge">Mascotas</span>
+                </div>
+                <div class="capsule-card">
+                    <div class="capsule-icon">&#x1F476;</div>
+                    <h3 class="capsule-name">Origin</h3>
+                    <p class="capsule-desc">Historial de nacimiento a adultez creado por padres para sus hijos.</p>
+                    <span class="capsule-badge">Familias</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Avatar Technology -->
+        <section class="ai-section">
+            <h2 class="section-title">&#x1F9E0; Tecnologia de Avatar IA</h2>
+            <p class="ai-subtitle">Preserva la voz y apariencia de tus seres queridos con tecnologia de punta. Solo con consentimiento explicito firmado en vida.</p>
+
+            <div class="tech-stack">
+                <div class="tech-card">
+                    <div class="tech-name">&#x1F3A4; ElevenLabs</div>
+                    <div class="tech-desc">Clonacion de voz profesional con IA</div>
+                    <span class="tech-status status-integrated">Integrado</span>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-name">&#x1F3AC; Wan 2.1/2.2</div>
+                    <div class="tech-desc">Generacion de video con IA local</div>
+                    <span class="tech-status status-integrated">Integrado</span>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-name">&#x1F5BC; ComfyUI</div>
+                    <div class="tech-desc">Pipeline de procesamiento visual</div>
+                    <span class="tech-status status-integrated">Integrado</span>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-name">&#x1F444; Float Lip Sync</div>
+                    <div class="tech-desc">Sincronizacion labial en tiempo real</div>
+                    <span class="tech-status status-coming">Proximamente</span>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-name">&#x1F4AC; MultiTalk</div>
+                    <div class="tech-desc">Avatares conversacionales</div>
+                    <span class="tech-status status-coming">Proximamente</span>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-name">&#x1F916; Claude/GPT</div>
+                    <div class="tech-desc">Personalidad conversacional IA</div>
+                    <span class="tech-status status-research">En desarrollo</span>
+                </div>
+            </div>
+
+            <div class="consent-highlight">
+                <h4>&#x1F512; Consentimiento Explicito Garantizado</h4>
+                <p>NUCLEA almacena la autorizacion firmada en vida. Nunca creamos avatares sin permiso explicito del titular.</p>
+            </div>
+        </section>
+
+        <!-- Pricing Preview -->
+        <section class="pricing-section">
+            <h2 class="section-title">Planes Anticipados</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="pricing-name">Esencial</h3>
+                    <div class="pricing-price">9.99 <span>/mes</span></div>
+                    <p class="pricing-desc">Para preservar lo que importa</p>
+                    <ul class="pricing-features">
+                        <li>2 capsulas activas</li>
+                        <li>5GB almacenamiento</li>
+                        <li>Compartir con 10 personas</li>
+                        <li>Soporte por email</li>
+                    </ul>
+                </div>
+                <div class="pricing-card featured">
+                    <h3 class="pricing-name">Familiar</h3>
+                    <div class="pricing-price">24.99 <span>/mes</span></div>
+                    <p class="pricing-desc">Para toda la familia</p>
+                    <ul class="pricing-features">
+                        <li>10 capsulas activas</li>
+                        <li>50GB almacenamiento</li>
+                        <li>Compartir ilimitado</li>
+                        <li>1 Avatar IA incluido</li>
+                        <li>Soporte prioritario</li>
+                    </ul>
+                </div>
+                <div class="pricing-card">
+                    <h3 class="pricing-name">EverLife Premium</h3>
+                    <div class="pricing-price">99 <span>unico</span></div>
+                    <p class="pricing-desc">Legado digital completo</p>
+                    <ul class="pricing-features">
+                        <li>Capsula EverLife completa</li>
+                        <li>Avatar IA con tu voz</li>
+                        <li>Video memorial personalizado</li>
+                        <li>Almacenamiento perpetuo</li>
+                        <li>Configuracion asistida</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Infrastructure Costs (for investors) -->
+        <section class="infra-section">
+            <h2 class="section-title">&#x2699; Infraestructura Tecnica</h2>
+            <div class="infra-grid">
+                <div class="infra-card">
+                    <h3>&#x1F3A4; Voice Generation</h3>
+                    <table class="infra-table">
+                        <tr><td>Proveedor</td><td>ElevenLabs Pro</td></tr>
+                        <tr><td>Coste mensual</td><td>$99/mes</td></tr>
+                        <tr><td>Capacidad</td><td>~166 hrs audio</td></tr>
+                        <tr><td>Coste/avatar</td><td>~$0.30</td></tr>
+                    </table>
+                </div>
+                <div class="infra-card">
+                    <h3>&#x1F4F9; Video Generation</h3>
+                    <table class="infra-table">
+                        <tr><td>GPU</td><td>RTX 4090 (RunPod)</td></tr>
+                        <tr><td>Coste/hora</td><td>$0.40/hr</td></tr>
+                        <tr><td>Tiempo/avatar</td><td>~4 horas</td></tr>
+                        <tr><td>Coste/avatar</td><td>~$1.60</td></tr>
+                    </table>
+                </div>
+                <div class="infra-card">
+                    <h3>&#x1F4BE; Storage & Hosting</h3>
+                    <table class="infra-table">
+                        <tr><td>Storage</td><td>Cloudflare R2</td></tr>
+                        <tr><td>Coste/GB</td><td>$0.015/mes</td></tr>
+                        <tr><td>CDN</td><td>Incluido</td></tr>
+                        <tr><td>Hosting</td><td>Vercel/Railway</td></tr>
+                    </table>
+                </div>
+                <div class="infra-card">
+                    <h3>&#x1F4B0; Unit Economics</h3>
+                    <table class="infra-table">
+                        <tr><td>Coste/EverLife</td><td>~$15 setup</td></tr>
+                        <tr><td>Coste mensual</td><td>~$0.65/user</td></tr>
+                        <tr><td>Precio venta</td><td>$99 + $9.99/mes</td></tr>
+                        <tr><td>Margen bruto</td><td>~70%</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Waitlist -->
+        <section class="waitlist-section">
+            <h2 class="waitlist-title">Unete a la Lista de Espera</h2>
+            <p class="waitlist-desc">Se de los primeros en preservar tus historias. Acceso anticipado + 30% descuento para early adopters.</p>
+            <form class="waitlist-form" onsubmit="handleWaitlist(event)">
+                <input type="email" class="waitlist-input" placeholder="tu@email.com" required>
+                <button type="submit" class="waitlist-btn">Reservar mi lugar</button>
+            </form>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">&copy; 2026 NUCLEA. Todos los derechos reservados.</p>
+            <div class="footer-links">
+                <a href="#">Privacidad</a>
+                <a href="#">Terminos</a>
+                <a href="#">Contacto</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function handleWaitlist(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input').value;
+            alert(`Gracias! Te hemos anadido a la lista de espera: ${email}\n\nTe contactaremos pronto con tu acceso anticipado.`);
+            e.target.reset();
+        }
+
+        // Add more particles dynamically
+        const particlesContainer = document.querySelector('.particles');
+        for (let i = 0; i < 10; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 15}s`;
+            particle.style.animationDuration = `${15 + Math.random() * 10}s`;
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>

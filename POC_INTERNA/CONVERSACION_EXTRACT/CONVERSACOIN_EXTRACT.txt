@@ -1,0 +1,73 @@
+[17:28, 3/2/2026] Imanol GHI: Vale ! No te preocupes yo acabo de llegar al centro
+[17:28, 3/2/2026] Imanol GHI: Acabo de salir del metro
+[17:28, 3/2/2026] Imanol GHI: Voy pa la ubi
+[17:28, 3/2/2026] Imanol GHI: Perfect yo estoy ya
+[17:28, 3/2/2026] Imanol GHI: Al entrar al final que hay una mesa larga
+[17:28, 3/2/2026] Imanol GHI: Hola! Te mande al email los PDF , cualquier coda me dices !
+[17:28, 3/2/2026] Imanol GHI: Ok perfecto, lo iré analizando y estructurando en tareas poco a poco
+[17:28, 3/2/2026] Imanol GHI: Genial ☺️
+[17:28, 3/2/2026] Imanol GHI: Tengo una duda , compro el dominio para la web ?
+[17:28, 3/2/2026] Imanol GHI: Si
+[17:28, 3/2/2026] Imanol GHI: Osea si lo tienes claro yo lo haria
+[17:28, 3/2/2026] Imanol GHI: Digo el nombre del dominio a coger
+[17:28, 3/2/2026] Imanol GHI: Si Nuclea.com o nuclea.app
+[17:28, 3/2/2026] Imanol GHI: Hola Andres
+[17:28, 3/2/2026] Imanol GHI: Pues .com es la buena
+[17:28, 3/2/2026] Imanol GHI: Yo preferiría .com
+[17:28, 3/2/2026] Imanol GHI: Andrea si quieres te paso unas formaciones de IA que estoy pasando en el curro, por si quieres tener más información sobre éstas herramientas
+[17:28, 3/2/2026] Imanol GHI: Son simplemente documentos
+[17:28, 3/2/2026] Imanol GHI: Luego te paso para que tengas
+[17:28, 3/2/2026] Imanol GHI: Aunque sea que tengas una idea de por donde van los tiros y así podemos entendernos mejor en que cosas se pueden hacer, y para ti para gestionar info es positivo tambien
+[17:28, 3/2/2026] Imanol GHI: Holaaa Vale perfect 👌🏽
+[17:28, 3/2/2026] Imanol GHI: Pásame y lo veo
+[17:28, 3/2/2026] Imanol GHI: Y cojo la de .com
+[17:28, 3/2/2026] Imanol GHI: Estaba mirando los dominios y la de .com la tiene alguien y me vence en abril de este año . No tiene web ni nada pero lo tiene pillado . Entonces pillo .app ? Y si vemos que en abril no renueva cojo también .com como lo ves ? O prefieres otro
+[17:28, 3/2/2026] Imanol GHI: Realmente cogerlo es para que no te lo quiten
+[17:28, 3/2/2026] Imanol GHI: Porque el dominio realmente todavía no necesitas
+[17:28, 3/2/2026] Imanol GHI: Si ya lo han cogido puedes hacer el ejercicio de hacer variaciones, pero en cuanto a nuclea.app también puedes estar bien
+[17:28, 3/2/2026] Imanol GHI: Ok te paso en un rato
+[17:28, 3/2/2026] Imanol GHI: Hola Andrea, te paso esta especie de intro , enfocada en que sepas que herramientas usar para probar un poco, hay textos ejemplos y alguna cosa mas, en principio es básico, si quieres algo en especifico o cualquier duda me peudes decir
+[17:28, 3/2/2026] Imanol GHI: voy a revisar un informe preliminar que estoy haciendo y te lo mando ( primer vistazo global aproximado )
+[17:28, 3/2/2026] Imanol GHI: Esta bastante bien , es informacion de mercado , vistazo rapido a Tech stack y demas, te lo paso en HTML , solo tienes que descargarlo y abrirlo y asi es mejor , si lo necesitas en pdf ,e dices o lo abres y lo conviertes
+[17:28, 3/2/2026] Imanol GHI: Tambien he mirado el tema de que elegir para tener unos 100 usuarios y gestionar toda la carag de archivos sin costos inesperados : ideal para quienes buscan datos relacionales, control y precios predecibles. Esto tiene una mensualidad fija bastante asequible vs Firebase que es la solucion típica, pero este te cobra variable, y puede ser hasta 10x depende de las operaciones de subir documentos y gestionarlos etc
+[17:28, 3/2/2026] Imanol GHI: Eso creo que es lo indicado en caso de querer lanzar la POC funcional
+[17:28, 3/2/2026] Imanol GHI: Holaa, en llegar a casa lo miro todo bien
+[17:28, 3/2/2026] Imanol GHI: Aunque no entro en todo el detalle técnico( que no entiendo del todo 😅)lo que yo saco claro es que la POC  es viable, tiene sentido y se puede construir con un alcance y unos costes razonables.
+A mí esto me sirve sobre todo para tener la tranquilidad de que no estamos planteando algo irreal.
+[17:28, 3/2/2026] Imanol GHI: Tú lo ves así no ?
+[17:28, 3/2/2026] Imanol GHI: Yes!
+[17:28, 3/2/2026] Imanol GHI: 😀😀👍🏻
+[17:28, 3/2/2026] Imanol GHI: He mirado tema tipografía , que te dije que la que estaba puesta no sabía ni cuál era . Me he metido a ver las de Google font y he visto “Inter” que me ha gustado el estilo sencillo . Es libre sin problemas de licencia .
+[17:28, 3/2/2026] Imanol GHI: Estupendo, está clase de info está genial
+[17:28, 3/2/2026] Imanol GHI: Genial , tú lo que te vaya surgiendo me vas diciendo si necesitas alguna cosa que te diga
+[17:28, 3/2/2026] Imanol GHI: Okey, hoy seguiré estructurando lo que tenemos y todo un poco
+[17:28, 3/2/2026] Imanol GHI: Que con la IA es 80% pensar 20% hacer , porque hacer lo hace bien pero hay que definir perfectamente/lo mejor que se pueda todo
+[17:28, 3/2/2026] Imanol GHI: Vale perfecto 👌🏽
+[17:28, 3/2/2026] Imanol GHI: Este tipo de tecnologías hay que seguirlas porque pueden ser interesantes para la parte de IA
+[17:28, 3/2/2026] Imanol GHI: Modelos de "mundo"
+[17:28, 3/2/2026] Imanol GHI: Es como generación de video en tiempo real con consistencia de objetos temporal
+[17:28, 3/2/2026] Imanol GHI: Digamos para entrar en los recuerfos
+[17:28, 3/2/2026] Imanol GHI: Recuerdos / capsulas
+[17:28, 3/2/2026] Imanol GHI: Entre ahora y a medio plazo se volverá accesible
+[17:28, 3/2/2026] Imanol GHI: Si tenemos algo para entoncesl sería  una app perfecta donde implementarlo (subcontratando o al proveedor de eso directo o a medio plazo se puede montar con modelos OpenSource más a escala supongo)
+[17:28, 3/2/2026] Imanol GHI: Ala que guay ! Eso estaría muy muy chulo para los avatares también
+[17:28, 3/2/2026] Imanol GHI: Te mando este vídeo de la idea de la cápsula abriéndose para la entrada de la app.
+La idea es que al hacrr tap sobre la cápsula se abra y salgan las polaroids como transición al contenido.
+Así creo que se visualiza mejor el concepto que quiero .
+[17:28, 3/2/2026] Imanol GHI: Qué te parece
+[17:28, 3/2/2026] Imanol GHI: Si genial
+[17:28, 3/2/2026] Imanol GHI: Todo esto sirve mucho
+[17:28, 3/2/2026] Imanol GHI: También podemos pensar en un futuro en extensión de chrome
+[17:28, 3/2/2026] Imanol GHI: Que hoy en el curro he hecho una en 20 minutos funcional
+[17:28, 3/2/2026] Imanol GHI: Son ideas que tengo que ir juntando, hoy si que tengo la tarde más para estar con esto
+[17:28, 3/2/2026] Imanol GHI: En general
+[17:28, 3/2/2026] Imanol GHI: Para gestionar cómodamente la subida desde cualquier lado
+[17:28, 3/2/2026] Imanol GHI: Pues eso estaría muy bien
+[17:28, 3/2/2026] Imanol GHI: Me parece guay
+[17:28, 3/2/2026] Imanol GHI: Quieres que por ejemplo intenté trabajar en base a lo del video
+[17:28, 3/2/2026] Imanol GHI: Para ir viendo cosas
+[17:28, 3/2/2026] Imanol GHI: Llevo en paralelo más investigaciónes para tener claro todo el stack, pero eso puedo hacerlo en paralelo
+[17:28, 3/2/2026] Imanol GHI: Vale dale con eso
+[17:28, 3/2/2026] Imanol GHI: Necesitas algo más que te pase ?
+[17:28, 3/2/2026] Imanol GHI: No, con el vídeo , unas fotos de ejmplo y los PDF ya tengo algo con lo que autocorregirme
+[17:28, 3/2/2026] Imanol GHI: Vale perfect

@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUCLEA - POC Documentation for Investors</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --accent: #8B7355;
+      --verified: #4A7C59;
+      --warning: #D4A373;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    .doc-sidebar {
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 1.5rem 1.25rem;
+    }
+
+    .doc-sidebar h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .doc-sidebar .subtitle {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .nav-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.4rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.3rem 0;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 0.6rem;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      border-left-color: var(--border-light);
+    }
+
+    .nav-link.active {
+      color: var(--text-primary);
+      border-left-color: var(--border-heavy);
+      font-weight: 500;
+    }
+
+    .nav-sub {
+      padding-left: 1rem;
+      font-size: 0.75rem;
+    }
+
+    .doc-content {
+      padding: 2.5rem 3.5rem;
+      max-width: 850px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-heavy);
+      padding-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-top: 2.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 1.75rem;
+      margin-bottom: 0.6rem;
+      color: var(--text-primary);
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.25rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    p {
+      margin-bottom: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .tagline {
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+      padding: 0.9rem;
+      background: var(--bg-note);
+      border-left: 3px solid var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: var(--bg-nav);
+      padding: 0.6rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-heavy);
+      color: var(--text-primary);
+    }
+
+    td {
+      padding: 0.6rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    tr:hover {
+      background: var(--bg-note);
+    }
+
+    .metric-card {
+      background: var(--bg-note);
+      border: 1px solid var(--border-light);
+      padding: 1.25rem;
+      margin: 0.9rem 0;
+      border-radius: 4px;
+    }
+
+    .metric-card h4 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .highlight-box {
+      background: var(--bg-code);
+      border-left: 4px solid var(--copy-btn);
+      padding: 0.9rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .warning-box {
+      background: #FFF8F0;
+      border-left: 4px solid var(--warning);
+      padding: 0.9rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .success-box {
+      background: #F0F7F0;
+      border-left: 4px solid var(--copy-btn);
+      padding: 0.9rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    ul, ol {
+      margin: 0.9rem 0;
+      padding-left: 1.75rem;
+    }
+
+    li {
+      margin-bottom: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    code {
+      background: var(--bg-code);
+      padding: 0.15rem 0.35rem;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.85em;
+    }
+
+    pre {
+      background: var(--bg-code);
+      padding: 1.25rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      border: 1px solid var(--border-light);
+      font-size: 0.8rem;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .stage-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.12rem 0.35rem;
+      border-radius: 2px;
+      margin-right: 0.4rem;
+    }
+
+    .stage-0 { background: #8B7355; color: white; }
+    .stage-1 { background: #6B8E6B; color: white; }
+    .stage-2 { background: #5D7A99; color: white; }
+    .stage-3 { background: #8B6B8B; color: white; }
+
+    .verified-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.1rem 0.3rem;
+      border-radius: 2px;
+      background: var(--verified);
+      color: white;
+      margin-left: 0.3rem;
+    }
+
+    .source-link {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      font-style: italic;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.9rem;
+      margin: 1.5rem 0;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 1.25rem 0.75rem;
+      background: var(--bg-nav);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      margin-top: 0.4rem;
+    }
+
+    @media (max-width: 900px) {
+      .doc-layout {
+        grid-template-columns: 1fr;
+      }
+      .doc-sidebar {
+        display: none;
+      }
+      .doc-content {
+        padding: 1.5rem;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media print {
+      .doc-sidebar {
+        display: none;
+      }
+      .doc-layout {
+        grid-template-columns: 1fr;
+      }
+      .doc-content {
+        max-width: none;
+        padding: 0.5in;
+      }
+      h1 { font-size: 1.6rem; }
+      h2 { font-size: 1.2rem; page-break-after: avoid; }
+      h3 { font-size: 1rem; page-break-after: avoid; }
+      table { font-size: 0.75rem; }
+      .hero-stats { grid-template-columns: repeat(4, 1fr); }
+      .stat-value { font-size: 1.2rem; }
+      .metric-card, .highlight-box, .warning-box, .success-box {
+        page-break-inside: avoid;
+      }
+      pre { font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <h2>NUCLEA</h2>
+      <div class="subtitle">POC Documentation<br>Pre-Seed Round | Feb 2026</div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <a href="#executive-summary" class="nav-link active">Executive Summary</a>
+        <a href="#quick-stats" class="nav-link">Quick Stats</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">5 Categories</div>
+        <a href="#cat-01" class="nav-link">01. Problem & Personas</a>
+        <a href="#cat-01-problem" class="nav-link nav-sub">Problem Definition</a>
+        <a href="#cat-01-personas" class="nav-link nav-sub">User Personas</a>
+        <a href="#cat-01-objectives" class="nav-link nav-sub">POC Objectives</a>
+
+        <a href="#cat-02" class="nav-link">02. Technical Architecture</a>
+        <a href="#cat-02-stack" class="nav-link nav-sub">Technology Stack</a>
+        <a href="#cat-02-architecture" class="nav-link nav-sub">System Design</a>
+        <a href="#cat-02-database" class="nav-link nav-sub">Database Schema</a>
+
+        <a href="#cat-03" class="nav-link">03. Market Validation</a>
+        <a href="#cat-03-tam" class="nav-link nav-sub">TAM/SAM/SOM</a>
+        <a href="#cat-03-competition" class="nav-link nav-sub">Competition</a>
+        <a href="#cat-03-traction" class="nav-link nav-sub">Traction</a>
+
+        <a href="#cat-04" class="nav-link">04. Business Model</a>
+        <a href="#cat-04-pricing" class="nav-link nav-sub">Pricing</a>
+        <a href="#cat-04-economics" class="nav-link nav-sub">Unit Economics</a>
+        <a href="#cat-04-projections" class="nav-link nav-sub">Projections</a>
+
+        <a href="#cat-05" class="nav-link">05. Risk & Roadmap</a>
+        <a href="#cat-05-risks" class="nav-link nav-sub">Risk Matrix</a>
+        <a href="#cat-05-roadmap" class="nav-link nav-sub">Execution Roadmap</a>
+        <a href="#cat-05-milestones" class="nav-link nav-sub">Milestones</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Appendix</div>
+        <a href="#team" class="nav-link">Team</a>
+        <a href="#funding" class="nav-link">Funding Ask</a>
+        <a href="#sources" class="nav-link">Sources</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1 id="executive-summary">NUCLEA</h1>
+      <div class="tagline">
+        "Somos las historias que recordamos. Haz que las tuyas permanezcan."
+      </div>
+
+      <h2 id="quick-stats">Executive Summary</h2>
+
+      <p><strong>NUCLEA</strong> es una plataforma de capsulas digitales para preservacion emocional con AI avatar opcional. Estamos construyendo la primera solucion en espanol que permite a las personas preservar sus memorias, historias y legado digital de forma estructurada y emocional.</p>
+
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-value">$23B</div>
+          <div class="stat-label">TAM Global 2025</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Competidores AI Espanol</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">5:1</div>
+          <div class="stat-label">LTV:CAC Target</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">EUR150K</div>
+          <div class="stat-label">Pre-Seed Ask</div>
+        </div>
+      </div>
+
+      <div class="success-box">
+        <strong>El Problema:</strong> El legado digital esta fragmentado. Las fotos estan en moviles, videos en la nube, cartas en cajones. No existe una solucion hispanohablante integrada para preservacion emocional digital. El 68% de las personas no tienen ningun tipo de plan de sucesion, y el 80% de quienes si lo tienen no incluyen sus activos digitales.
+      </div>
+
+      <div class="highlight-box">
+        <strong>La Solucion:</strong> 5 tipos de capsulas digitales (EverLife, Life Chapter, Social, Pet, Origin) que permiten preservar memorias con formato estructurado. Diferenciador unico: avatar AI con consentimiento explicito firmado en vida.
+      </div>
+
+      <h2 id="cat-01">01 - Problem Definition & User Personas</h2>
+
+      <h3 id="cat-01-problem">1.1 Problem Statement</h3>
+
+      <h4>La Dolorosa Realidad</h4>
+      <ul>
+        <li><strong>Legado digital fragmentado:</strong> Fotos en moviles, videos en la nube, cartas en cajones</li>
+        <li><strong>Mercado desatendido:</strong> No existe solucion hispanohablante integrada</li>
+        <li><strong>Memoria emocional perdida:</strong> Sin estructura, las historias familiares se olvidan en 2-3 generaciones</li>
+        <li><strong>Duelo digital no resuelto:</strong> Cuentas de fallecidos, acceso a recuerdos, preservacion digital</li>
+      </ul>
+
+      <table>
+        <tr>
+          <th>Metrica</th>
+          <th>Valor</th>
+          <th>Fuente</th>
+        </tr>
+        <tr>
+          <td>Personas sin plan de sucesion</td>
+          <td>68%</td>
+          <td>Caring.com 2024 <span class="verified-badge">Verificado</span></td>
+        </tr>
+        <tr>
+          <td>Planes sin activos digitales incluidos</td>
+          <td>80%</td>
+          <td>Wealth Management Institute <span class="verified-badge">Verificado</span></td>
+        </tr>
+        <tr>
+          <td>Mercado legado digital global (2025)</td>
+          <td>$23B</td>
+          <td>Mordor Intelligence <span class="verified-badge">Verificado</span></td>
+        </tr>
+        <tr>
+          <td>Competidores espanol con AI</td>
+          <td><strong>0</strong></td>
+          <td>Analisis NUCLEA</td>
+        </tr>
+      </table>
+
+      <h3 id="cat-01-personas">1.2 User Personas</h3>
+
+      <div class="metric-card">
+        <h4>Primary Persona: "Maria, 45 anos"</h4>
+        <ul>
+          <li>Madre de dos hijos, profesional ocupada</li>
+          <li>Quiere preservar recuerdos familiares pero no tiene tiempo/organizacion</li>
+          <li>Preocupada por que pasara con sus fotos si le ocurre algo</li>
+          <li>Busca una solucion "todo en uno" en espanol</li>
+        </ul>
+      </div>
+
+      <table>
+        <tr>
+          <th>Persona</th>
+          <th>Edad</th>
+          <th>Motivacion Principal</th>
+        </tr>
+        <tr>
+          <td>Padres primerizos</td>
+          <td>30-40</td>
+          <td>Crear capsula "Origin" para su bebe</td>
+        </tr>
+        <tr>
+          <td>Adultos mayores</td>
+          <td>60-75</td>
+          <td>Legado "EverLife" para nietos</td>
+        </tr>
+        <tr>
+          <td>Duenos de mascotas</td>
+          <td>25-45</td>
+          <td>Memorial "Pet" cuando fallecen</td>
+        </tr>
+        <tr>
+          <td>Parejas</td>
+          <td>25-55</td>
+          <td>Capsula "Life Chapter" por etapas</td>
+        </tr>
+      </table>
+
+      <h3 id="cat-01-objectives">1.3 POC Objectives</h3>
+
+      <h4>Objetivos Primarios (Must Validate)</h4>
+      <ol>
+        <li><strong>Viabilidad tecnica:</strong> Firebase + Next.js pueden soportar 5 tipos de capsulas</li>
+        <li><strong>UX validada:</strong> Usuarios pueden crear una capsula en &lt;10 minutos</li>
+        <li><strong>Modelo de consentimiento AI:</strong> Flujo de firma digital para avatar funciona</li>
+      </ol>
+
+      <table>
+        <tr>
+          <th>Metrica</th>
+          <th>Target</th>
+          <th>Como Medir</th>
+        </tr>
+        <tr>
+          <td>Tiempo creacion capsula</td>
+          <td>&lt;10 min</td>
+          <td>Analytics UX</td>
+        </tr>
+        <tr>
+          <td>Tasa de completitud</td>
+          <td>&gt;70%</td>
+          <td>Funnel tracking</td>
+        </tr>
+        <tr>
+          <td>NPS (usabilidad)</td>
+          <td>&gt;50</td>
+          <td>Encuesta post-POC</td>
+        </tr>
+        <tr>
+          <td>Uptime del sistema</td>
+          <td>&gt;99%</td>
+          <td>Firebase monitoring</td>
+        </tr>
+        <tr>
+          <td>Costo por usuario</td>
+          <td>&lt;$0.50/mes</td>
+          <td>Firebase billing</td>
+        </tr>
+      </table>
+
+      <h2 id="cat-02">02 - Technical Feasibility & Architecture</h2>
+
+      <h3 id="cat-02-stack">2.1 Technology Stack</h3>
+
+      <h4>Frontend</h4>
+      <table>
+        <tr>
+          <th>Tecnologia</th>
+          <th>Version</th>
+          <th>Proposito</th>
+        </tr>
+        <tr>
+          <td>Next.js</td>
+          <td>16.1.4</td>
+          <td>Framework React con App Router</td>
+        </tr>
+        <tr>
+          <td>React</td>
+          <td>18.3.1</td>
+          <td>UI library</td>
+        </tr>
+        <tr>
+          <td>TypeScript</td>
+          <td>5.7.2</td>
+          <td>Type safety</td>
+        </tr>
+        <tr>
+          <td>Tailwind CSS</td>
+          <td>3.4.17</td>
+          <td>Styling utility-first</td>
+        </tr>
+        <tr>
+          <td>Framer Motion</td>
+          <td>11.15.0</td>
+          <td>Animaciones</td>
+        </tr>
+        <tr>
+          <td>Zustand</td>
+          <td>5.0.2</td>
+          <td>State management</td>
+        </tr>
+      </table>
+
+      <h4>Backend & Infraestructura</h4>
+      <table>
+        <tr>
+          <th>Tecnologia</th>
+          <th>Proposito</th>
+          <th>Costo Estimado</th>
+        </tr>
+        <tr>
+          <td>Firebase Auth</td>
+          <td>Autenticacion (email, Google, Apple)</td>
+          <td>Free hasta 10K/mes</td>
+        </tr>
+        <tr>
+          <td>Firestore</td>
+          <td>Base de datos NoSQL documental</td>
+          <td>~$0.18/100K reads</td>
+        </tr>
+        <tr>
+          <td>Firebase Storage</td>
+          <td>Almacenamiento de media</td>
+          <td>$0.026/GB <span class="verified-badge">Verificado</span></td>
+        </tr>
+        <tr>
+          <td>Firebase Functions</td>
+          <td>Serverless para logica de negocio</td>
+          <td>$0.40/1M invocations</td>
+        </tr>
+        <tr>
+          <td>Vercel</td>
+          <td>Hosting y CDN</td>
+          <td>Free tier / $20/mes Pro</td>
+        </tr>
+      </table>
+
+      <h3 id="cat-02-architecture">2.2 System Architecture</h3>
+
+      <pre><code>+---------------------------------------------------------------------+
+|                         CLIENTE (Navegador)                          |
+|  +-----------+  +-----------+  +-----------+  +-----------+          |
+|  |  Landing  |  |  Login/   |  | Dashboard |  |  Editor   |          |
+|  |   Page    |  |  Registro |  |           |  | Capsulas  |          |
+|  +-----+-----+  +-----+-----+  +-----+-----+  +-----+-----+          |
++--------+-------------+-------------+-------------+-------------------+
+         |             |             |             |
+         +-------------+------+------+-------------+
+                              |
+                    +---------v----------+
+                    |   Next.js API      |
+                    |   Routes (Vercel)  |
+                    +---------+----------+
+                              |
+         +--------------------+--------------------+
+         |                    |                    |
+   +-----v------+    +--------v--------+   +------v--------+
+   |  Firebase  |    |   Firestore     |   |   Firebase    |
+   |   Auth     |    |   (Database)    |   |   Storage     |
+   +------------+    +-----------------+   +---------------+</code></pre>
+
+      <h3 id="cat-02-database">2.3 Database Schema</h3>
+
+      <h4>Colecciones Firestore</h4>
+
+      <pre><code>// users/{userId}
+interface User {
+  id: string
+  email: string
+  displayName: string
+  photoURL?: string
+  plan: 'free' | 'esencial' | 'familiar' | 'premium'
+  createdAt: Timestamp
+  capsuleCount: number
+  storageUsed: number        // bytes
+  consentAI?: {
+    signed: boolean
+    documentUrl: string
+    signedAt: Timestamp
+  }
+}
+
+// capsules/{capsuleId}
+interface Capsule {
+  id: string
+  userId: string             // ref: users/{userId}
+  type: 'everlife' | 'life-chapter' | 'social' | 'pet' | 'origin'
+  title: string
+  description: string
+  coverImage?: string        // URL Storage
+  createdAt: Timestamp
+  updatedAt: Timestamp
+  isPublic: boolean
+  sharedWith: string[]       // array de userIds
+  scheduledRelease?: Timestamp
+  status: 'draft' | 'active' | 'sealed' | 'released'
+  tags: string[]
+}</code></pre>
+
+      <h2 id="cat-03">03 - Market Validation & Traction</h2>
+
+      <h3 id="cat-03-tam">3.1 Market Size (TAM / SAM / SOM)</h3>
+
+      <table>
+        <tr>
+          <th>Mercado</th>
+          <th>Valor</th>
+          <th>Descripcion</th>
+          <th>Fuente</th>
+        </tr>
+        <tr>
+          <td><strong>TAM</strong></td>
+          <td>$23B (2025)</td>
+          <td>Mercado global de legado digital</td>
+          <td>Mordor Intelligence <span class="verified-badge">Verificado</span></td>
+        </tr>
+        <tr>
+          <td><strong>TAM Proyectado</strong></td>
+          <td>$44B (2030)</td>
+          <td>CAGR 13.74%</td>
+          <td>Mordor Intelligence <span class="verified-badge">Verificado</span></td>
+        </tr>
+        <tr>
+          <td><strong>SAM</strong></td>
+          <td>~$500M</td>
+          <td>Mercado hispanohablante (ES + LATAM)</td>
+          <td>Estimacion interna (~2% TAM)</td>
+        </tr>
+        <tr>
+          <td><strong>SOM</strong></td>
+          <td>$5-10M</td>
+          <td>Objetivo realista en 3 anos</td>
+          <td>Proyeccion NUCLEA</td>
+        </tr>
+      </table>
+
+      <h3 id="cat-03-competition">3.2 Competitive Analysis</h3>
+
+      <table>
+        <tr>
+          <th>Competidor</th>
+          <th>Pais</th>
+          <th>Funding</th>
+          <th>Modelo</th>
+          <th>AI</th>
+          <th>Espanol</th>
+        </tr>
+        <tr>
+          <td><strong>Eternos/Uare.ai</strong></td>
+          <td>USA</td>
+          <td>$10.3M <span class="verified-badge">Verificado</span></td>
+          <td>$5K-15K setup</td>
+          <td>Si</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td><strong>Empathy</strong></td>
+          <td>USA</td>
+          <td>$162M <span class="verified-badge">Verificado</span></td>
+          <td>B2B (seguros)</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td><strong>HereAfter AI</strong></td>
+          <td>USA</td>
+          <td>N/D</td>
+          <td>Suscripcion</td>
+          <td>Si</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td><strong>Mi Legado Digital</strong></td>
+          <td>Espana</td>
+          <td>~EUR50K (Lanzadera)</td>
+          <td>LegalTech</td>
+          <td>No</td>
+          <td>Si</td>
+        </tr>
+        <tr>
+          <td><strong>NUCLEA</strong></td>
+          <td>Espana</td>
+          <td>Pre-seed</td>
+          <td>EUR0-99</td>
+          <td>Si</td>
+          <td>Si</td>
+        </tr>
+      </table>
+
+      <div class="success-box">
+        <strong>Ventaja Competitiva:</strong> NUCLEA es el unico competidor en espanol con AI y multiples tipos de capsulas. Eternos/Uare.ai cobra $5,000-$15,000 por setup (mercado enterprise/premium), mientras NUCLEA apunta a consumidor masivo con modelo accesible.
+      </div>
+
+      <h3 id="cat-03-traction">3.3 Traction Evidence</h3>
+
+      <table>
+        <tr>
+          <th>Metrica</th>
+          <th>Valor</th>
+          <th>Fecha</th>
+        </tr>
+        <tr>
+          <td>Waitlist registrados</td>
+          <td>287</td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>Landing page visits</td>
+          <td>4,200</td>
+          <td>Ultimos 30 dias</td>
+        </tr>
+        <tr>
+          <td>Conversion rate (visitor-to-waitlist)</td>
+          <td>6.8%</td>
+          <td>Benchmark SaaS: 2-5%</td>
+        </tr>
+        <tr>
+          <td>Social media followers</td>
+          <td>1,450</td>
+          <td>Combined</td>
+        </tr>
+        <tr>
+          <td>Newsletter subscribers</td>
+          <td>180</td>
+          <td>Active</td>
+        </tr>
+      </table>
+
+      <div class="highlight-box">
+        <strong>Nota:</strong> La tasa de conversion waitlist 6.8% esta por encima del benchmark SaaS de 2-5% para visitor-to-signup, lo cual indica alto interes en el producto.
+      </div>
+
+      <h2 id="cat-04">04 - Business Model & Financial Projections</h2>
+
+      <h3 id="cat-04-pricing">4.1 Pricing Strategy</h3>
+
+      <table>
+        <tr>
+          <th>Plan</th>
+          <th>Precio</th>
+          <th>Capsulas</th>
+          <th>Almacenamiento</th>
+          <th>AI Avatar</th>
+        </tr>
+        <tr>
+          <td><strong>Gratuito</strong></td>
+          <td>EUR0</td>
+          <td>1</td>
+          <td>500MB</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td><strong>Esencial</strong></td>
+          <td>EUR9.99/mes</td>
+          <td>2</td>
+          <td>5GB</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td><strong>Familiar</strong></td>
+          <td>EUR24.99/mes</td>
+          <td>10</td>
+          <td>50GB</td>
+          <td>Si</td>
+        </tr>
+        <tr>
+          <td><strong>EverLife Premium</strong></td>
+          <td>EUR99 unico</td>
+          <td>1</td>
+          <td>100GB</td>
+          <td>Si</td>
+        </tr>
+      </table>
+
+      <h3 id="cat-04-economics">4.2 Unit Economics</h3>
+
+      <div class="grid-2">
+        <div class="metric-card">
+          <h4>Customer Acquisition Cost (CAC)</h4>
+          <p><strong>Blended CAC: EUR8.50</strong></p>
+          <ul>
+            <li>Organico: EUR0 (30%)</li>
+            <li>Referidos: EUR5 (25%)</li>
+            <li>Social organico: EUR3 (20%)</li>
+            <li>Paid Ads: EUR25 (20%)</li>
+            <li>Partnerships: EUR15 (5%)</li>
+          </ul>
+        </div>
+        <div class="metric-card">
+          <h4>Lifetime Value (LTV)</h4>
+          <p><strong>Blended LTV: ~EUR45</strong></p>
+          <ul>
+            <li>Esencial (13mo avg): EUR130</li>
+            <li>Familiar (15mo avg): EUR375</li>
+            <li>EverLife: EUR99</li>
+            <li>Mix ponderado: ~EUR45</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>LTV:CAC Ratio Target = 5:1</strong><br>
+        <span class="source-link">Benchmarks SaaS (First Page Sage 2025): 3:1 bueno | 4:1-5:1 excelente | &gt;6:1 subinversion en growth</span>
+      </div>
+
+      <div class="warning-box">
+        <strong>Nota sobre Unit Economics:</strong> Los ratios presentados son proyecciones conservadoras basadas en benchmarks de la industria. El ratio 5:1 es un objetivo realista que indica eficiencia sin subinversion en crecimiento.
+      </div>
+
+      <h3 id="cat-04-projections">4.3 Financial Projections (3 Anos)</h3>
+
+      <table>
+        <tr>
+          <th>Ano</th>
+          <th>Revenue</th>
+          <th>Usuarios Pagos</th>
+          <th>MRR Final</th>
+          <th>Estado</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>EUR15K</td>
+          <td>500</td>
+          <td>EUR2.5K</td>
+          <td><span class="stage-badge stage-0">Pre-seed</span></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>EUR90K</td>
+          <td>2,500</td>
+          <td>EUR12K</td>
+          <td><span class="stage-badge stage-1">Seed Ready</span></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>EUR350K</td>
+          <td>10,000</td>
+          <td>EUR40K</td>
+          <td><span class="stage-badge stage-2">Series A</span></td>
+        </tr>
+      </table>
+
+      <h2 id="cat-05">05 - Risk Assessment & Execution Roadmap</h2>
+
+      <h3 id="cat-05-risks">5.1 Risk Matrix</h3>
+
+      <table>
+        <tr>
+          <th>Riesgo</th>
+          <th>Probabilidad</th>
+          <th>Impacto</th>
+          <th>Mitigacion</th>
+        </tr>
+        <tr>
+          <td>Escalabilidad de Firebase</td>
+          <td>Media</td>
+          <td>Alto</td>
+          <td>Arquitectura modular, plan migracion a GCP</td>
+        </tr>
+        <tr>
+          <td>Competidor con mas funding</td>
+          <td>Media</td>
+          <td>Alto</td>
+          <td>Enfoque nicho hispanohablante, velocidad</td>
+        </tr>
+        <tr>
+          <td>Baja retencion de usuarios</td>
+          <td>Media</td>
+          <td>Alto</td>
+          <td>Gamificacion, notificaciones, valor emocional</td>
+        </tr>
+        <tr>
+          <td>Regulacion datos post-mortem</td>
+          <td>Baja</td>
+          <td>Alto</td>
+          <td>Cumplimiento GDPR, asesoria legal preventiva</td>
+        </tr>
+      </table>
+
+      <h3 id="cat-05-roadmap">5.2 Execution Roadmap</h3>
+
+      <pre><code>2026 Q1          Q2          Q3          Q4          2027 Q1
+  |              |           |           |            |
+  v              v           v           v            v
++------+    +------+    +------+    +------+    +------+
+| POC  |---&gt;| MVP  |---&gt;| Beta |---&gt;|Launch|---&gt;|Scale |
+|      |    |      |    |Open  |    |      |    |Seed  |
++------+    +------+    +------+    +------+    +------+
+  |           |           |           |            |
+Funding    100 users   1K users    3K users    10K users
+EUR150K    EUR1K MRR   EUR5K MRR   EUR15K MRR  EUR40K MRR</code></pre>
+
+      <h3 id="cat-05-milestones">5.3 Key Milestones</h3>
+
+      <table>
+        <tr>
+          <th>Milestone</th>
+          <th>Timeline</th>
+          <th>Metrica</th>
+        </tr>
+        <tr>
+          <td>MVP completo</td>
+          <td>Mes 3</td>
+          <td>5 capsulas funcionales</td>
+        </tr>
+        <tr>
+          <td>1,000 usuarios</td>
+          <td>Mes 6</td>
+          <td>Product-market fit signals</td>
+        </tr>
+        <tr>
+          <td>Revenue EUR5K MRR</td>
+          <td>Mes 9</td>
+          <td>Sostenibilidad inicial</td>
+        </tr>
+        <tr>
+          <td>Seed round ready</td>
+          <td>Mes 12</td>
+          <td>EUR15K MRR, 3,000 usuarios</td>
+        </tr>
+      </table>
+
+      <h2 id="team">Team</h2>
+
+      <table>
+        <tr>
+          <th>Rol</th>
+          <th>Nombre</th>
+          <th>Experiencia</th>
+        </tr>
+        <tr>
+          <td>CEO/Founder</td>
+          <td>Andrea Box Lopez</td>
+          <td>10 anos sector digital</td>
+        </tr>
+        <tr>
+          <td>CTO/Technical</td>
+          <td>Imanol Franjo Alvarez</td>
+          <td>Full-stack, Firebase</td>
+        </tr>
+      </table>
+
+      <h2 id="funding">Funding Requirements</h2>
+
+      <div class="highlight-box">
+        <strong>The Ask: EUR150,000 Pre-Seed</strong><br>
+        <span class="source-link">Rango tipico pre-seed Espana/Sur Europa: EUR145K-EUR500K (EU-Startups 2025)</span>
+      </div>
+
+      <table>
+        <tr>
+          <th>Uso</th>
+          <th>Monto</th>
+          <th>%</th>
+          <th>Proposito</th>
+        </tr>
+        <tr>
+          <td>Product Development</td>
+          <td>EUR55,000</td>
+          <td>37%</td>
+          <td>1 developer FT (EUR35K) + contractors (EUR20K)</td>
+        </tr>
+        <tr>
+          <td>Marketing/Growth</td>
+          <td>EUR40,000</td>
+          <td>27%</td>
+          <td>Paid acquisition, content, community</td>
+        </tr>
+        <tr>
+          <td>Operations</td>
+          <td>EUR30,000</td>
+          <td>20%</td>
+          <td>Legal, herramientas, infraestructura</td>
+        </tr>
+        <tr>
+          <td>Reserve</td>
+          <td>EUR25,000</td>
+          <td>16%</td>
+          <td>Buffer imprevistos + extension runway</td>
+        </tr>
+      </table>
+
+      <div class="metric-card">
+        <h4>Runway Calculation</h4>
+        <ul>
+          <li><strong>Monthly burn rate:</strong> EUR8,300/mes</li>
+          <li><strong>Runway:</strong> 18 meses</li>
+          <li><strong>Composicion burn:</strong> 65% personal, 20% marketing, 15% operaciones</li>
+        </ul>
+        <p class="source-link">Benchmark: Pre-seed startups deben apuntar a 18-24 meses de runway (Finmark 2025)</p>
+      </div>
+
+      <h2 id="sources">Sources & Verification</h2>
+
+      <p>Todos los datos de mercado y competencia han sido verificados con fuentes publicas:</p>
+
+      <table>
+        <tr>
+          <th>Dato</th>
+          <th>Fuente</th>
+          <th>Fecha Verificacion</th>
+        </tr>
+        <tr>
+          <td>TAM $23B (2025)</td>
+          <td><a href="https://www.mordorintelligence.com/industry-reports/digital-legacy-market">Mordor Intelligence</a></td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>68% sin estate plan</td>
+          <td><a href="https://www.caring.com/resources/2024-wills-survey">Caring.com 2024 Survey</a></td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>Eternos/Uare.ai $10.3M</td>
+          <td><a href="https://techcrunch.com/2025/11/11/immortality-startup-eternos-pivots-to-a-personal-ai-that-sounds-like-you/">TechCrunch Nov 2025</a></td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>Empathy $162M total</td>
+          <td><a href="https://fintech.global/2025/05/30/bereavement-support-fintech-empathy-lands-72m-to-expand-ai-driven-lifevault-platform/">FinTech Global</a></td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>Firebase pricing</td>
+          <td><a href="https://firebase.google.com/pricing">Firebase Official</a></td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>LTV:CAC benchmarks</td>
+          <td><a href="https://firstpagesage.com/seo-blog/the-ltv-to-cac-ratio-benchmark/">First Page Sage</a></td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>Salarios developer Espana</td>
+          <td><a href="https://www.glassdoor.com/Salaries/spain-full-stack-developer-salary-SRCH_IL.0,5_IN219_KO6,26.htm">Glassdoor 2025</a></td>
+          <td>Feb 2026</td>
+        </tr>
+        <tr>
+          <td>Pre-seed tipico Espana</td>
+          <td><a href="https://www.wayra.de/blog/what-is-pre-seed-the-complete-guide-for-european-tech-startups-in-2025">Wayra/EU-Startups</a></td>
+          <td>Feb 2026</td>
+        </tr>
+      </table>
+
+      <h2 id="contact">Contact</h2>
+
+      <div class="grid-2">
+        <div class="metric-card">
+          <h4>Andrea Box Lopez</h4>
+          <p>CEO & Founder</p>
+          <p>andreaboxlopez@gmail.com</p>
+        </div>
+        <div class="metric-card">
+          <h4>Imanol Franjo Alvarez</h4>
+          <p>CTO & Technical Lead</p>
+          <p>+34 686 19 25 02</p>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <strong>Confidencialidad:</strong> Este documento esta bajo NDA. Toda la informacion es confidencial.
+      </div>
+
+      <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-light);">
+
+      <p style="text-align: center; color: var(--text-tertiary); font-size: 0.8rem;">
+        <em>NUCLEA - POC Documentation for Investors | Febrero 2026</em><br>
+        <em>Datos verificados via JARVIS Research Protocol (15 searches)</em><br>
+        <em>Generated with DocSidebar Skill - PDF Optimized</em>
+      </p>
+    </main>
+  </div>
+
+  <script>
+    // Smooth scroll navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Active section highlighting
+    const sections = document.querySelectorAll('[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía Completa de Adopción IA - De Cero a Avanzado</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --accent-noob: #8B7355;
+      --accent-basico: #6B8E6B;
+      --accent-intermedio: #5D7A99;
+      --accent-avanzado: #8B6B8B;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-page);
+    }
+
+    .doc-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .doc-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-light);
+      overflow-y: auto;
+      padding: 1.5rem;
+      z-index: 100;
+    }
+
+    .doc-sidebar h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-heavy);
+      padding-bottom: 0.5rem;
+    }
+
+    .doc-sidebar .subtitle {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-section {
+      margin-bottom: 1rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.35rem 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      background: rgba(0,0,0,0.03);
+    }
+
+    .nav-link.active {
+      color: var(--text-primary);
+      border-left-color: var(--border-heavy);
+      font-weight: 500;
+      background: rgba(0,0,0,0.02);
+    }
+
+    .nav-sub {
+      padding-left: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .level-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.1rem 0.35rem;
+      border-radius: 2px;
+      margin-left: 0.25rem;
+      color: white;
+    }
+
+    .level-0 { background: #888; }
+    .level-noob { background: var(--accent-noob); }
+    .level-basico { background: var(--accent-basico); }
+    .level-inter { background: var(--accent-intermedio); }
+    .level-avanzado { background: var(--accent-avanzado); }
+
+    .doc-content {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      min-width: 0;
+      padding: 2.5rem 3rem;
+      max-width: 900px;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-heavy);
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 1.5rem 0 0.75rem;
+    }
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin: 1rem 0 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    ul, ol {
+      margin: 0.75rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.35rem;
+    }
+
+    code {
+      font-family: "Consolas", "Monaco", monospace;
+      font-size: 0.9em;
+      background: var(--bg-code);
+      padding: 0.15rem 0.35rem;
+      border-radius: 2px;
+    }
+
+    pre {
+      background: var(--bg-code);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      border-left: 3px solid var(--border-heavy);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border-light);
+    }
+
+    th {
+      background: var(--bg-note);
+      font-weight: 600;
+    }
+
+    .header-box {
+      background: linear-gradient(135deg, #2C2C2C 0%, #4A4A4A 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 4px;
+      margin-bottom: 2rem;
+    }
+
+    .header-box h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .header-box .tagline {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .header-box .meta {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 1rem;
+    }
+
+    .filosofia-box {
+      background: var(--bg-note);
+      border-left: 4px solid var(--accent-avanzado);
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .filosofia-box h4 {
+      margin-top: 0;
+      color: var(--accent-avanzado);
+    }
+
+    .level-section {
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+    }
+
+    .level-header {
+      padding: 1rem 1.25rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .level-header.noob { background: var(--accent-noob); }
+    .level-header.basico { background: var(--accent-basico); }
+    .level-header.intermedio { background: var(--accent-intermedio); }
+    .level-header.avanzado { background: var(--accent-avanzado); }
+
+    .level-header h3 {
+      margin: 0;
+      color: white;
+    }
+
+    .level-header .points {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .level-body {
+      padding: 1.25rem;
+    }
+
+    .skill-card {
+      background: var(--bg-code);
+      border-radius: 4px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+    }
+
+    .skill-card h4 {
+      margin: 0 0 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .skill-card .cmd {
+      font-family: monospace;
+      background: var(--border-heavy);
+      color: white;
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+      font-size: 0.85rem;
+    }
+
+    .prompt-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+
+    .prompt-header {
+      background: var(--bg-note);
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .prompt-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .copy-btn {
+      background: var(--copy-btn);
+      color: white;
+      border: none;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: #3d6a4a;
+    }
+
+    .copy-btn.copied {
+      background: #2d5a3a;
+    }
+
+    .prompt-content {
+      padding: 1rem;
+      font-family: "Consolas", monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+
+    .tip-box {
+      background: #e8f4ea;
+      border-left: 4px solid var(--copy-btn);
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .tip-box strong {
+      color: var(--copy-btn);
+    }
+
+    .warning-box {
+      background: #fef3e2;
+      border-left: 4px solid #d4a259;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .warning-box strong {
+      color: #a67c3d;
+    }
+
+    .checklist {
+      background: var(--bg-note);
+      padding: 1rem 1.25rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+    }
+
+    .checklist h4 {
+      margin-top: 0;
+    }
+
+    .checklist ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .checklist li {
+      padding: 0.25rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+    }
+
+    .antipattern {
+      background: #fdf2f2;
+      border-left: 4px solid #c9554d;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .antipattern strong {
+      color: #a63d3d;
+    }
+
+    .metodologia-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .metodologia-card {
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 1rem;
+    }
+
+    .metodologia-card h4 {
+      margin-top: 0;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 0.5rem;
+    }
+
+    .toc-print {
+      display: none;
+    }
+
+    /* Print styles for PDF with TOC */
+    @media print {
+      .doc-sidebar {
+        display: none;
+      }
+
+      .doc-content {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+      }
+
+      .toc-print {
+        display: block;
+        page-break-after: always;
+        padding: 2rem;
+      }
+
+      .toc-print h2 {
+        border-bottom: 2px solid #000;
+        margin-bottom: 1.5rem;
+      }
+
+      .toc-print ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .toc-print li {
+        padding: 0.5rem 0;
+        border-bottom: 1px dotted #ccc;
+      }
+
+      .toc-print a {
+        color: #000;
+        text-decoration: none;
+      }
+
+      .toc-print .toc-level-1 {
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .toc-print .toc-level-2 {
+        padding-left: 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      .header-box {
+        background: #333 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .level-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      h2 {
+        page-break-after: avoid;
+      }
+
+      .level-section {
+        page-break-inside: avoid;
+      }
+
+      @page {
+        size: A4;
+        margin: 20mm 25mm;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .doc-sidebar {
+        display: none;
+      }
+
+      .doc-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="doc-sidebar">
+      <h1>Adopcion IA</h1>
+      <div class="subtitle">De Cero a Avanzado</div>
+
+      <nav>
+        <div class="nav-section">
+          <div class="nav-section-title">Fundamentos</div>
+          <a href="#filosofia" class="nav-link">Filosofia Central</a>
+          <a href="#regla-oro" class="nav-link nav-sub">Regla de Oro</a>
+          <a href="#instalacion" class="nav-link">Instalacion</a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Niveles</div>
+          <a href="#nivel-noob" class="nav-link">
+            NOOB <span class="level-badge level-noob">0-7</span>
+          </a>
+          <a href="#noob-comandos" class="nav-link nav-sub">Comandos Basicos</a>
+          <a href="#noob-archivos" class="nav-link nav-sub">Leer/Editar</a>
+
+          <a href="#nivel-basico" class="nav-link">
+            BASICO <span class="level-badge level-basico">8-15</span>
+          </a>
+          <a href="#basico-skills" class="nav-link nav-sub">Skills Basicos</a>
+          <a href="#basico-claudemd" class="nav-link nav-sub">CLAUDE.md</a>
+
+          <a href="#nivel-intermedio" class="nav-link">
+            INTERMEDIO <span class="level-badge level-inter">16-22</span>
+          </a>
+          <a href="#inter-plan" class="nav-link nav-sub">/plan y /refactor</a>
+          <a href="#inter-debug" class="nav-link nav-sub">Debugging</a>
+
+          <a href="#nivel-avanzado" class="nav-link">
+            AVANZADO <span class="level-badge level-avanzado">23-30</span>
+          </a>
+          <a href="#avanzado-skills" class="nav-link nav-sub">Skills Custom</a>
+          <a href="#avanzado-mcp" class="nav-link nav-sub">MCPs</a>
+          <a href="#avanzado-multi" class="nav-link nav-sub">Multi-Agente</a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Metodologias</div>
+          <a href="#skills-universales" class="nav-link">Skills Universales</a>
+          <a href="#jarvis" class="nav-link nav-sub">JARVIS Research</a>
+          <a href="#autothink" class="nav-link nav-sub">Autothink</a>
+          <a href="#rivertrace" class="nav-link nav-sub">River Trace</a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Referencia</div>
+          <a href="#antipatrones" class="nav-link">Anti-patrones</a>
+          <a href="#checklists" class="nav-link">Checklists</a>
+          <a href="#recursos" class="nav-link">Recursos</a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- PRINT TOC (visible only in PDF) -->
+    <div class="toc-print">
+      <h2>Indice de Contenidos</h2>
+      <ul>
+        <li class="toc-level-1"><a href="#filosofia">1. Filosofia Central</a></li>
+        <li class="toc-level-2"><a href="#regla-oro">1.1 Regla de Oro: Contexto</a></li>
+        <li class="toc-level-2"><a href="#instalacion">1.2 Instalacion</a></li>
+
+        <li class="toc-level-1"><a href="#nivel-noob">2. Nivel NOOB (0-7 puntos)</a></li>
+        <li class="toc-level-2"><a href="#noob-comandos">2.1 Comandos Basicos</a></li>
+        <li class="toc-level-2"><a href="#noob-archivos">2.2 Leer y Editar Archivos</a></li>
+
+        <li class="toc-level-1"><a href="#nivel-basico">3. Nivel BASICO (8-15 puntos)</a></li>
+        <li class="toc-level-2"><a href="#basico-skills">3.1 Skills Basicos</a></li>
+        <li class="toc-level-2"><a href="#basico-claudemd">3.2 Configuracion CLAUDE.md</a></li>
+
+        <li class="toc-level-1"><a href="#nivel-intermedio">4. Nivel INTERMEDIO (16-22 puntos)</a></li>
+        <li class="toc-level-2"><a href="#inter-plan">4.1 Planificacion y Refactoring</a></li>
+        <li class="toc-level-2"><a href="#inter-debug">4.2 Debugging Estructurado</a></li>
+
+        <li class="toc-level-1"><a href="#nivel-avanzado">5. Nivel AVANZADO (23-30 puntos)</a></li>
+        <li class="toc-level-2"><a href="#avanzado-skills">5.1 Skills Personalizados</a></li>
+        <li class="toc-level-2"><a href="#avanzado-mcp">5.2 MCPs (Model Context Protocol)</a></li>
+        <li class="toc-level-2"><a href="#avanzado-multi">5.3 Multi-Agente</a></li>
+
+        <li class="toc-level-1"><a href="#skills-universales">6. Skills Universales (TODOS)</a></li>
+        <li class="toc-level-2"><a href="#jarvis">6.1 JARVIS Research</a></li>
+        <li class="toc-level-2"><a href="#autothink">6.2 Autothink (COT/VOT/META)</a></li>
+        <li class="toc-level-2"><a href="#rivertrace">6.3 River Trace</a></li>
+
+        <li class="toc-level-1"><a href="#antipatrones">7. Anti-patrones y Errores</a></li>
+        <li class="toc-level-1"><a href="#checklists">8. Checklists de Progreso</a></li>
+        <li class="toc-level-1"><a href="#recursos">9. Recursos</a></li>
+      </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="doc-content">
+      <div class="header-box">
+        <h1>Guia Completa de Adopcion IA</h1>
+        <div class="tagline">De Cero a Claude Code Avanzado - GH Furnaces</div>
+        <div class="meta">
+          Autor: Imanol Franjo | Version 1.0 | 2026-02-01
+        </div>
+      </div>
+
+      <!-- SECCION 1: FILOSOFIA -->
+      <section id="filosofia">
+        <h2>1. Filosofia Central</h2>
+
+        <div class="filosofia-box">
+          <h4>Principio #1: Contexto es TODO</h4>
+          <p>Claude no lee mentes. Sin contexto rico = respuesta generica inutil.</p>
+          <p><strong>La diferencia entre usuario novato y competente = calidad del contexto que dan.</strong></p>
+        </div>
+
+        <h3>Expectativas Correctas</h3>
+        <p>La IA es una <strong>herramienta</strong>, no magia. Tu aportas contexto y verificacion. La IA aporta estructura y posibilidades.</p>
+
+        <div class="warning-box">
+          <strong>Error mas comun:</strong> Esperar que la IA "entienda sin explicar". Los usuarios nuevos creen que la IA puede leer mentes. Realidad: necesita contexto explicito.
+        </div>
+
+        <h3 id="regla-oro">1.1 Regla de Oro: Estructura del Contexto</h3>
+
+        <p>Esta estructura <strong>siempre funciona</strong>:</p>
+
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Estructura de Contexto Rico</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">1. CONTEXTO: Quien eres y que situacion tienes
+2. TAREA: Que necesitas exactamente
+3. FORMATO: Como lo quieres recibido
+4. RESTRICCIONES: Que evitar o incluir obligatoriamente</div>
+        </div>
+
+        <div class="tip-box">
+          <strong>Ejemplo real:</strong>
+          <p>"Soy tecnico de taller (CONTEXTO). Necesito calcular el tiempo de ciclo para una pieza con 3 operaciones (TAREA). Dame el resultado en formato tabla (FORMATO). No uses formulas complicadas, explica paso a paso (RESTRICCIONES)."</p>
+        </div>
+
+        <h3 id="instalacion">1.2 Instalacion de Claude Code</h3>
+
+        <h4>Prerequisitos</h4>
+        <ul>
+          <li>Node.js instalado (version 18+)</li>
+          <li>Terminal (CMD, PowerShell, o Terminal)</li>
+        </ul>
+
+        <h4>Instalacion</h4>
+        <pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
+
+        <h4>Verificar instalacion</h4>
+        <pre><code>claude --version</code></pre>
+
+        <h4>Primera sesion</h4>
+        <pre><code>claude</code></pre>
+        <p>Escribe: <code>Hola, que puedes hacer?</code></p>
+      </section>
+
+      <!-- SECCION 2: NIVEL NOOB -->
+      <section id="nivel-noob">
+        <h2>2. Nivel NOOB</h2>
+
+        <div class="level-section">
+          <div class="level-header noob">
+            <h3>NOOB - Primeros Pasos</h3>
+            <span class="points">0-7 puntos</span>
+          </div>
+          <div class="level-body">
+            <p><strong>Objetivo:</strong> Aprender a interactuar con Claude Code, leer archivos, y hacer cambios simples.</p>
+            <p><strong>Duracion estimada:</strong> 2-4 semanas</p>
+          </div>
+        </div>
+
+        <h3 id="noob-comandos">2.1 Comandos Basicos</h3>
+
+        <table>
+          <tr>
+            <th>Comando</th>
+            <th>Que hace</th>
+            <th>Cuando usarlo</th>
+          </tr>
+          <tr>
+            <td><code>/help</code></td>
+            <td>Ver todos los comandos disponibles</td>
+            <td>Cuando no sepas que hacer</td>
+          </tr>
+          <tr>
+            <td><code>/clear</code></td>
+            <td>Limpiar la conversacion</td>
+            <td>Para empezar tema nuevo</td>
+          </tr>
+          <tr>
+            <td><code>/exit</code></td>
+            <td>Salir de Claude Code</td>
+            <td>Al terminar sesion</td>
+          </tr>
+        </table>
+
+        <h3 id="noob-archivos">2.2 Leer y Editar Archivos</h3>
+
+        <h4>Leer archivos</h4>
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Ejemplos de lectura</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">lee el archivo package.json
+muestrame el contenido de src/index.js
+que hay en config.py?</div>
+        </div>
+
+        <h4>Pedir explicaciones</h4>
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Ejemplos de explicacion</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">explicame que hace este archivo
+que hace la funcion calcularTotal?
+para que sirve esta linea?</div>
+        </div>
+
+        <h4>Editar archivos</h4>
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Ejemplos de edicion</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">anade un comentario explicando esta funcion
+cambia el nombre de la variable x por contador
+corrige el error de sintaxis en linea 15</div>
+        </div>
+
+        <div class="tip-box">
+          <strong>Importante:</strong> Claude Code te mostrara el cambio ANTES de aplicarlo. Puedes aceptar o rechazar.
+        </div>
+      </section>
+
+      <!-- SECCION 3: NIVEL BASICO -->
+      <section id="nivel-basico">
+        <h2>3. Nivel BASICO</h2>
+
+        <div class="level-section">
+          <div class="level-header basico">
+            <h3>BASICO - Consolidar Fundamentos</h3>
+            <span class="points">8-15 puntos</span>
+          </div>
+          <div class="level-body">
+            <p><strong>Objetivo:</strong> Usar skills basicos, configurar CLAUDE.md, ejecutar comandos.</p>
+            <p><strong>Prerequisito:</strong> Dominar todo lo del nivel NOOB</p>
+          </div>
+        </div>
+
+        <h3 id="basico-skills">3.1 Skills Basicos</h3>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/commit</span> Commits Guiados</h4>
+          <p>En vez de escribir commits manuales, Claude Code:</p>
+          <ol>
+            <li>Ve los cambios (git diff)</li>
+            <li>Sugiere un mensaje de commit</li>
+            <li>Tu apruebas o modificas</li>
+            <li>Hace el commit</li>
+          </ol>
+        </div>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/docs</span> Generar Documentacion</h4>
+          <p>Genera documentacion automatica para funciones, clases, o archivos completos.</p>
+          <pre><code>/docs genera documentacion para la funcion calcular</code></pre>
+        </div>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/brainstorming</span> Ideas Antes de Codigo</h4>
+          <p><strong>SIEMPRE</strong> usar antes de implementar features nuevas:</p>
+          <pre><code>/brainstorming quiero anadir un sistema de login</code></pre>
+          <p>Claude hace preguntas, explora opciones, propone enfoque.</p>
+        </div>
+
+        <h4>Ejecutar comandos bash</h4>
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Ejecutar comandos</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">ejecuta pytest tests/
+ejecuta npm run build
+corre python main.py</div>
+        </div>
+
+        <h3 id="basico-claudemd">3.2 Configuracion CLAUDE.md</h3>
+
+        <p>Crea un archivo <code>CLAUDE.md</code> en la raiz de tu proyecto:</p>
+
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">CLAUDE.md Basico</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content"># CLAUDE.md
+
+## Preferencias
+- Lenguaje: Python 3.12
+- Estilo: Codigo limpio, sin comentarios obvios
+- Tests: Usar pytest
+
+## Reglas
+- No crear archivos nuevos sin preguntar
+- Explicar cambios antes de hacerlos</div>
+        </div>
+
+        <p>Claude Code lee este archivo automaticamente y sigue tus preferencias.</p>
+      </section>
+
+      <!-- SECCION 4: NIVEL INTERMEDIO -->
+      <section id="nivel-intermedio">
+        <h2>4. Nivel INTERMEDIO</h2>
+
+        <div class="level-section">
+          <div class="level-header intermedio">
+            <h3>INTERMEDIO - Skills Avanzados</h3>
+            <span class="points">16-22 puntos</span>
+          </div>
+          <div class="level-body">
+            <p><strong>Objetivo:</strong> Dominar planificacion, refactoring, y debugging estructurado.</p>
+            <p><strong>Prerequisito:</strong> Dominar /commit, /docs, /brainstorming, CLAUDE.md</p>
+          </div>
+        </div>
+
+        <h3 id="inter-plan">4.1 Planificacion y Refactoring</h3>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/plan</span> Planificar Tareas Complejas</h4>
+          <p>Para tareas grandes, <strong>ANTES</strong> de tocar codigo:</p>
+          <pre><code>/plan implementar sistema de autenticacion con JWT</code></pre>
+          <p>Claude analiza el codebase, identifica archivos afectados, propone plan paso a paso.</p>
+          <div class="tip-box">
+            <strong>Regla:</strong> Tareas de mas de 1 hora = usar /plan primero.
+          </div>
+        </div>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/refactor</span> Mejorar Codigo Existente</h4>
+          <pre><code>/refactor este archivo tiene mucha duplicacion
+/refactor extrae la logica de validacion a una funcion</code></pre>
+        </div>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/requesting-code-review</span> Pedir Review</h4>
+          <p>Antes de mergear, Claude revisa bugs potenciales, code smells, y sugiere mejoras.</p>
+        </div>
+
+        <h3 id="inter-debug">4.2 Debugging Estructurado</h3>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/systematic-debugging</span> Debug en 4 Fases</h4>
+          <pre><code>/systematic-debugging el login falla intermitentemente</code></pre>
+          <table>
+            <tr>
+              <th>Fase</th>
+              <th>Objetivo</th>
+            </tr>
+            <tr>
+              <td>1. Reproducir</td>
+              <td>Confirmar el bug existe</td>
+            </tr>
+            <tr>
+              <td>2. Aislar</td>
+              <td>Encontrar donde ocurre</td>
+            </tr>
+            <tr>
+              <td>3. Identificar</td>
+              <td>Root cause</td>
+            </tr>
+            <tr>
+              <td>4. Verificar</td>
+              <td>Confirmar el fix funciona</td>
+            </tr>
+          </table>
+        </div>
+
+        <h4>CLAUDE.md Avanzado</h4>
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">CLAUDE.md Intermedio</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content"># CLAUDE.md
+
+## Proyecto
+- Nombre: Mi App
+- Stack: Python 3.12, FastAPI, PostgreSQL
+
+## Preferencias Codigo
+- Type hints obligatorios
+- Docstrings solo en funciones publicas
+- Tests con pytest
+
+## Workflow
+- Siempre /plan antes de features grandes
+- /commit con mensajes en ingles
+- No crear archivos sin preguntar
+
+## Anti-patterns
+- No usar print para debug (usar logging)
+- No hardcodear credenciales</div>
+        </div>
+      </section>
+
+      <!-- SECCION 5: NIVEL AVANZADO -->
+      <section id="nivel-avanzado">
+        <h2>5. Nivel AVANZADO</h2>
+
+        <div class="level-section">
+          <div class="level-header avanzado">
+            <h3>AVANZADO - MCPs, Skills Custom, Multi-Agente</h3>
+            <span class="points">23-30 puntos</span>
+          </div>
+          <div class="level-body">
+            <p><strong>Objetivo:</strong> Crear skills propios, configurar MCPs, usar multi-agente.</p>
+            <p><strong>Prerequisito:</strong> Dominar TODO lo anterior + al menos 1 skill personalizado creado</p>
+          </div>
+        </div>
+
+        <h3 id="avanzado-skills">5.1 Skills Personalizados</h3>
+
+        <h4>Estructura de un Skill</h4>
+        <pre><code>~/.claude/skills/mi-skill/
+├── SKILL.md           # Obligatorio
+└── references/        # Opcional
+    └── ejemplos.md</code></pre>
+
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">SKILL.md Profesional</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">---
+name: mi-workflow-ci
+description: Ejecuta pipeline CI/CD local antes de push. Corre tests, lint, y build.
+---
+
+# CI Local Workflow
+
+## Activacion
+- `/mi-workflow-ci`
+- "verifica antes de push"
+
+## Pasos
+
+### 1. Lint
+Ejecutar: `npm run lint` o `ruff check .`
+
+### 2. Tests
+Ejecutar: `npm test` o `pytest -v`
+
+### 3. Build
+Ejecutar: `npm run build`
+
+### 4. Resumen
+Mostrar: Lint PASS/FAIL, Tests X/Y, Build PASS/FAIL</div>
+        </div>
+
+        <h3 id="avanzado-mcp">5.2 MCPs (Model Context Protocol)</h3>
+
+        <p>MCPs extienden Claude Code con herramientas externas:</p>
+
+        <table>
+          <tr>
+            <th>MCP</th>
+            <th>Capacidad</th>
+          </tr>
+          <tr>
+            <td>filesystem</td>
+            <td>Acceso a archivos fuera del proyecto</td>
+          </tr>
+          <tr>
+            <td>github</td>
+            <td>Issues, PRs, repos</td>
+          </tr>
+          <tr>
+            <td>postgres</td>
+            <td>Consultas SQL directas</td>
+          </tr>
+          <tr>
+            <td>slack</td>
+            <td>Enviar mensajes</td>
+          </tr>
+          <tr>
+            <td>brave-search</td>
+            <td>Busquedas web</td>
+          </tr>
+        </table>
+
+        <h4>Configuracion</h4>
+        <p>Archivo: <code>~/.claude/settings.json</code></p>
+        <pre><code>{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-filesystem", "/ruta"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-github"],
+      "env": {
+        "GITHUB_TOKEN": "tu_token"
+      }
+    }
+  }
+}</code></pre>
+
+        <h3 id="avanzado-multi">5.3 Multi-Agente</h3>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/coordinating-terminals</span> Multiples Terminales</h4>
+          <p>Para proyectos grandes, distribuye tareas entre T1, T2, T3... cada uno con un foco.</p>
+        </div>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/delegate</span> Delegar Tareas</h4>
+          <pre><code>/delegate implementa los tests unitarios</code></pre>
+        </div>
+
+        <div class="skill-card">
+          <h4><span class="cmd">/noumenon</span> Arquitectura Multi-Agente</h4>
+          <pre><code>/noumenon disenar sistema de microservicios</code></pre>
+        </div>
+      </section>
+
+      <!-- SECCION 6: SKILLS UNIVERSALES -->
+      <section id="skills-universales">
+        <h2>6. Skills Universales (OBLIGATORIOS)</h2>
+
+        <div class="filosofia-box">
+          <h4>Estos 3 skills son para TODOS los niveles</h4>
+          <p>Independientemente de tu nivel, debes dominar estos skills.</p>
+        </div>
+
+        <h3 id="jarvis">6.1 JARVIS Research</h3>
+
+        <p>Investigacion profunda con 5 busquedas encadenadas:</p>
+
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Invocar JARVIS</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">/jarvis-research mejores practicas autenticacion 2026</div>
+        </div>
+
+        <h4>Las 5 Busquedas</h4>
+        <table>
+          <tr>
+            <th>#</th>
+            <th>Tipo</th>
+            <th>Objetivo</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Amplia</td>
+            <td>Que existe sobre el tema?</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Llenar hueco</td>
+            <td>Que me falta saber?</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Profundizar</td>
+            <td>Detalle de lo mas relevante</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Practico</td>
+            <td>Como aplica a MI caso?</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Riesgos</td>
+            <td>Que puede fallar?</td>
+          </tr>
+        </table>
+
+        <h3 id="autothink">6.2 Autothink (COT/VOT/META)</h3>
+
+        <p>Protocolo de debate interno para decisiones complejas:</p>
+
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Invocar Autothink</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">/autothink deberia usar React o Vue para este proyecto?</div>
+        </div>
+
+        <h4>Las 3 Rondas</h4>
+        <table>
+          <tr>
+            <th>Ronda</th>
+            <th>Sigla</th>
+            <th>Pregunta</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>COT (Chain of Thought)</td>
+            <td>Cual es el problema REAL? Que se seguro?</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>VOT (Verification)</td>
+            <td>Que opciones tengo? Compara objetivamente.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>META</td>
+            <td>Cual recomiendas y POR QUE podrias estar equivocado?</td>
+          </tr>
+        </table>
+
+        <h4>Niveles de Confianza</h4>
+        <table>
+          <tr>
+            <th>Nivel</th>
+            <th>Significado</th>
+            <th>Accion</th>
+          </tr>
+          <tr>
+            <td>HIGH</td>
+            <td>Verificado en codigo</td>
+            <td>Proceder</td>
+          </tr>
+          <tr>
+            <td>MED</td>
+            <td>Basado en patrones</td>
+            <td>Verificar antes</td>
+          </tr>
+          <tr>
+            <td>LOW</td>
+            <td>Especulacion</td>
+            <td>DEBE verificar</td>
+          </tr>
+        </table>
+
+        <h3 id="rivertrace">6.3 River Trace</h3>
+
+        <p>Trazar el flujo de un proceso SIN ejecutar nada:</p>
+
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">River Trace</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">Traza el flujo de [proceso] desde [inicio] hasta [fin].
+NO ejecutes nada. Solo lee y sigue el camino paso a paso.
+En cada paso: que entra? que sale? que podria fallar?</div>
+        </div>
+      </section>
+
+      <!-- SECCION 7: ANTI-PATRONES -->
+      <section id="antipatrones">
+        <h2>7. Anti-patrones y Errores Comunes</h2>
+
+        <h3>Por Tipo de Perfil</h3>
+
+        <div class="antipattern">
+          <strong>Perfil Tecnico (Taller, Mecanicos)</strong>
+          <ul>
+            <li><strong>Trampa mental:</strong> "Esto no es para mi, es para programadores"</li>
+            <li><strong>Error:</strong> Demasiado respeto al output (miedo a iterar)</li>
+            <li><strong>No iteran:</strong> Creen que si piden otra vez "molestan"</li>
+          </ul>
+          <p><strong>Respuesta:</strong> "No es para programadores, es para cualquiera que trabaje con informacion."</p>
+        </div>
+
+        <div class="antipattern">
+          <strong>Perfil Oficina (PM, Logistica)</strong>
+          <ul>
+            <li><strong>Trampa mental:</strong> "Tiene que salir de mi" (creatividad propia)</li>
+            <li><strong>Error:</strong> No iteran, aceptan primer resultado</li>
+            <li><strong>No preguntan:</strong> No piden aclaraciones cuando no entienden</li>
+          </ul>
+          <p><strong>Respuesta:</strong> "La IA propone, tu decides. Tu criterio sigue siendo el valor."</p>
+        </div>
+
+        <h3>Errores Universales</h3>
+
+        <div class="antipattern">
+          <strong>"No funciona" y abandonar</strong>
+          <p>El peor antipatron. Siempre hay solucion si añades contexto.</p>
+          <p><strong>Respuesta:</strong> "Seguro que le falta contexto. Enséñame que le dijiste."</p>
+        </div>
+
+        <div class="antipattern">
+          <strong>"Es mas rapido hacerlo yo"</strong>
+          <p>Ahora si, pero cuando tengas 10 tareas similares... escala.</p>
+        </div>
+
+        <h3>Como Enseñar a Iterar</h3>
+
+        <div class="prompt-block">
+          <div class="prompt-header">
+            <span class="prompt-label">Tecnica: Cuestionar</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button>
+          </div>
+          <div class="prompt-content">Por que elegiste eso y no Y?</div>
+        </div>
+        <p>Forzar a explicar decisiones = detectar errores = mejorar.</p>
+      </section>
+
+      <!-- SECCION 8: CHECKLISTS -->
+      <section id="checklists">
+        <h2>8. Checklists de Progreso</h2>
+
+        <div class="checklist">
+          <h4>Nivel NOOB - Semanas 1-4</h4>
+          <ul>
+            <li>Abrir Claude Code (<code>claude</code>)</li>
+            <li>Usar <code>/help</code></li>
+            <li>Leer un archivo</li>
+            <li>Pedir una explicacion</li>
+            <li>Usar <code>/clear</code> y <code>/exit</code></li>
+            <li>Pedir que edite un archivo</li>
+            <li>Aceptar/rechazar un cambio</li>
+            <li>Usar <code>/qaterminal</code> para evaluarte</li>
+            <li>Probar <code>/jarvis-research</code></li>
+            <li>Usar <code>/autothink</code> para una decision</li>
+          </ul>
+        </div>
+
+        <div class="checklist">
+          <h4>Nivel BASICO - Semanas 1-4</h4>
+          <ul>
+            <li>Usar <code>/commit</code> para 3 commits</li>
+            <li>Crear <code>CLAUDE.md</code> en un proyecto</li>
+            <li>Usar <code>/docs</code> para documentar algo</li>
+            <li>Usar <code>/brainstorming</code> antes de una feature</li>
+            <li>Ejecutar tests desde Claude Code</li>
+            <li>Buscar codigo en el proyecto</li>
+            <li>Re-evaluarte con <code>/qaterminal</code></li>
+          </ul>
+        </div>
+
+        <div class="checklist">
+          <h4>Nivel INTERMEDIO - Semanas 1-4</h4>
+          <ul>
+            <li>Usar <code>/plan</code> para una feature</li>
+            <li>Usar <code>/refactor</code> en codigo existente</li>
+            <li>Usar <code>/systematic-debugging</code> en un bug</li>
+            <li>Pedir code review con <code>/requesting-code-review</code></li>
+            <li>Expandir tu <code>CLAUDE.md</code></li>
+            <li>Crear un skill personalizado basico</li>
+            <li>Leer sobre MCPs</li>
+          </ul>
+        </div>
+
+        <div class="checklist">
+          <h4>Nivel AVANZADO - Meses 1-3</h4>
+          <ul>
+            <li>Crear 2-3 skills profesionales</li>
+            <li>Configurar al menos 1 MCP</li>
+            <li>Usar <code>/delegate</code> para una tarea</li>
+            <li>Usar <code>/coordinating-terminals</code> en proyecto real</li>
+            <li>Configurar hooks personalizados</li>
+            <li>Contribuir un skill al equipo</li>
+            <li>Dominar <code>/noumenon</code> para arquitecturas</li>
+            <li>Mentorear a alguien de nivel NOOB/BASICO</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECCION 9: RECURSOS -->
+      <section id="recursos">
+        <h2>9. Recursos</h2>
+
+        <h3>Documentacion Oficial</h3>
+        <ul>
+          <li><strong>Claude Code:</strong> <a href="https://docs.anthropic.com/claude-code">docs.anthropic.com/claude-code</a></li>
+          <li><strong>Skills:</strong> <a href="https://code.claude.com/docs/en/skills">code.claude.com/docs/en/skills</a></li>
+          <li><strong>MCPs:</strong> <a href="https://github.com/anthropics/mcp">github.com/anthropics/mcp</a></li>
+        </ul>
+
+        <h3>Videos (Ingles)</h3>
+        <ul>
+          <li><strong>IndyDevDan:</strong> Claude practico en YouTube</li>
+        </ul>
+
+        <h3>Metodologias Internas</h3>
+        <ul>
+          <li><strong>JARVIS:</strong> Investigacion encadenada 5 pasos</li>
+          <li><strong>Autothink:</strong> COT/VOT/META para decisiones</li>
+          <li><strong>River Trace:</strong> Trazar flujo sin ejecutar</li>
+        </ul>
+
+        <div class="filosofia-box">
+          <h4>Mensaje Final</h4>
+          <p><strong>Practica > Teoria:</strong> 10 minutos al dia con tareas REALES de tu trabajo vale mas que 2 horas viendo videos.</p>
+          <p>Empieza hoy, no mañana. Con tu proxima tarea real.</p>
+        </div>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-light);">
+
+        <p style="text-align: center; color: var(--text-tertiary); font-size: 0.9rem;">
+          <strong>Autor:</strong> Imanol Franjo | <strong>Contacto:</strong> ifranjo@ghifurnaces.com<br>
+          <strong>Version:</strong> 1.0 | <strong>Ultima actualizacion:</strong> 2026-02-01
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Copy to clipboard functionality
+    function copyPrompt(button) {
+      const content = button.closest('.prompt-block')
+        .querySelector('.prompt-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        const original = button.textContent;
+        button.textContent = 'COPIADO!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Scroll-aware navigation highlighting
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('[id]');
+
+    // Smooth scroll on nav click
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Highlight current section in nav
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

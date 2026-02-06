@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUCLEA Stack Decision: Firebase vs Supabase 2026</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --accent: #8B7355;
+      --green: #4A7C59;
+      --orange: #D4A373;
+      --red: #9B4D4D;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    .doc-sidebar {
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+    }
+
+    .doc-sidebar h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .doc-sidebar .subtitle {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .nav-section { margin-bottom: 1rem; }
+
+    .nav-section-title {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.3rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.25rem 0;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 0.5rem;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      border-left-color: var(--border-light);
+    }
+
+    .doc-content {
+      padding: 2rem 3rem;
+      max-width: 800px;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border-heavy);
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.25rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    p { margin-bottom: 0.75rem; color: var(--text-secondary); }
+
+    .tagline {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+      padding: 0.75rem;
+      background: var(--bg-note);
+      border-left: 3px solid var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.8rem;
+    }
+
+    th {
+      background: var(--bg-nav);
+      padding: 0.5rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-heavy);
+    }
+
+    td {
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    tr:hover { background: var(--bg-note); }
+
+    .highlight-box {
+      background: var(--bg-code);
+      border-left: 4px solid var(--green);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+    }
+
+    .warning-box {
+      background: #FFF8F0;
+      border-left: 4px solid var(--orange);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+    }
+
+    .danger-box {
+      background: #FFF0F0;
+      border-left: 4px solid var(--red);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+    }
+
+    .success-box {
+      background: #F0F7F0;
+      border-left: 4px solid var(--green);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+    }
+
+    ul, ol {
+      margin: 0.75rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.3rem;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    code {
+      background: var(--bg-code);
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.8em;
+    }
+
+    pre {
+      background: var(--bg-code);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid var(--border-light);
+      font-size: 0.75rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.1rem 0.3rem;
+      border-radius: 2px;
+      margin-left: 0.3rem;
+    }
+
+    .badge-green { background: var(--green); color: white; }
+    .badge-orange { background: var(--orange); color: white; }
+    .badge-red { background: var(--red); color: white; }
+
+    .verdict {
+      background: linear-gradient(135deg, #F0F7F0 0%, #E8F5E8 100%);
+      border: 2px solid var(--green);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+
+    .verdict h3 {
+      color: var(--green);
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .comparison-card {
+      background: var(--bg-note);
+      border: 1px solid var(--border-light);
+      padding: 1rem;
+      border-radius: 4px;
+    }
+
+    .comparison-card h4 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .source-link {
+      font-size: 0.65rem;
+      color: var(--text-tertiary);
+    }
+
+    @media print {
+      .doc-sidebar { display: none; }
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-content { max-width: none; padding: 0.5in; }
+    }
+
+    @media (max-width: 800px) {
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-sidebar { display: none; }
+      .doc-content { padding: 1.5rem; }
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <h2>Stack Decision</h2>
+      <div class="subtitle">Firebase vs Supabase<br>NUCLEA | Feb 2026</div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <a href="#tldr" class="nav-link">TL;DR Veredicto</a>
+        <a href="#context" class="nav-link">Contexto NUCLEA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Comparativa</div>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="#database" class="nav-link">Base de Datos</a>
+        <a href="#auth" class="nav-link">Autenticacion</a>
+        <a href="#storage" class="nav-link">Storage (Media)</a>
+        <a href="#nextjs" class="nav-link">Integracion Next.js</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Decision</div>
+        <a href="#recommendation" class="nav-link">Recomendacion</a>
+        <a href="#migration" class="nav-link">Plan de Migracion</a>
+        <a href="#sources" class="nav-link">Fuentes</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1>Stack Decision: Firebase vs Supabase</h1>
+      <div class="tagline">
+        Investigacion JARVIS (5 busquedas) | Verificado Feb 2026 | Para proyecto NUCLEA
+      </div>
+
+      <h2 id="tldr">TL;DR - Veredicto</h2>
+
+      <div class="verdict">
+        <h3>RECOMENDACION: SUPABASE</h3>
+        <p style="margin-bottom: 0;"><strong>Para NUCLEA especificamente</strong>, Supabase es mejor opcion por:</p>
+        <ul style="text-align: left; display: inline-block;">
+          <li>Pricing predecible ($25/mes Pro vs spikes impredecibles)</li>
+          <li>Mejor para media-heavy apps (fotos/videos de capsulas)</li>
+          <li>PostgreSQL = relaciones claras (users → capsules → content)</li>
+          <li>Open-source = sin vendor lock-in</li>
+        </ul>
+      </div>
+
+      <h2 id="context">Contexto NUCLEA</h2>
+
+      <table>
+        <tr>
+          <th>Requisito</th>
+          <th>Importancia</th>
+          <th>Mejor Opcion</th>
+        </tr>
+        <tr>
+          <td>Storage de fotos/videos</td>
+          <td><span class="badge badge-red">CRITICO</span></td>
+          <td>Supabase (pricing egress)</td>
+        </tr>
+        <tr>
+          <td>Auth (email, Google, Apple)</td>
+          <td><span class="badge badge-orange">ALTA</span></td>
+          <td>Ambos (equivalentes)</td>
+        </tr>
+        <tr>
+          <td>Relaciones de datos</td>
+          <td><span class="badge badge-orange">ALTA</span></td>
+          <td>Supabase (SQL)</td>
+        </tr>
+        <tr>
+          <td>Pricing predecible</td>
+          <td><span class="badge badge-red">CRITICO</span></td>
+          <td>Supabase ($25 fijo)</td>
+        </tr>
+        <tr>
+          <td>Velocidad de desarrollo</td>
+          <td><span class="badge badge-orange">ALTA</span></td>
+          <td>Firebase (mas maduro)</td>
+        </tr>
+        <tr>
+          <td>Integracion Next.js</td>
+          <td><span class="badge badge-orange">ALTA</span></td>
+          <td>Ambos (excelente docs)</td>
+        </tr>
+      </table>
+
+      <h2 id="pricing">Pricing Detallado</h2>
+
+      <h3>Firebase (Blaze Plan)</h3>
+      <div class="warning-box">
+        <strong>Modelo: Pago por OPERACION</strong><br>
+        Costos escalan con reads/writes, no con usuarios. Puede causar spikes impredecibles.
+      </div>
+
+      <table>
+        <tr>
+          <th>Servicio</th>
+          <th>Free Tier</th>
+          <th>Blaze Pricing</th>
+        </tr>
+        <tr>
+          <td>Firestore reads</td>
+          <td>50K/dia</td>
+          <td>$0.18 / 100K reads</td>
+        </tr>
+        <tr>
+          <td>Firestore writes</td>
+          <td>20K/dia</td>
+          <td>$0.18 / 100K writes</td>
+        </tr>
+        <tr>
+          <td>Storage (almacenado)</td>
+          <td>1 GB</td>
+          <td>$0.026 / GB</td>
+        </tr>
+        <tr>
+          <td>Storage (descarga)</td>
+          <td>10 GB/mes</td>
+          <td>$0.15 / GB</td>
+        </tr>
+        <tr>
+          <td>Auth</td>
+          <td>10K/mes</td>
+          <td>$0.01 / verificacion</td>
+        </tr>
+      </table>
+
+      <h3>Supabase (Pro Plan)</h3>
+      <div class="highlight-box">
+        <strong>Modelo: Pago por RECURSOS</strong><br>
+        $25/mes fijo incluye: 8GB DB, 100GB storage, 100K MAU. Pricing predecible.
+      </div>
+
+      <table>
+        <tr>
+          <th>Plan</th>
+          <th>Precio</th>
+          <th>Incluye</th>
+        </tr>
+        <tr>
+          <td>Free</td>
+          <td>$0</td>
+          <td>500MB DB, 1GB storage, 50K MAU, 2 proyectos</td>
+        </tr>
+        <tr>
+          <td>Pro</td>
+          <td>$25/mes</td>
+          <td>8GB DB, 100GB storage, 100K MAU, unlimited API</td>
+        </tr>
+        <tr>
+          <td>Team</td>
+          <td>$599/mes</td>
+          <td>Pro + colaboracion equipo + soporte</td>
+        </tr>
+      </table>
+
+      <h3>Comparativa de Costos (Escenarios)</h3>
+
+      <table>
+        <tr>
+          <th>Escenario</th>
+          <th>Firebase Est.</th>
+          <th>Supabase Est.</th>
+        </tr>
+        <tr>
+          <td>POC (100 usuarios)</td>
+          <td>$0 (free tier)</td>
+          <td>$0 (free tier)</td>
+        </tr>
+        <tr>
+          <td>MVP (1K usuarios, 10GB media)</td>
+          <td>~$15-30/mes</td>
+          <td>$0 (free tier)</td>
+        </tr>
+        <tr>
+          <td>Growth (5K usuarios, 50GB media)</td>
+          <td>~$50-150/mes</td>
+          <td>$25/mes (Pro)</td>
+        </tr>
+        <tr>
+          <td>Scale (10K usuarios, 100GB media)</td>
+          <td>~$100-300/mes</td>
+          <td>$25/mes (Pro)</td>
+        </tr>
+      </table>
+
+      <p class="source-link">Fuentes: <a href="https://firebase.google.com/pricing">Firebase Pricing</a>, <a href="https://supabase.com/pricing">Supabase Pricing</a></p>
+
+      <h2 id="database">Base de Datos</h2>
+
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h4>Firebase Firestore</h4>
+          <ul>
+            <li>NoSQL documental</li>
+            <li>Flexible, sin esquema</li>
+            <li>Joins en cliente (denormalizacion)</li>
+            <li>Real-time nativo excelente</li>
+            <li>Vendor lock-in (propietario)</li>
+          </ul>
+          <p><strong>Mejor para:</strong> Prototipos rapidos, mobile-first, chat apps</p>
+        </div>
+        <div class="comparison-card">
+          <h4>Supabase PostgreSQL</h4>
+          <ul>
+            <li>SQL relacional</li>
+            <li>Esquema estricto, foreign keys</li>
+            <li>Joins nativos, queries complejas</li>
+            <li>Real-time via subscriptions</li>
+            <li>Open-source, portable</li>
+          </ul>
+          <p><strong>Mejor para:</strong> SaaS, dashboards, apps con relaciones</p>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>Para NUCLEA:</strong> Las capsulas tienen relaciones claras (User → Capsules → Content → Media). PostgreSQL maneja esto mejor que NoSQL.
+      </div>
+
+      <h2 id="auth">Autenticacion</h2>
+
+      <table>
+        <tr>
+          <th>Feature</th>
+          <th>Firebase Auth</th>
+          <th>Supabase Auth</th>
+        </tr>
+        <tr>
+          <td>Email/Password</td>
+          <td>Si</td>
+          <td>Si</td>
+        </tr>
+        <tr>
+          <td>Google/Apple/Social</td>
+          <td>Si (20+ providers)</td>
+          <td>Si (15+ providers)</td>
+        </tr>
+        <tr>
+          <td>Magic Links</td>
+          <td>Si</td>
+          <td>Si</td>
+        </tr>
+        <tr>
+          <td>MFA</td>
+          <td>Si</td>
+          <td>Si</td>
+        </tr>
+        <tr>
+          <td>Row Level Security</td>
+          <td>Via Security Rules</td>
+          <td>Via SQL Policies (RLS)</td>
+        </tr>
+        <tr>
+          <td>Madurez</td>
+          <td>Muy madura</td>
+          <td>Madura</td>
+        </tr>
+      </table>
+
+      <p><strong>Veredicto Auth:</strong> Ambos son excelentes. Firebase tiene mas providers, Supabase tiene RLS mas granular.</p>
+
+      <h2 id="storage">Storage (Fotos/Videos)</h2>
+
+      <div class="danger-box">
+        <strong>CRITICO para NUCLEA:</strong> Las capsulas contendran fotos y videos. El storage es el costo principal.
+      </div>
+
+      <table>
+        <tr>
+          <th>Metrica</th>
+          <th>Firebase Storage</th>
+          <th>Supabase Storage</th>
+        </tr>
+        <tr>
+          <td>Almacenamiento</td>
+          <td>$0.026/GB</td>
+          <td>Incluido en plan (1-100GB)</td>
+        </tr>
+        <tr>
+          <td>Egress (descarga)</td>
+          <td>$0.15/GB</td>
+          <td>2GB free, luego $0.09/GB</td>
+        </tr>
+        <tr>
+          <td>Free tier</td>
+          <td>1GB + 10GB transfer</td>
+          <td>1GB + 2GB transfer</td>
+        </tr>
+        <tr>
+          <td>CDN</td>
+          <td>Google Cloud CDN</td>
+          <td>CDN incluido</td>
+        </tr>
+        <tr>
+          <td>Transformaciones</td>
+          <td>Via Cloud Functions</td>
+          <td>Image transforms built-in</td>
+        </tr>
+      </table>
+
+      <div class="highlight-box">
+        <strong>Para NUCLEA (media-heavy):</strong> Supabase es significativamente mas barato en egress/transfer. Con 100GB de fotos servidas a usuarios, la diferencia es notable.
+      </div>
+
+      <h2 id="nextjs">Integracion Next.js 16</h2>
+
+      <h3>Firebase + Next.js</h3>
+      <pre><code>// Instalacion
+npm install firebase firebase-admin
+
+// Estructura recomendada
+/lib/firebase.ts        - Client SDK init
+/lib/firebase-admin.ts  - Admin SDK (server)
+/middleware.ts          - Auth check (next-firebase-auth-edge)
+
+// Server Component con Firestore
+export const dynamic = 'force-dynamic'
+import { db } from '@/lib/firebase-admin'
+const capsules = await db.collection('capsules').get()</code></pre>
+
+      <h3>Supabase + Next.js</h3>
+      <pre><code>// Instalacion
+npm install @supabase/supabase-js @supabase/ssr
+
+// Estructura recomendada
+/lib/supabase/client.ts  - Browser client
+/lib/supabase/server.ts  - Server client
+/middleware.ts           - Auth + session refresh
+
+// Server Component con Supabase
+import { createClient } from '@/lib/supabase/server'
+const supabase = await createClient()
+const { data: capsules } = await supabase
+  .from('capsules')
+  .select('*')</code></pre>
+
+      <table>
+        <tr>
+          <th>Aspecto</th>
+          <th>Firebase</th>
+          <th>Supabase</th>
+        </tr>
+        <tr>
+          <td>Docs oficiales</td>
+          <td>Buenas (codelab)</td>
+          <td>Excelentes (quickstart)</td>
+        </tr>
+        <tr>
+          <td>App Router support</td>
+          <td>Si (con workarounds)</td>
+          <td>Si (nativo)</td>
+        </tr>
+        <tr>
+          <td>Edge Runtime</td>
+          <td>Requiere next-firebase-auth-edge</td>
+          <td>Nativo</td>
+        </tr>
+        <tr>
+          <td>Templates disponibles</td>
+          <td>Varios</td>
+          <td>SaaS template oficial</td>
+        </tr>
+      </table>
+
+      <h2 id="recommendation">Recomendacion Final</h2>
+
+      <div class="verdict">
+        <h3>NUCLEA debe usar SUPABASE</h3>
+      </div>
+
+      <h3>Razones especificas para NUCLEA:</h3>
+
+      <ol>
+        <li><strong>Pricing predecible</strong> - $25/mes vs spikes impredecibles. Critico para startup pre-seed con runway limitado.</li>
+        <li><strong>Media storage</strong> - Las capsulas son media-heavy. Supabase es mas barato en egress.</li>
+        <li><strong>Relaciones de datos</strong> - User → Capsule → Content. PostgreSQL maneja esto nativamente.</li>
+        <li><strong>Sin vendor lock-in</strong> - Open-source. Si escala, puedes migrar a cualquier PostgreSQL.</li>
+        <li><strong>Next.js 16</strong> - Integracion nativa mejor documentada para App Router.</li>
+      </ol>
+
+      <h3>Cuando Firebase seria mejor:</h3>
+      <ul>
+        <li>Si necesitaras real-time chat dentro de capsulas (Firebase Realtime DB)</li>
+        <li>Si el equipo ya tuviera experiencia Firebase</li>
+        <li>Si fuera mobile-first (React Native + Firebase es muy maduro)</li>
+      </ul>
+
+      <h2 id="migration">Plan de Implementacion</h2>
+
+      <h3>Fase 1: Setup Supabase (Dia 1)</h3>
+      <pre><code>1. Crear proyecto en supabase.com
+2. Configurar Auth providers (Email, Google)
+3. Crear schema inicial:
+   - users (extends auth.users)
+   - capsules
+   - capsule_content
+   - media_files
+4. Configurar RLS policies
+5. Crear bucket para storage</code></pre>
+
+      <h3>Fase 2: Next.js Integration (Dia 2)</h3>
+      <pre><code>1. npx create-next-app@latest nuclea --typescript --tailwind --app
+2. npm install @supabase/supabase-js @supabase/ssr
+3. Configurar env vars
+4. Setup middleware para auth
+5. Crear lib/supabase/client.ts y server.ts</code></pre>
+
+      <h3>Fase 3: Core Features (Dias 3-7)</h3>
+      <pre><code>1. Auth flow (login/register/logout)
+2. Dashboard con lista de capsulas
+3. Crear capsula (form + save to DB)
+4. Upload media a Storage
+5. Ver capsula individual</code></pre>
+
+      <h2 id="sources">Fuentes Verificadas</h2>
+
+      <table>
+        <tr>
+          <th>Dato</th>
+          <th>Fuente</th>
+        </tr>
+        <tr>
+          <td>Firebase Pricing</td>
+          <td><a href="https://firebase.google.com/pricing">firebase.google.com/pricing</a></td>
+        </tr>
+        <tr>
+          <td>Supabase Pricing</td>
+          <td><a href="https://supabase.com/pricing">supabase.com/pricing</a></td>
+        </tr>
+        <tr>
+          <td>Firebase vs Supabase 2026</td>
+          <td><a href="https://hackceleration.com/supabase-review/">Hackceleration Review</a></td>
+        </tr>
+        <tr>
+          <td>Next.js + Supabase</td>
+          <td><a href="https://supabase.com/docs/guides/getting-started/quickstarts/nextjs">Supabase Docs</a></td>
+        </tr>
+        <tr>
+          <td>Firebase Pricing Traps</td>
+          <td><a href="https://www.sashido.io/en/blog/firebase-guide-and-pricing-traps-2026">Sashido Guide 2026</a></td>
+        </tr>
+        <tr>
+          <td>Storage Comparison</td>
+          <td><a href="https://dev.to/dshukertjr/supabase-and-firebase-pricing-comparison-204f">DEV.to Comparison</a></td>
+        </tr>
+      </table>
+
+      <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-light);">
+
+      <p style="text-align: center; color: var(--text-tertiary); font-size: 0.75rem;">
+        <em>NUCLEA Stack Decision | JARVIS Research Protocol (5 searches)</em><br>
+        <em>Verificado: Feb 2026 | Generado con DocSidebar Skill</em>
+      </p>
+    </main>
+  </div>
+</body>
+</html>

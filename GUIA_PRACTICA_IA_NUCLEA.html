@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía Práctica de IA - NUCLEA</title>
+  <style>
+    :root {
+      --bg-page: #FAFAF8;
+      --bg-section: #FFFFFF;
+      --bg-code: #F4F4F0;
+      --border: #E0E0DC;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --accent: #8B7355;
+      --accent-green: #2D6A4F;
+      --accent-red: #9B2C2C;
+      --accent-gold: #92792A;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", -apple-system, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-page);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.15rem; font-weight: 600; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: var(--text-secondary); }
+    p { margin-bottom: 0.75rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.25rem; }
+    li { margin-bottom: 0.35rem; }
+
+    .header { border-bottom: 3px solid var(--accent); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    .header .meta { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    th, td { padding: 0.5rem 0.75rem; text-align: left; border: 1px solid var(--border); }
+    th { background: var(--bg-code); font-weight: 600; }
+    .good { color: var(--accent-green); font-weight: 600; }
+    .bad { color: var(--accent-red); font-weight: 600; }
+    .mid { color: var(--accent-gold); font-weight: 600; }
+
+    .recommendation { background: var(--bg-section); border: 1px solid var(--border); border-left: 4px solid var(--accent-green); padding: 1rem; margin: 1rem 0; }
+    .warning { background: #FEF6F6; border: 1px solid #E8D4D4; border-left: 4px solid var(--accent-red); padding: 1rem; margin: 1rem 0; }
+    .note { background: var(--bg-code); border-left: 3px solid var(--accent); padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.9rem; }
+
+    .prompt-box { background: var(--bg-code); border: 1px solid var(--border); margin: 0.75rem 0; font-size: 0.9rem; }
+    .prompt-box .label { background: var(--border); padding: 0.35rem 0.75rem; font-weight: 600; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+    .prompt-box .content { padding: 0.75rem; font-family: "Consolas", monospace; white-space: pre-wrap; }
+    .copy-btn { background: var(--accent); color: white; border: none; padding: 0.2rem 0.5rem; font-size: 0.7rem; cursor: pointer; }
+    .copy-btn:hover { background: #6B5A45; }
+
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .compare-box { background: var(--bg-section); border: 1px solid var(--border); padding: 0.75rem; }
+    .compare-box h4 { font-size: 0.85rem; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--border); }
+    .compare-box.good-box { border-left: 3px solid var(--accent-green); }
+    .compare-box.bad-box { border-left: 3px solid var(--accent-red); }
+
+    .section-num { color: var(--accent); font-weight: 600; }
+
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-secondary); text-align: center; }
+
+    @media print {
+      body { padding: 0; max-width: 100%; }
+      .copy-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>Guía Práctica de IA para NUCLEA</h1>
+  <div class="meta">
+    Documento de referencia | Febrero 2026<br>
+    Datos verificados con JARVIS Research Protocol (5 búsquedas encadenadas)
+  </div>
+</header>
+
+<!-- ============================== -->
+<section>
+  <h2><span class="section-num">1.</span> Qué herramienta usar</h2>
+
+  <p>Comparativa basada en datos verificados de enero-febrero 2026. Las IAs cambian rápido; verificar antes de decisiones importantes.</p>
+
+  <table>
+    <tr>
+      <th>Herramienta</th>
+      <th>Versión actual</th>
+      <th>Gratis</th>
+      <th>Límites reales</th>
+    </tr>
+    <tr>
+      <td><strong>Kimi K2.5</strong></td>
+      <td>K2.5 (27 ene 2026)</td>
+      <td class="good">Sí, API NVIDIA</td>
+      <td>Sin límites publicados. Agent Swarm: 100 sub-agentes paralelos.</td>
+    </tr>
+    <tr>
+      <td><strong>Gemini 3</strong></td>
+      <td>3 Pro / 3 Flash</td>
+      <td class="good">Sí, AI Studio</td>
+      <td>10-50 RPM según región. Contexto: 1-2M tokens.</td>
+    </tr>
+    <tr>
+      <td><strong>Claude</strong></td>
+      <td>Opus 4.5 / Sonnet 4.5</td>
+      <td class="mid">Limitado</td>
+      <td>Solo Sonnet gratis, límites dinámicos. Contexto: 200K.</td>
+    </tr>
+    <tr>
+      <td><strong>ChatGPT</strong></td>
+      <td>GPT-5.2</td>
+      <td class="bad">Muy limitado</td>
+      <td>10 msg/5h, luego GPT-5 mini. 3 archivos/día. Contexto: 16K.</td>
+    </tr>
+  </table>
+
+  <h3>Mejor herramienta según tarea</h3>
+  <table>
+    <tr>
+      <th>Tarea</th>
+      <th>Recomendación</th>
+      <th>Por qué</th>
+    </tr>
+    <tr>
+      <td>Research / Investigación profunda</td>
+      <td><strong>Kimi K2.5</strong></td>
+      <td>Agent Swarm coordina hasta 100 sub-agentes en paralelo. API gratis sin límites visibles.</td>
+    </tr>
+    <tr>
+      <td>Info actual / Multimodal / Video</td>
+      <td><strong>Gemini 3</strong></td>
+      <td>Contexto de 1-2M tokens, integración Google, Veo 3 para video.</td>
+    </tr>
+    <tr>
+      <td>Código / Documentos largos</td>
+      <td><strong>Claude</strong></td>
+      <td>80.9% SWE-bench (mejor en código), 200K contexto, menos alucinaciones.</td>
+    </tr>
+    <tr>
+      <td>—</td>
+      <td class="bad">ChatGPT NO</td>
+      <td>10 mensajes cada 5 horas es insuficiente. Cortes mid-conversación.</td>
+    </tr>
+  </table>
+
+  <div class="recommendation">
+    <strong>Recomendación práctica:</strong>
+    <ul>
+      <li><strong>Kimi K2.5</strong> como herramienta principal para investigación y tareas complejas. Es open-source (1T parámetros) y la API vía NVIDIA no tiene límites publicados.</li>
+      <li><strong>Gemini 3</strong> para información actual, trabajo con Gmail/Docs, y cuando necesites analizar video.</li>
+      <li><strong>Claude</strong> cuando trabajes con documentos muy largos o necesites código de alta calidad.</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <strong>Sobre ChatGPT:</strong> La versión gratuita está severamente limitada: 10 mensajes cada 5 horas, después cambia automáticamente a GPT-5 mini (modelo inferior). ChatGPT perdió 19 puntos de market share en 2026 (de 87% a 68%) mientras Gemini subió a 18%. Los planes de pago ($20-$200/mes) no ofrecen ventaja sobre alternativas gratuitas como Kimi.
+    <br><br>
+    <em>Fuentes: <a href="https://www.glbgpt.com/hub/chatgpt-5-2-free-limit-explained-how-many-messages-can-you-use-in-2025/">ChatGPT Free Limits 2026</a>, <a href="https://improvado.io/blog/claude-vs-chatgpt-vs-gemini-vs-deepseek">Improvado Comparison</a></em>
+  </div>
+
+  <h3>URLs de acceso</h3>
+  <ul>
+    <li>Kimi: <a href="https://kimi.moonshot.cn">kimi.moonshot.cn</a> | <a href="https://build.nvidia.com/moonshotai/kimi-k2.5">API NVIDIA</a></li>
+    <li>Gemini: <a href="https://gemini.google.com">gemini.google.com</a> | <a href="https://ai.google.dev">AI Studio</a></li>
+    <li>Claude: <a href="https://claude.ai">claude.ai</a></li>
+  </ul>
+
+  <div class="note">
+    <strong>Nota sobre Kimi K2.5:</strong> Lanzado el 27 de enero de 2026 por Moonshot AI. Modelo de 1 trillón de parámetros, open-source. Su feature "Agent Swarm" puede descomponer tareas complejas en subtareas ejecutadas por hasta 100 agentes especializados en paralelo (hasta 1,500 tool calls). Actualmente el modelo abierto más potente según benchmarks de código y WebDev.
+    <br><em>Fuente: <a href="https://techcrunch.com/2026/01/27/chinas-moonshot-releases-a-new-open-source-model-kimi-k2-5-and-a-coding-agent/">TechCrunch</a></em>
+  </div>
+</section>
+
+<!-- ============================== -->
+<section>
+  <h2><span class="section-num">2.</span> Cómo escribir prompts efectivos</h2>
+
+  <p>La diferencia entre obtener algo útil o una respuesta genérica está en cómo pides las cosas.</p>
+
+  <h3>Estructura que funciona</h3>
+
+  <div class="prompt-box">
+    <div class="label">Plantilla base</div>
+    <div class="content">CONTEXTO: [Quién eres, qué situación tienes]
+TAREA: [Qué necesitas exactamente]
+FORMATO: [Cómo lo quieres recibir]
+RESTRICCIONES: [Qué evitar, qué incluir obligatoriamente]</div>
+  </div>
+
+  <h3>Comparación directa</h3>
+
+  <div class="compare-grid">
+    <div class="compare-box bad-box">
+      <h4>Prompt vago</h4>
+      <p>"Escribe un email para inversores"</p>
+      <p><em>Resultado: genérico, inútil</em></p>
+    </div>
+    <div class="compare-box good-box">
+      <h4>Prompt con contexto</h4>
+      <p>"Soy CEO de NUCLEA, startup de cápsulas digitales con avatar IA. Escribe email frío a Albert Castells (business angel, consumer apps). Pedir reunión 15min. Tono profesional, max 150 palabras, mencionar que somos únicos en español con IA."</p>
+      <p><em>Resultado: específico, usable</em></p>
+    </div>
+  </div>
+
+  <h3>Técnicas avanzadas</h3>
+
+  <table>
+    <tr>
+      <th>Técnica</th>
+      <th>Cuándo usar</th>
+      <th>Cómo pedirlo</th>
+    </tr>
+    <tr>
+      <td><strong>Iterar</strong></td>
+      <td>Siempre (mínimo 2-3 veces)</td>
+      <td>"Hazlo más corto" / "Cambia el tono a más formal" / "Añade datos concretos"</td>
+    </tr>
+    <tr>
+      <td><strong>Pedir opciones</strong></td>
+      <td>Cuando no estás segura de qué enfoque</td>
+      <td>"Dame 3 versiones diferentes: una emocional, una práctica, una con urgencia"</td>
+    </tr>
+    <tr>
+      <td><strong>Pedir crítica</strong></td>
+      <td>Para revisar tu trabajo</td>
+      <td>"Actúa como inversor escéptico. Encuentra los 5 puntos débiles de este pitch."</td>
+    </tr>
+    <tr>
+      <td><strong>Role-play</strong></td>
+      <td>Preparar reuniones</td>
+      <td>"Actúa como business angel que ha visto 100 pitches. Hazme las preguntas difíciles."</td>
+    </tr>
+    <tr>
+      <td><strong>Investigación encadenada</strong></td>
+      <td>Temas complejos (usar en Kimi)</td>
+      <td>"Investiga [tema]. 5 fases: panorama → gaps → profundidad → aplicación → riesgos."</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ============================== -->
+<section>
+  <h2><span class="section-num">3.</span> Prompts listos para NUCLEA</h2>
+
+  <h3>3.1 Email a inversor</h3>
+  <div class="prompt-box">
+    <div class="label"><span>Email frío a business angel</span><button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button></div>
+    <div class="content">CONTEXTO: Soy Andrea Box López, CEO de NUCLEA. Startup española de cápsulas digitales para preservación emocional. Diferenciador: avatar IA con consentimiento firmado en vida. Pre-seed buscando 150K€. Único producto en español con esta feature.
+
+TAREA: Email frío a [NOMBRE], business angel especializado en [SECTOR]. Objetivo: conseguir reunión de 15 minutos.
+
+FORMATO:
+- Asunto (max 50 caracteres)
+- Cuerpo (max 150 palabras)
+
+RESTRICCIONES:
+- Tono profesional, directo
+- Mencionar el diferenciador de IA
+- Call to action claro
+- No adjuntos mencionados</div>
+  </div>
+
+  <h3>3.2 Análisis de competidor</h3>
+  <div class="prompt-box">
+    <div class="label"><span>Research competitivo</span><button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button></div>
+    <div class="content">TAREA: Analiza [NOMBRE COMPETIDOR] ([URL]).
+
+Para cada punto, indica la fuente si la encuentras:
+1. Modelo de precios (planes, costes)
+2. Features principales
+3. ¿Tienen IA? ¿Qué tipo?
+4. ¿Disponible en español?
+5. Funding recibido (si es público)
+6. Puntos fuertes
+7. Debilidades evidentes
+
+CONTEXTO: Comparo con NUCLEA (cápsulas digitales + avatar IA, mercado hispanohablante).
+
+FORMATO: Bullet points concisos. Si no encuentras información, indica "No disponible públicamente".</div>
+  </div>
+
+  <h3>3.3 Preparación de pitch</h3>
+  <div class="prompt-box">
+    <div class="label"><span>Guión para pitch de 3 minutos</span><button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button></div>
+    <div class="content">CONTEXTO: NUCLEA - Cápsulas digitales con avatar IA. Único en español con esta feature. Pre-seed, 150K€. TAM legado digital: $15-26B global. SAM hispanohablante: ~$500M.
+
+TAREA: Guión de pitch de 3 minutos exactos.
+
+FORMATO para cada sección:
+- Qué decir (texto literal)
+- Duración
+- Qué mostrar/slide
+
+ESTRUCTURA:
+1. Gancho (15s)
+2. Problema (30s)
+3. Solución (40s)
+4. Mercado (25s)
+5. Por qué ahora / diferenciador (20s)
+6. Modelo de negocio (20s)
+7. Ask (10s)
+
+RESTRICCIONES:
+- Total: 3 minutos exactos
+- Un dato memorable por sección
+- Sin jerga técnica</div>
+  </div>
+
+  <h3>3.4 Investigación profunda (usar en Kimi K2.5)</h3>
+  <div class="prompt-box">
+    <div class="label"><span>Research tipo JARVIS</span><button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button></div>
+    <div class="content">TAREA: Investigación profunda sobre [TEMA].
+
+Proceso en 5 fases secuenciales:
+1. PANORAMA: ¿Qué existe sobre este tema? Fuentes principales.
+2. GAPS: ¿Qué información falta o es contradictoria?
+3. PROFUNDIDAD: Detalle de los 2-3 puntos más relevantes.
+4. APLICACIÓN: ¿Cómo aplica específicamente a NUCLEA (cápsulas digitales, mercado español)?
+5. RIESGOS: ¿Qué puede salir mal? ¿Qué debo verificar?
+
+CONTEXTO NUCLEA: Startup española, cápsulas digitales con avatar IA, pre-seed.
+
+FORMATO: Secciones numeradas. Cita fuentes cuando las tengas. Al final, resumen ejecutivo de 1 párrafo con nivel de confianza.</div>
+  </div>
+
+  <h3>3.5 Simulación de reunión</h3>
+  <div class="prompt-box">
+    <div class="label"><span>Role-play con inversor</span><button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button></div>
+    <div class="content">TAREA: Simula una reunión con inversor para practicar mi pitch.
+
+TU ROL: Business angel español con 10 años de experiencia. Has visto cientos de pitches. Eres directo, haces preguntas incómodas, detectas bullshit.
+
+REGLAS:
+- Después de cada respuesta mía, haz 1-2 preguntas difíciles
+- Si mi respuesta es débil, dilo
+- Si ves red flags, menciónalos
+- Al final (después de 8-10 intercambios), dame feedback honesto
+
+Empiezo yo con mi pitch de apertura:
+
+[INSERTAR TU APERTURA]</div>
+  </div>
+
+  <h3>3.6 Revisión crítica de documento</h3>
+  <div class="prompt-box">
+    <div class="label"><span>Feedback brutal</span><button class="copy-btn" onclick="copyPrompt(this)">COPIAR</button></div>
+    <div class="content">TAREA: Revisa este documento como si fueras inversor evaluando si poner dinero.
+
+[PEGAR DOCUMENTO]
+
+ANÁLISIS:
+1. Puntuación 1-10 con justificación
+2. 3 puntos fuertes
+3. 3 debilidades críticas
+4. Preguntas que haría un inversor
+5. Qué cambiar para mejorar
+
+RESTRICCIONES:
+- Sé crítico, no amable
+- Si algo no funciona, dilo directo
+- Prioriza lo que más impacta en la decisión de inversión</div>
+  </div>
+</section>
+
+<!-- ============================== -->
+<section>
+  <h2><span class="section-num">4.</span> Errores que cuestan tiempo</h2>
+
+  <table>
+    <tr>
+      <th>Error</th>
+      <th>Por qué es problema</th>
+      <th>Solución</th>
+    </tr>
+    <tr>
+      <td>Aceptar primera respuesta</td>
+      <td>La primera versión es borrador, no producto final</td>
+      <td>Iterar mínimo 2-3 veces. "Mejora X", "Hazlo más Y"</td>
+    </tr>
+    <tr>
+      <td>Prompts de una línea</td>
+      <td>Sin contexto = respuesta genérica</td>
+      <td>Usar estructura: Contexto + Tarea + Formato + Restricciones</td>
+    </tr>
+    <tr>
+      <td>Creer datos sin verificar</td>
+      <td>Las IAs inventan información que suena real</td>
+      <td>Verificar: números, fechas, URLs, nombres de empresas</td>
+    </tr>
+    <tr>
+      <td>Mezclar temas en una conversación</td>
+      <td>La IA pierde foco</td>
+      <td>Conversación nueva para tema nuevo</td>
+    </tr>
+    <tr>
+      <td>Abandonar si no funciona</td>
+      <td>Casi siempre es problema de contexto</td>
+      <td>"Esto no es lo que necesito porque [X]. Lo que busco es [Y]"</td>
+    </tr>
+    <tr>
+      <td>No dar feedback específico</td>
+      <td>La IA no puede mejorar sin dirección</td>
+      <td>"El tono está mal, necesito más formal" vs "No me gusta"</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ============================== -->
+<section>
+  <h2><span class="section-num">5.</span> Referencias y fuentes</h2>
+
+  <h3>Datos de herramientas (verificados febrero 2026)</h3>
+  <ul>
+    <li><strong>Kimi K2.5:</strong> <a href="https://www.kimi.com/ai-models/kimi-k2-5">Página oficial</a> | <a href="https://techcrunch.com/2026/01/27/chinas-moonshot-releases-a-new-open-source-model-kimi-k2-5-and-a-coding-agent/">TechCrunch</a> | <a href="https://build.nvidia.com/moonshotai/kimi-k2.5/modelcard">NVIDIA NIM</a></li>
+    <li><strong>Gemini 3:</strong> <a href="https://ai.google.dev/gemini-api/docs/pricing">API Pricing</a> | <a href="https://gemini.google/release-notes/">Release Notes</a> | <a href="https://www.glbgpt.com/hub/gemini-3-pro-costs-gemini-3-api-costs-latest-insights-for-2025/">Pricing Guide</a></li>
+    <li><strong>Claude 4.5:</strong> <a href="https://www.glbgpt.com/hub/is-claude-ai-free-2026/">Límites 2026</a> | <a href="https://www.datastudios.org/post/claude-opus-4-5-pricing-subscription-tiers-api-rates-and-feature-access-in-early-2026">Pricing tiers</a></li>
+    <li><strong>ChatGPT 5.2:</strong> <a href="https://www.glbgpt.com/hub/chatgpt-5-2-free-limit-explained-how-many-messages-can-you-use-in-2025/">Free Limits</a> | <a href="https://help.openai.com/en/articles/9275245-chatgpt-free-tier-faq">OpenAI FAQ</a></li>
+    <li><strong>Comparativas:</strong> <a href="https://improvado.io/blog/claude-vs-chatgpt-vs-gemini-vs-deepseek">Improvado</a> | <a href="https://felloai.com/best-ai-of-january-2026/">Fello AI</a> | <a href="https://playcode.io/blog/chatgpt-vs-claude-vs-gemini-coding-2026">PlayCode Coding</a></li>
+  </ul>
+
+  <h3>Documentación NUCLEA relacionada</h3>
+  <ul>
+    <li>Business Plan: <code>PREREUNION_ANDREA/BUSINESS_PLAN_NUCLEA.md</code></li>
+    <li>Leads inversores: <code>PREREUNION_ANDREA/LEADS_REALES_NUCLEA.md</code></li>
+    <li>Análisis mercado: <code>PREREUNION_ANDREA/analysis/</code></li>
+    <li>POC técnico: <code>POC_INVERSION_NUCLEA/</code></li>
+  </ul>
+</section>
+
+<footer>
+  Documento de referencia | NUCLEA | Febrero 2026<br>
+  Datos verificados con JARVIS Research Protocol (5 búsquedas encadenadas)<br>
+  Los datos de herramientas tienen fecha de caducidad. Verificar antes de decisiones importantes.
+</footer>
+
+<script>
+function copyPrompt(btn) {
+  const content = btn.closest('.prompt-box').querySelector('.content').textContent;
+  navigator.clipboard.writeText(content).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'COPIADO';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUCLEA - Wireframes Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0c0c14;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-warm: #e8a87c;
+            --accent-rose: #c38d9e;
+            --accent-sage: #85dcba;
+            --accent-lavender: #a9a9d8;
+            --text: #ffffff;
+            --text-soft: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --gradient-warm: linear-gradient(135deg, #e8a87c 0%, #c38d9e 50%, #a9a9d8 100%);
+            --gradient-card: linear-gradient(135deg, rgba(232, 168, 124, 0.1) 0%, rgba(195, 141, 158, 0.05) 100%);
+            --shadow-glow: 0 8px 32px rgba(232, 168, 124, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Ambient background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-warm);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-rose);
+            bottom: 20%;
+            left: -50px;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: var(--accent-lavender);
+            top: 50%;
+            right: 20%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(12, 12, 20, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+        }
+
+        .nav-screens {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 10px 18px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-soft);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-btn:hover {
+            background: rgba(232, 168, 124, 0.15);
+            border-color: var(--accent-warm);
+            color: var(--text);
+        }
+
+        .nav-btn.active {
+            background: var(--gradient-warm);
+            border-color: transparent;
+            color: var(--bg-dark);
+            font-weight: 600;
+        }
+
+        /* Main container */
+        .main {
+            position: relative;
+            z-index: 1;
+            padding: 100px 40px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Screen info */
+        .screen-info {
+            margin-bottom: 40px;
+        }
+
+        .screen-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: var(--gradient-warm);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--bg-dark);
+            margin-bottom: 15px;
+        }
+
+        .screen-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .screen-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 600px;
+        }
+
+        /* Phone mockup */
+        .phone-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .phone {
+            width: 375px;
+            background: linear-gradient(145deg, #1a1a2e, #0f0f1a);
+            border-radius: 50px;
+            padding: 15px;
+            box-shadow:
+                0 50px 100px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background: #000;
+            border-radius: 20px;
+        }
+
+        .phone-screen {
+            background: var(--bg-dark);
+            border-radius: 38px;
+            min-height: 750px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Screen content */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* App header */
+        .app-header {
+            padding: 60px 24px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .app-menu {
+            width: 36px;
+            height: 36px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .app-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-soft);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Landing screen */
+        .landing-content {
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .landing-visual {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px;
+            background: var(--gradient-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .landing-visual::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            animation: rotate 20s linear infinite;
+        }
+
+        .landing-visual::after {
+            content: '';
+            position: absolute;
+            inset: -40px;
+            border-radius: 50%;
+            border: 1px dashed var(--glass-border);
+            animation: rotate 30s linear infinite reverse;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .landing-icon {
+            font-size: 5rem;
+        }
+
+        .landing-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .landing-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 36px;
+            background: var(--gradient-warm);
+            border: none;
+            border-radius: 16px;
+            color: var(--bg-dark);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(232, 168, 124, 0.25);
+        }
+
+        /* Features section */
+        .features-section {
+            padding: 30px 24px;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            background: var(--gradient-card);
+            border-color: rgba(232, 168, 124, 0.3);
+            transform: translateX(5px);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-card);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .feature-info h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feature-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Capsule selection */
+        .capsule-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 20px 24px;
+        }
+
+        .capsule-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .capsule-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-warm);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .capsule-card:hover {
+            border-color: var(--accent-warm);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .capsule-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .capsule-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .capsule-card.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .capsule-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .capsule-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .capsule-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .coming-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(169, 169, 216, 0.2);
+            border-radius: 10px;
+            font-size: 0.65rem;
+            color: var(--accent-lavender);
+            margin-top: 10px;
+        }
+
+        /* Wizard */
+        .wizard-header {
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .wizard-progress {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .wizard-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            transition: all 0.3s;
+        }
+
+        .wizard-dot.active {
+            background: var(--accent-warm);
+            border-color: var(--accent-warm);
+            box-shadow: 0 0 12px rgba(232, 168, 124, 0.5);
+        }
+
+        .wizard-dot.completed {
+            background: var(--accent-sage);
+            border-color: var(--accent-sage);
+        }
+
+        .wizard-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .wizard-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Form */
+        .form-content {
+            padding: 20px 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-soft);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-warm);
+            box-shadow: 0 0 0 4px rgba(232, 168, 124, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: none;
+        }
+
+        /* Upload */
+        .upload-zone {
+            border: 2px dashed var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--glass);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent-warm);
+            background: var(--gradient-card);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .upload-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .preview-thumb {
+            aspect-ratio: 1;
+            background: var(--gradient-card);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .preview-thumb.more {
+            background: var(--glass);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Date options */
+        .date-options {
+            padding: 0 24px;
+        }
+
+        .date-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .date-option:hover {
+            border-color: var(--accent-warm);
+        }
+
+        .date-option.selected {
+            background: var(--gradient-card);
+            border-color: var(--accent-warm);
+        }
+
+        .date-radio {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .date-option.selected .date-radio {
+            border-color: var(--accent-warm);
+        }
+
+        .date-option.selected .date-radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: var(--accent-warm);
+            border-radius: 50%;
+        }
+
+        .date-info h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .date-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Preview card */
+        .preview-container {
+            padding: 20px 24px;
+        }
+
+        .preview-card {
+            background: var(--gradient-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 32px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-warm);
+        }
+
+        .preview-type {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--gradient-warm);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--bg-dark);
+            margin-bottom: 20px;
+        }
+
+        .preview-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .preview-recipient {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .preview-date {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-soft);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .preview-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            padding: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-soft);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary-sm {
+            background: var(--gradient-warm);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary-sm:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Dashboard */
+        .dashboard-header {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+        .add-capsule-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-warm);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--bg-dark);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .add-capsule-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .capsule-list {
+            padding: 0 24px;
+        }
+
+        .capsule-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .capsule-item:hover {
+            border-color: var(--accent-warm);
+            transform: translateX(5px);
+        }
+
+        .capsule-thumb {
+            width: 64px;
+            height: 64px;
+            background: var(--gradient-card);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .capsule-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .capsule-info h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .capsule-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .capsule-status {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        .status-ready {
+            background: rgba(133, 220, 186, 0.15);
+            color: var(--accent-sage);
+        }
+
+        .status-draft {
+            background: rgba(232, 168, 124, 0.15);
+            color: var(--accent-warm);
+        }
+
+        /* Notes panel */
+        .notes-panel {
+            margin-top: 40px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 400px;
+        }
+
+        .notes-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notes-content {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Success animation */
+        .success-animation {
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: var(--gradient-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            animation: success-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes success-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(133, 220, 186, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(133, 220, 186, 0); }
+        }
+
+        .success-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .success-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .phone-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-screens {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient background -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-brand">NUCLEA WIREFRAMES</div>
+        <div class="nav-screens">
+            <button class="nav-btn active" onclick="showScreen('landing')">Landing</button>
+            <button class="nav-btn" onclick="showScreen('select')">Seleccion</button>
+            <button class="nav-btn" onclick="showScreen('step1')">Paso 1</button>
+            <button class="nav-btn" onclick="showScreen('step2')">Paso 2</button>
+            <button class="nav-btn" onclick="showScreen('step3')">Paso 3</button>
+            <button class="nav-btn" onclick="showScreen('preview')">Preview</button>
+            <button class="nav-btn" onclick="showScreen('success')">Exito</button>
+            <button class="nav-btn" onclick="showScreen('dashboard')">Dashboard</button>
+        </div>
+    </nav>
+
+    <main class="main">
+        <!-- Screen info will change per screen -->
+        <div class="screen-info" id="screenInfo">
+            <span class="screen-badge">PANTALLA 1 DE 8</span>
+            <h1 class="screen-title">Landing Page</h1>
+            <p class="screen-desc">Primera impresion. Propuesta de valor emocional clara y CTA prominente.</p>
+        </div>
+
+        <div class="phone-container">
+            <div class="phone">
+                <div class="phone-screen">
+                    <!-- Landing -->
+                    <div class="screen active" id="landing">
+                        <div class="app-header">
+                            <div class="app-logo">NUCLEA</div>
+                            <div class="app-menu">☰</div>
+                        </div>
+                        <div class="landing-content">
+                            <div class="landing-visual">
+                                <span class="landing-icon">💊</span>
+                            </div>
+                            <h1 class="landing-title">Somos las historias que recordamos</h1>
+                            <p class="landing-subtitle">"Haz que las tuyas permanezcan."</p>
+                            <button class="btn-primary" onclick="showScreen('select')">
+                                Crear mi capsula
+                                <span>→</span>
+                            </button>
+                        </div>
+                        <div class="features-section">
+                            <div class="feature-card">
+                                <div class="feature-icon">🔒</div>
+                                <div class="feature-info">
+                                    <h4>Privacidad total</h4>
+                                    <p>Cifrado de extremo a extremo</p>
+                                </div>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">📅</div>
+                                <div class="feature-info">
+                                    <h4>Entrega programada</h4>
+                                    <p>Tu decides cuando llega</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Select Capsule -->
+                    <div class="screen" id="select">
+                        <div class="app-header">
+                            <div class="app-back" onclick="showScreen('landing')">← Volver</div>
+                            <div class="app-logo">NUCLEA</div>
+                        </div>
+                        <div class="wizard-header">
+                            <h2 class="wizard-title">Que quieres preservar?</h2>
+                            <p class="wizard-subtitle">Elige el tipo de capsula</p>
+                        </div>
+                        <div class="capsule-grid">
+                            <div class="capsule-card" onclick="showScreen('step1')">
+                                <div class="capsule-emoji">🏛️</div>
+                                <div class="capsule-name">EverLife</div>
+                                <div class="capsule-desc">Tu legado para quienes amas</div>
+                            </div>
+                            <div class="capsule-card" onclick="showScreen('step1')">
+                                <div class="capsule-emoji">📖</div>
+                                <div class="capsule-name">Life Chapter</div>
+                                <div class="capsule-desc">Una etapa especial como regalo</div>
+                            </div>
+                            <div class="capsule-card disabled">
+                                <div class="capsule-emoji">👥</div>
+                                <div class="capsule-name">Social</div>
+                                <div class="capsule-desc">Tu dia a dia privado</div>
+                                <span class="coming-badge">Proximamente</span>
+                            </div>
+                            <div class="capsule-card disabled">
+                                <div class="capsule-emoji">🐾</div>
+                                <div class="capsule-name">Pet</div>
+                                <div class="capsule-desc">Homenaje a tu mascota</div>
+                                <span class="coming-badge">Proximamente</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Basic Info -->
+                    <div class="screen" id="step1">
+                        <div class="app-header">
+                            <div class="app-back" onclick="showScreen('select')">← Volver</div>
+                            <div class="app-logo">NUCLEA</div>
+                        </div>
+                        <div class="wizard-header">
+                            <div class="wizard-progress">
+                                <div class="wizard-dot active"></div>
+                                <div class="wizard-dot"></div>
+                                <div class="wizard-dot"></div>
+                                <div class="wizard-dot"></div>
+                            </div>
+                            <h2 class="wizard-title">Informacion basica</h2>
+                            <p class="wizard-subtitle">Cuentanos sobre tu capsula</p>
+                        </div>
+                        <div class="form-content">
+                            <div class="form-group">
+                                <label class="form-label">Nombre de tu capsula</label>
+                                <input type="text" class="form-input" placeholder="Ej: Para mi hija Maria">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Para quien es?</label>
+                                <input type="text" class="form-input" placeholder="Nombre del destinatario">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mensaje inicial</label>
+                                <textarea class="form-input form-textarea" placeholder="Unas palabras desde el corazon..."></textarea>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('select')">Cancelar</button>
+                            <button class="btn btn-primary-sm" onclick="showScreen('step2')">Siguiente →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Upload -->
+                    <div class="screen" id="step2">
+                        <div class="app-header">
+                            <div class="app-back" onclick="showScreen('step1')">← Volver</div>
+                            <div class="app-logo">NUCLEA</div>
+                        </div>
+                        <div class="wizard-header">
+                            <div class="wizard-progress">
+                                <div class="wizard-dot completed"></div>
+                                <div class="wizard-dot active"></div>
+                                <div class="wizard-dot"></div>
+                                <div class="wizard-dot"></div>
+                            </div>
+                            <h2 class="wizard-title">Anade contenido</h2>
+                            <p class="wizard-subtitle">Fotos, videos, textos...</p>
+                        </div>
+                        <div class="form-content">
+                            <div class="upload-zone">
+                                <div class="upload-icon">📷</div>
+                                <div class="upload-text">Toca para subir</div>
+                                <div class="upload-hint">Fotos, videos o documentos</div>
+                            </div>
+                            <div class="upload-preview">
+                                <div class="preview-thumb">🖼️</div>
+                                <div class="preview-thumb">🖼️</div>
+                                <div class="preview-thumb">🎬</div>
+                                <div class="preview-thumb more">+8</div>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('step1')">← Anterior</button>
+                            <button class="btn btn-primary-sm" onclick="showScreen('step3')">Siguiente →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Date -->
+                    <div class="screen" id="step3">
+                        <div class="app-header">
+                            <div class="app-back" onclick="showScreen('step2')">← Volver</div>
+                            <div class="app-logo">NUCLEA</div>
+                        </div>
+                        <div class="wizard-header">
+                            <div class="wizard-progress">
+                                <div class="wizard-dot completed"></div>
+                                <div class="wizard-dot completed"></div>
+                                <div class="wizard-dot active"></div>
+                                <div class="wizard-dot"></div>
+                            </div>
+                            <h2 class="wizard-title">Cuando debe llegar?</h2>
+                            <p class="wizard-subtitle">Programa la entrega</p>
+                        </div>
+                        <div class="date-options">
+                            <div class="date-option selected" onclick="selectDate(this)">
+                                <div class="date-radio"></div>
+                                <div class="date-info">
+                                    <h4>Fecha especifica</h4>
+                                    <p>15 de marzo de 2026</p>
+                                </div>
+                            </div>
+                            <div class="date-option" onclick="selectDate(this)">
+                                <div class="date-radio"></div>
+                                <div class="date-info">
+                                    <h4>Cuando ya no este</h4>
+                                    <p>Para capsulas EverLife</p>
+                                </div>
+                            </div>
+                            <div class="date-option" onclick="selectDate(this)">
+                                <div class="date-radio"></div>
+                                <div class="date-info">
+                                    <h4>Evento especial</h4>
+                                    <p>Boda, graduacion, cumpleanos...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('step2')">← Anterior</button>
+                            <button class="btn btn-primary-sm" onclick="showScreen('preview')">Siguiente →</button>
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="screen" id="preview">
+                        <div class="app-header">
+                            <div class="app-back" onclick="showScreen('step3')">← Volver</div>
+                            <div class="app-logo">NUCLEA</div>
+                        </div>
+                        <div class="wizard-header">
+                            <div class="wizard-progress">
+                                <div class="wizard-dot completed"></div>
+                                <div class="wizard-dot completed"></div>
+                                <div class="wizard-dot completed"></div>
+                                <div class="wizard-dot active"></div>
+                            </div>
+                            <h2 class="wizard-title">Tu capsula</h2>
+                            <p class="wizard-subtitle">Revisa antes de guardar</p>
+                        </div>
+                        <div class="preview-container">
+                            <div class="preview-card">
+                                <span class="preview-type">Life Chapter</span>
+                                <h3 class="preview-title">Para mi hija Maria</h3>
+                                <p class="preview-recipient">Destinatario: Maria Garcia</p>
+                                <div class="preview-date">
+                                    <span>📅</span>
+                                    <span>15 de marzo de 2026</span>
+                                </div>
+                                <div class="preview-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value">12</div>
+                                        <div class="stat-label">Fotos</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">3</div>
+                                        <div class="stat-label">Textos</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">1</div>
+                                        <div class="stat-label">Video</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('step3')">← Editar</button>
+                            <button class="btn btn-primary-sm" onclick="showScreen('success')">Guardar ✓</button>
+                        </div>
+                    </div>
+
+                    <!-- Success -->
+                    <div class="screen" id="success">
+                        <div class="app-header">
+                            <div class="app-logo">NUCLEA</div>
+                            <div class="app-menu">☰</div>
+                        </div>
+                        <div class="success-animation">
+                            <div class="success-icon">✨</div>
+                            <h2 class="success-title">Capsula creada!</h2>
+                            <p class="success-text">Tu capsula esta guardada de forma segura y llegara a Maria el 15 de marzo de 2026.</p>
+                            <button class="btn-primary" onclick="showScreen('dashboard')">
+                                Ver mis capsulas
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard -->
+                    <div class="screen" id="dashboard">
+                        <div class="app-header">
+                            <div class="app-logo">NUCLEA</div>
+                            <div class="app-menu">👤</div>
+                        </div>
+                        <div class="dashboard-header">
+                            <h2 class="dashboard-title">Mis Capsulas</h2>
+                            <div class="add-capsule-btn" onclick="showScreen('select')">+</div>
+                        </div>
+                        <div class="capsule-list">
+                            <div class="capsule-item">
+                                <div class="capsule-thumb">📖</div>
+                                <div class="capsule-info">
+                                    <h4>Para mi hija Maria</h4>
+                                    <p class="capsule-meta">Life Chapter · 15 mar 2026</p>
+                                </div>
+                                <span class="capsule-status status-ready">Lista</span>
+                            </div>
+                            <div class="capsule-item">
+                                <div class="capsule-thumb">🏛️</div>
+                                <div class="capsule-info">
+                                    <h4>Mi legado familiar</h4>
+                                    <p class="capsule-meta">EverLife · Sin fecha</p>
+                                </div>
+                                <span class="capsule-status status-draft">Borrador</span>
+                            </div>
+                            <div class="capsule-item">
+                                <div class="capsule-thumb">📖</div>
+                                <div class="capsule-info">
+                                    <h4>Viaje a Japon 2024</h4>
+                                    <p class="capsule-meta">Life Chapter · Entregado</p>
+                                </div>
+                                <span class="capsule-status status-ready">Entregado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes panel -->
+            <div class="notes-panel" id="notesPanel">
+                <div class="notes-title">
+                    <span>💡</span>
+                    <span>Notas de diseno</span>
+                </div>
+                <p class="notes-content" id="notesContent">
+                    La landing debe transmitir emocion desde el primer momento. Colores calidos, tipografia elegante. El CTA principal es claro: "Crear mi capsula". Las animaciones sutiles generan confianza.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const screenData = {
+            landing: {
+                badge: 'PANTALLA 1 DE 8',
+                title: 'Landing Page',
+                desc: 'Primera impresion. Propuesta de valor emocional clara y CTA prominente.',
+                notes: 'La landing debe transmitir emocion desde el primer momento. Colores calidos, tipografia elegante. El CTA principal es claro: "Crear mi capsula". Las animaciones sutiles generan confianza.'
+            },
+            select: {
+                badge: 'PANTALLA 2 DE 8',
+                title: 'Seleccion de Capsula',
+                desc: 'El usuario elige que tipo de capsula quiere crear.',
+                notes: 'Mostrar las 5 capsulas pero solo 2 activas para la demo. Las otras como "Proximamente" muestran la vision completa del ecosistema. Cards con hover effect para feedback.'
+            },
+            step1: {
+                badge: 'PANTALLA 3 DE 8',
+                title: 'Wizard - Informacion Basica',
+                desc: 'Primer paso: nombre, destinatario y mensaje inicial.',
+                notes: 'Formulario limpio con campos grandes. El progress bar visual muestra donde esta el usuario. Validacion en tiempo real. Placeholder text inspirador.'
+            },
+            step2: {
+                badge: 'PANTALLA 4 DE 8',
+                title: 'Wizard - Subir Contenido',
+                desc: 'Upload de fotos, videos y documentos.',
+                notes: 'Zona de drop grande y clara. Preview de archivos subidos. Contador de items. Soporte para multiples formatos. Limite de tamaño visible.'
+            },
+            step3: {
+                badge: 'PANTALLA 5 DE 8',
+                title: 'Wizard - Programar Entrega',
+                desc: 'Cuando debe llegar la capsula al destinatario.',
+                notes: 'Tres opciones principales: fecha especifica, "cuando ya no este" (EverLife), o evento especial. Radio buttons grandes para touch. Calendario integrado.'
+            },
+            preview: {
+                badge: 'PANTALLA 6 DE 8',
+                title: 'Preview Final',
+                desc: 'Revision de la capsula antes de guardar.',
+                notes: 'Card visual con toda la info resumida. Stats de contenido. Opcion de editar. Boton de guardar prominente. Transmitir que es un momento importante.'
+            },
+            success: {
+                badge: 'PANTALLA 7 DE 8',
+                title: 'Confirmacion de Exito',
+                desc: 'La capsula se ha creado correctamente.',
+                notes: 'Celebracion visual con animacion. Mensaje claro de que paso. Fecha de entrega visible. CTA para ver dashboard. Momento emotivo.'
+            },
+            dashboard: {
+                badge: 'PANTALLA 8 DE 8',
+                title: 'Dashboard',
+                desc: 'Vista de todas las capsulas del usuario.',
+                notes: 'Lista limpia con estados visuales. FAB para crear nueva. Filtros por tipo/estado. Cada item clickeable para ver detalle. Ordenar por fecha.'
+            }
+        };
+
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Show target
+            document.getElementById(screenId).classList.add('active');
+            // Update nav
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[onclick="showScreen('${screenId}')"]`)?.classList.add('active');
+            // Update info
+            const data = screenData[screenId];
+            document.querySelector('.screen-badge').textContent = data.badge;
+            document.querySelector('.screen-title').textContent = data.title;
+            document.querySelector('.screen-desc').textContent = data.desc;
+            document.getElementById('notesContent').textContent = data.notes;
+        }
+
+        function selectDate(el) {
+            document.querySelectorAll('.date-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

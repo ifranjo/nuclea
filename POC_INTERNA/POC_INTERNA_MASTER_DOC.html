@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POC INTERNA - NUCLEA | Documentación Técnica</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-sidebar: #F7F5F0;
+      --bg-code: #F0EDE5;
+      --text-primary: #2D2D2D;
+      --text-secondary: #5A5A5A;
+      --text-muted: #8A8A8A;
+      --border: #E0DCD4;
+      --accent: #6B5B4F;
+      --accent-light: #8B7B6B;
+      --link: #4A6B8A;
+      --folder-blue: #4A90D9;
+      --folder-green: #5AAF6A;
+      --folder-orange: #D97B4A;
+      --folder-purple: #8A6BBF;
+      --folder-red: #D94A4A;
+      --folder-gray: #7A7A7A;
+      --file-md: #5A9BD4;
+      --file-sql: #D4A55A;
+      --file-html: #D95A5A;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .sidebar-header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .nav-section {
+      margin-bottom: 20px;
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      padding: 8px 20px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 8px 20px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.15s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: rgba(0,0,0,0.03);
+      color: var(--text-primary);
+      border-left-color: var(--accent);
+    }
+
+    .nav-link.active {
+      background: rgba(0,0,0,0.05);
+      color: var(--text-primary);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      margin-left: 280px;
+      padding: 40px 60px;
+      max-width: 900px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 40px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    /* Folder tree */
+    .folder-tree {
+      background: var(--bg-code);
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    .folder-tree a {
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+
+    .folder-tree a:hover {
+      opacity: 0.7;
+    }
+
+    .folder {
+      color: var(--folder-blue);
+      font-weight: 600;
+    }
+
+    .folder-specs { color: var(--folder-green); }
+    .folder-ui { color: var(--folder-purple); }
+    .folder-anim { color: var(--folder-orange); }
+    .folder-backend { color: var(--folder-red); }
+    .folder-prompts { color: #D97BD9; }
+    .folder-assets { color: var(--folder-gray); }
+
+    .file-md { color: var(--file-md); }
+    .file-sql { color: var(--file-sql); }
+    .file-html { color: var(--file-html); }
+    .file-txt { color: var(--text-muted); }
+
+    .indent-1 { margin-left: 20px; }
+    .indent-2 { margin-left: 40px; }
+    .indent-3 { margin-left: 60px; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg-sidebar);
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--text-muted);
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    /* Links */
+    a {
+      color: var(--link);
+    }
+
+    .local-link {
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      background: var(--bg-code);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-done { background: #D4EDDA; color: #155724; }
+    .badge-progress { background: #FFF3CD; color: #856404; }
+    .badge-pending { background: #F8D7DA; color: #721C24; }
+
+    /* Code blocks */
+    pre {
+      background: var(--bg-code);
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      margin: 16px 0;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      background: var(--bg-code);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+    /* Callouts */
+    .callout {
+      padding: 16px 20px;
+      border-radius: 6px;
+      margin: 20px 0;
+      border-left: 4px solid;
+    }
+
+    .callout-info {
+      background: #E7F3FF;
+      border-color: #4A90D9;
+    }
+
+    .callout-warning {
+      background: #FFF8E7;
+      border-color: #D9A54A;
+    }
+
+    /* Print styles */
+    @media print {
+      .sidebar { display: none; }
+      .main { margin-left: 0; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1>POC INTERNA</h1>
+        <p>NUCLEA - Feb 2026</p>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">General</div>
+        <a href="#overview" class="nav-link active">Overview</a>
+        <a href="#structure" class="nav-link">Estructura</a>
+        <a href="#quick-links" class="nav-link">Links Rápidos</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Especificaciones</div>
+        <a href="#design-system" class="nav-link">Sistema de Diseño</a>
+        <a href="#user-flows" class="nav-link">Flujos de Usuario</a>
+        <a href="#data-model" class="nav-link">Modelo de Datos</a>
+        <a href="#capsule-types" class="nav-link">Tipos de Cápsula</a>
+        <a href="#future-messages" class="nav-link">Mensajes Futuros</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Recursos</div>
+        <a href="#prompts" class="nav-link">Prompts IA</a>
+        <a href="#assets" class="nav-link">Assets</a>
+        <a href="#external" class="nav-link">Docs Externos</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Estado</div>
+        <a href="#status" class="nav-link">Progreso</a>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+      <section id="overview">
+        <h1>POC INTERNA - NUCLEA</h1>
+        <p class="subtitle">Documentación técnica para el prototipo funcional</p>
+
+        <p>Este documento centraliza toda la documentación de la POC interna de NUCLEA. Contiene links directos a archivos locales que funcionan en Chrome.</p>
+
+        <div class="callout callout-info">
+          <strong>Metáfora central:</strong> NUCLEA es una cápsula de tiempo física que se abre y libera recuerdos (polaroids). La interacción es un ritual, no una transacción.
+        </div>
+      </section>
+
+      <section id="structure">
+        <h2>Estructura de Carpetas</h2>
+        <p>Estructura completa de POC_INTERNA con links navegables:</p>
+
+        <div class="folder-tree">
+          <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/" class="folder">POC_INTERNA/</a><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/CLAUDE.md" class="file-md">CLAUDE.md</a></span><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/README.md" class="file-md">README.md</a></span><br>
+          <span class="indent-1">│</span><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/" class="folder folder-specs">01_SPECS/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md" class="file-md">DESIGN_SYSTEM.md</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/USER_FLOWS.md" class="file-md">USER_FLOWS.md</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/DATA_MODEL.md" class="file-md">DATA_MODEL.md</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/CAPSULE_TYPES.md" class="file-md">CAPSULE_TYPES.md</a></span><br>
+          <span class="indent-2">└── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/FUTURE_MESSAGES.md" class="file-md">FUTURE_MESSAGES.md</a></span><br>
+          <span class="indent-1">│</span><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/" class="folder folder-ui">02_UI_SCREENS/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/00_INTRO/" class="folder folder-ui">00_INTRO/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/01_SELECTION/" class="folder folder-ui">01_SELECTION/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/02_CAPSULES/" class="folder folder-ui">02_CAPSULES/</a></span><br>
+          <span class="indent-3">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/02_CAPSULES/legacy/" class="folder">legacy/</a></span><br>
+          <span class="indent-3">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/02_CAPSULES/together/" class="folder">together/</a></span><br>
+          <span class="indent-3">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/02_CAPSULES/social/" class="folder">social/</a></span><br>
+          <span class="indent-3">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/02_CAPSULES/pet/" class="folder">pet/</a></span><br>
+          <span class="indent-3">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/02_CAPSULES/life_chapter/" class="folder">life_chapter/</a></span><br>
+          <span class="indent-3">└── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/02_CAPSULES/origin/" class="folder">origin/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/03_AUTH/" class="folder folder-ui">03_AUTH/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/04_PAYMENT/" class="folder folder-ui">04_PAYMENT/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/05_ACTIVE/" class="folder folder-ui">05_ACTIVE/</a></span><br>
+          <span class="indent-2">└── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/02_UI_SCREENS/06_CLOSURE/" class="folder folder-ui">06_CLOSURE/</a></span><br>
+          <span class="indent-1">│</span><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/03_ANIMATION/" class="folder folder-anim">03_ANIMATION/</a></span><br>
+          <span class="indent-1">│</span><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/04_BACKEND/" class="folder folder-backend">04_BACKEND/</a></span><br>
+          <span class="indent-1">│</span><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/05_PROMPTS/" class="folder folder-prompts">05_PROMPTS/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/05_PROMPTS/VIDEO_GENERATION.md" class="file-md">VIDEO_GENERATION.md</a></span><br>
+          <span class="indent-2">└── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/05_PROMPTS/IMAGE_GENERATION.md" class="file-md">IMAGE_GENERATION.md</a></span><br>
+          <span class="indent-1">│</span><br>
+          <span class="indent-1">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/ASSETS/" class="folder folder-assets">ASSETS/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/ASSETS/video_frames/" class="folder">video_frames/</a></span><br>
+          <span class="indent-2">├── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/ASSETS/pdf_screens/" class="folder">pdf_screens/</a></span><br>
+          <span class="indent-2">└── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/ASSETS/brand/" class="folder">brand/</a></span><br>
+          <span class="indent-1">│</span><br>
+          <span class="indent-1">└── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/CONVERSACION_EXTRACT/" class="folder folder-gray">CONVERSACION_EXTRACT/</a></span><br>
+          <span class="indent-2">└── <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/CONVERSACION_EXTRACT/CONVERSACOIN_EXTRACT.txt" class="file-txt">CONVERSACOIN_EXTRACT.txt</a></span>
+        </div>
+      </section>
+
+      <section id="quick-links">
+        <h2>Links Rápidos</h2>
+
+        <h3>Documentación Principal</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Descripción</th>
+              <th>Link Local</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sistema de Diseño</td>
+              <td>Colores, tipografía, componentes</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md" class="local-link">DESIGN_SYSTEM.md</a></td>
+            </tr>
+            <tr>
+              <td>Flujos de Usuario</td>
+              <td>Rivertrace completo</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/USER_FLOWS.md" class="local-link">USER_FLOWS.md</a></td>
+            </tr>
+            <tr>
+              <td>Modelo de Datos</td>
+              <td>Schema PostgreSQL/Supabase</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/DATA_MODEL.md" class="local-link">DATA_MODEL.md</a></td>
+            </tr>
+            <tr>
+              <td>Tipos de Cápsula</td>
+              <td>6 tipos detallados</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/CAPSULE_TYPES.md" class="local-link">CAPSULE_TYPES.md</a></td>
+            </tr>
+            <tr>
+              <td>Mensajes Futuros</td>
+              <td>Sistema de custodia temporal</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/FUTURE_MESSAGES.md" class="local-link">FUTURE_MESSAGES.md</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Recursos Externos (Fuera de POC_INTERNA)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Recurso</th>
+              <th>Descripción</th>
+              <th>Link Local</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PDFs de Diseño (Andrea)</td>
+              <td>12 mockups originales</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/DISEÑO_ANDREA_PANTALLAS/" class="local-link">DISEÑO_ANDREA_PANTALLAS/</a></td>
+            </tr>
+            <tr>
+              <td>Frames Video Demo</td>
+              <td>4 capturas de la animación</td>
+              <td><a href="file:///E:/DOWNLOADS/screenshots_20260203_173352/" class="local-link">screenshots_20260203_173352/</a></td>
+            </tr>
+            <tr>
+              <td>Código Existente</td>
+              <td>Next.js app actual</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/PREREUNION_ANDREA/src/" class="local-link">PREREUNION_ANDREA/src/</a></td>
+            </tr>
+            <tr>
+              <td>Business Plan</td>
+              <td>Plan de negocio completo</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/PREREUNION_ANDREA/BUSINESS_PLAN_NUCLEA.md" class="local-link">BUSINESS_PLAN_NUCLEA.md</a></td>
+            </tr>
+            <tr>
+              <td>POC Inversión</td>
+              <td>Documentación para inversores</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INVERSION_NUCLEA/" class="local-link">POC_INVERSION_NUCLEA/</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="status">
+        <h2>Estado del Proyecto</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Estado</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Estructura carpetas</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>22 carpetas creadas</td>
+            </tr>
+            <tr>
+              <td>CLAUDE.md</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>Contexto para agentes</td>
+            </tr>
+            <tr>
+              <td>Sistema de Diseño</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>Completo y detallado</td>
+            </tr>
+            <tr>
+              <td>Flujos de Usuario</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>Rivertrace documentado</td>
+            </tr>
+            <tr>
+              <td>Modelo de Datos</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>Schema SQL + RLS</td>
+            </tr>
+            <tr>
+              <td>Tipos de Cápsula</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>6 tipos especificados</td>
+            </tr>
+            <tr>
+              <td>Mensajes Futuros</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>Spec técnica completa</td>
+            </tr>
+            <tr>
+              <td>Prompts Video IA</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>Runway/Luma</td>
+            </tr>
+            <tr>
+              <td>Prompts Imagen IA</td>
+              <td><span class="badge badge-done">Hecho</span></td>
+              <td>Midjourney/DALL-E</td>
+            </tr>
+            <tr>
+              <td>Specs Animación</td>
+              <td><span class="badge badge-pending">Pendiente</span></td>
+              <td>Framer Motion specs</td>
+            </tr>
+            <tr>
+              <td>Specs por Pantalla</td>
+              <td><span class="badge badge-pending">Pendiente</span></td>
+              <td>Detalles UI individuales</td>
+            </tr>
+            <tr>
+              <td>Importar Assets</td>
+              <td><span class="badge badge-pending">Pendiente</span></td>
+              <td>Copiar frames a carpetas</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warning">
+          <strong>Próximos pasos:</strong>
+          <ol style="margin-top: 8px; margin-left: 20px;">
+            <li>Copiar frames del video demo a ASSETS/video_frames/</li>
+            <li>Crear specs de animación Framer Motion</li>
+            <li>Documentar cada pantalla en 02_UI_SCREENS/</li>
+            <li>Implementar componente Cápsula animada</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="design-system">
+        <h2>Sistema de Diseño</h2>
+        <p>Resumen del sistema visual. <a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md">Ver documento completo →</a></p>
+
+        <h3>Paleta de colores</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Valor</th>
+              <th>Uso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>bg-primary</td>
+              <td><code>#FFFFFF</code></td>
+              <td>Fondo principal</td>
+            </tr>
+            <tr>
+              <td>text-primary</td>
+              <td><code>#1A1A1A</code></td>
+              <td>Títulos</td>
+            </tr>
+            <tr>
+              <td>text-secondary</td>
+              <td><code>#6B6B6B</code></td>
+              <td>Descripciones</td>
+            </tr>
+            <tr>
+              <td>accent-gold</td>
+              <td><code>#D4AF37</code></td>
+              <td>Solo EverLife/Premium</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Tipografía</h3>
+        <p>Fuente principal: <strong>Inter</strong> (sans-serif)</p>
+        <p>Display opcional: <strong>Cormorant Garamond</strong> (serif, solo títulos emotivos)</p>
+      </section>
+
+      <section id="user-flows">
+        <h2>Flujos de Usuario</h2>
+        <p><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/USER_FLOWS.md">Ver rivertrace completo →</a></p>
+
+        <h3>Flujo principal</h3>
+        <pre>
+[App Launch]
+    ↓
+Cápsula Cerrada (tap)
+    ↓
+Animación Apertura (auto 4s)
+    ↓
+Manifiesto NUCLEA
+    ↓
+Selección de Cápsula
+    ↓
+[AUTH GATE]
+    ↓
+Legal → Pago → ACTIVA
+        </pre>
+      </section>
+
+      <section id="data-model">
+        <h2>Modelo de Datos</h2>
+        <p><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/DATA_MODEL.md">Ver schema completo →</a></p>
+
+        <h3>Tablas principales</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Tabla</th>
+              <th>Propósito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>users</code></td><td>Usuarios registrados</td></tr>
+            <tr><td><code>capsules</code></td><td>Cápsulas creadas</td></tr>
+            <tr><td><code>contents</code></td><td>Fotos, videos, audios, textos</td></tr>
+            <tr><td><code>collaborators</code></td><td>Colaboradores por cápsula</td></tr>
+            <tr><td><code>future_messages</code></td><td>Mensajes programados</td></tr>
+            <tr><td><code>subscriptions</code></td><td>Suscripciones activas</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="capsule-types">
+        <h2>Tipos de Cápsula</h2>
+        <p><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/CAPSULE_TYPES.md">Ver especificación completa →</a></p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Propósito</th>
+              <th>AI Avatar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Legacy</td><td>Herencia post-mortem</td><td>Sí</td></tr>
+            <tr><td>Together</td><td>Parejas</td><td>No</td></tr>
+            <tr><td>Social</td><td>Amigos/familia</td><td>No</td></tr>
+            <tr><td>Pet</td><td>Mascotas</td><td>No</td></tr>
+            <tr><td>Life Chapter</td><td>Etapas de vida</td><td>Opcional</td></tr>
+            <tr><td>Origin</td><td>Padres → hijos</td><td>Opcional</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="future-messages">
+        <h2>Sistema de Mensajes Futuros</h2>
+        <p><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/01_SPECS/FUTURE_MESSAGES.md">Ver especificación técnica completa →</a></p>
+
+        <div class="callout callout-info">
+          <strong>Promesa:</strong> "Los mensajes futuros se entregan SIEMPRE en la fecha marcada, independientemente de que el destinatario use la app."
+        </div>
+
+        <h3>Ciclo de vida</h3>
+        <pre>
+Creación → Cifrado → Bloqueo → [Fecha] → Desbloqueo → Notificación → Descarga (30d) → Borrado
+        </pre>
+      </section>
+
+      <section id="prompts">
+        <h2>Prompts para IA</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Herramienta</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Video</td>
+              <td>Runway Gen-3, Luma</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/05_PROMPTS/VIDEO_GENERATION.md" class="local-link">VIDEO_GENERATION.md</a></td>
+            </tr>
+            <tr>
+              <td>Imagen</td>
+              <td>Midjourney, DALL-E</td>
+              <td><a href="file:///C:/Users/Kaos/scripts/nuclea/POC_INTERNA/05_PROMPTS/IMAGE_GENERATION.md" class="local-link">IMAGE_GENERATION.md</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="assets">
+        <h2>Assets</h2>
+
+        <h3>Video Demo (frames)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Frame</th>
+              <th>Tiempo</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Frame 1</td>
+              <td>1.14s</td>
+              <td>Cápsula cerrada, 2 polaroids emergiendo</td>
+            </tr>
+            <tr>
+              <td>Frame 2</td>
+              <td>1.67s</td>
+              <td>Separándose, 4 polaroids</td>
+            </tr>
+            <tr>
+              <td>Frame 3</td>
+              <td>2.65s</td>
+              <td>Más abierta, polaroids en cascada</td>
+            </tr>
+            <tr>
+              <td>Frame 4</td>
+              <td>3.81s</td>
+              <td>Completamente abierta, polaroids libres</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Ubicación: <a href="file:///E:/DOWNLOADS/screenshots_20260203_173352/" class="local-link">E:\DOWNLOADS\screenshots_20260203_173352\</a></p>
+      </section>
+
+      <section id="external">
+        <h2>Documentación Externa</h2>
+
+        <h3>PDFs de Diseño (Andrea)</h3>
+        <p>Ubicación: <a href="file:///C:/Users/Kaos/scripts/nuclea/DISEÑO_ANDREA_PANTALLAS/" class="local-link">DISEÑO_ANDREA_PANTALLAS/</a></p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>PDF</th>
+              <th>Contenido</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>NUCLEA_INICIO.pdf</td><td>Pantallas 1-4 (onboarding)</td></tr>
+            <tr><td>NUCLEA_CAPSULAS.pdf</td><td>6 tipos de cápsula</td></tr>
+            <tr><td>NUCLEA_REGISTRO.pdf</td><td>Auth + Legal + Pago</td></tr>
+            <tr><td>NUCLEA_CIERRE CAPSULA.pdf</td><td>Sistema de cierre</td></tr>
+            <tr><td>NUCLEA_LEGACY MENSJ FUUROS.pdf</td><td>Mensajes futuros</td></tr>
+            <tr><td>N UCLEA_LEGACY CAPSULE.pdf</td><td>Detalle Legacy</td></tr>
+            <tr><td>NUCLEA_TOGETHER*.pdf</td><td>Together (2 PDFs)</td></tr>
+            <tr><td>NUCLEA_SOCIAL CAPSULE.pdf</td><td>Social</td></tr>
+            <tr><td>NUCLEA_PET CAPSULE.pdf</td><td>Pet</td></tr>
+            <tr><td>NUCLEA_LIFE CHAPTER.pdf</td><td>Life Chapter</td></tr>
+            <tr><td>Nuclea_Capsulas_Base*.pdf</td><td>Botones y base</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <footer style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px;">
+        <p>Generado: 3 Feb 2026 | NUCLEA POC INTERNA</p>
+        <p>Mantenido por: Imanol Franjo Álvarez (CTO)</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

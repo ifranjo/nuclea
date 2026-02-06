@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUCLEA - Análisis Video Demo y Estrategia Técnica</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --accent-gold: #D4AF37;
+      --accent-dark: #0D0D12;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    .doc-sidebar {
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent-gold);
+    }
+
+    .sidebar-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      margin-bottom: 2rem;
+    }
+
+    .nav-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.35rem 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 0.75rem;
+      transition: all 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      border-left-color: var(--border-light);
+    }
+
+    .nav-link.active {
+      color: var(--text-primary);
+      border-left-color: var(--accent-gold);
+      font-weight: 500;
+    }
+
+    .nav-sub {
+      padding-left: 1.25rem;
+      font-size: 0.8rem;
+    }
+
+    .doc-content {
+      padding: 3rem 4rem;
+      max-width: 900px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-weight: 400;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .meta-box {
+      background: var(--bg-note);
+      border-left: 3px solid var(--accent-gold);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    .meta-box strong {
+      color: var(--text-primary);
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, var(--accent-dark) 0%, #1a1a2e 100%);
+      color: #fff;
+      padding: 1.5rem;
+      border-radius: 4px;
+      margin: 1.5rem 0;
+    }
+
+    .highlight-box h4 {
+      color: var(--accent-gold);
+      margin-top: 0;
+    }
+
+    .highlight-box p {
+      color: #ccc;
+      margin-bottom: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      background: var(--bg-nav);
+      border-bottom: 2px solid var(--border-light);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    tr:hover td {
+      background: var(--bg-note);
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+
+    .tag-recommended {
+      background: #4A7C59;
+      color: white;
+    }
+
+    .tag-current {
+      background: #6B8E9B;
+      color: white;
+    }
+
+    .tag-premium {
+      background: #8B7355;
+      color: white;
+    }
+
+    .tag-free {
+      background: #6B6B6B;
+      color: white;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-card {
+      border: 1px solid var(--border-light);
+      padding: 1.25rem;
+      background: var(--bg-page);
+    }
+
+    .comparison-card h4 {
+      margin-top: 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .comparison-card.recommended {
+      border-color: var(--accent-gold);
+      background: linear-gradient(135deg, var(--bg-page) 0%, #faf8f3 100%);
+    }
+
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .pros, .cons {
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .pros {
+      background: #f0f7f0;
+      border-left: 3px solid #4A7C59;
+    }
+
+    .cons {
+      background: #faf0f0;
+      border-left: 3px solid #8B4545;
+    }
+
+    .pros h5, .cons h5 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .pros h5 {
+      color: #4A7C59;
+    }
+
+    .cons h5 {
+      color: #8B4545;
+    }
+
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .capsule-types {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .capsule-card {
+      border: 1px solid var(--border-light);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .capsule-card h5 {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .capsule-card p {
+      font-size: 0.8rem;
+      margin-bottom: 0;
+    }
+
+    .flow-diagram {
+      background: var(--bg-code);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .flow-number {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-gold);
+      color: var(--accent-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .action-items {
+      background: var(--bg-note);
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .action-items h4 {
+      margin-top: 0;
+      color: var(--text-primary);
+    }
+
+    .action-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .action-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-light);
+      margin-right: 0.75rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .timestamp {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-light);
+    }
+
+    @media (max-width: 900px) {
+      .doc-layout {
+        grid-template-columns: 1fr;
+      }
+      .doc-sidebar {
+        display: none;
+      }
+      .doc-content {
+        padding: 2rem;
+      }
+      .comparison-grid,
+      .pros-cons,
+      .capsule-types {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .doc-sidebar {
+        display: none;
+      }
+      .doc-layout {
+        grid-template-columns: 1fr;
+      }
+      .doc-content {
+        max-width: none;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <div class="sidebar-title">NUCLEA</div>
+      <div class="sidebar-subtitle">Análisis Video Demo y Estrategia</div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Contexto</div>
+        <a href="#contexto" class="nav-link">Proyecto NUCLEA</a>
+        <a href="#equipo" class="nav-link nav-sub">Equipo y Estado</a>
+        <a href="#video-demo" class="nav-link">El Video Demo</a>
+        <a href="#concepto-ux" class="nav-link nav-sub">Concepto UX Clave</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Decisiones Técnicas</div>
+        <a href="#stack-backend" class="nav-link">Stack Backend</a>
+        <a href="#supabase-vs-firebase" class="nav-link nav-sub">Supabase vs Firebase</a>
+        <a href="#video-ia" class="nav-link">Generación Video IA</a>
+        <a href="#herramientas-comparativa" class="nav-link nav-sub">Comparativa Herramientas</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Arquitectura</div>
+        <a href="#capsulas" class="nav-link">Tipos de Cápsulas</a>
+        <a href="#flujo-ux" class="nav-link">Flujo UX Prioritario</a>
+        <a href="#imagenes-ref" class="nav-link">Imágenes de Referencia</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Acción</div>
+        <a href="#proximos-pasos" class="nav-link">Próximos Pasos</a>
+        <a href="#recomendaciones" class="nav-link nav-sub">Recomendaciones</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1>NUCLEA</h1>
+      <p class="subtitle">Análisis Video Demo y Estrategia Técnica</p>
+
+      <div class="meta-box">
+        <strong>Fecha:</strong> 3 de febrero de 2026<br>
+        <strong>Conversación:</strong> WhatsApp entre Andrea (CEO) e Imanol (CTO)<br>
+        <strong>Enfoque:</strong> Estética del video demo, NO POC interna
+      </div>
+
+      <h2 id="contexto">Contexto del Proyecto</h2>
+
+      <p>NUCLEA es una plataforma española de <strong>legado digital</strong> que permite crear cápsulas de memoria con avatares AI opcionales. La propuesta de valor se resume en su tagline:</p>
+
+      <div class="highlight-box">
+        <h4>"Somos las historias que recordamos. Haz que las tuyas permanezcan."</h4>
+        <p>Plataforma de memoria digital con 6 tipos de cápsulas, precios accesibles (€0-99), y la única solución en español con avatares AI.</p>
+      </div>
+
+      <h3 id="equipo">Equipo y Estado Actual</h3>
+
+      <table>
+        <tr>
+          <th>Rol</th>
+          <th>Nombre</th>
+          <th>Responsabilidad</th>
+        </tr>
+        <tr>
+          <td>CEO / Fundadora</td>
+          <td>Andrea Box López</td>
+          <td>Visión de producto, UX, fundraising</td>
+        </tr>
+        <tr>
+          <td>CTO / Técnico</td>
+          <td>Imanol Franjo Álvarez</td>
+          <td>Arquitectura, desarrollo, stack</td>
+        </tr>
+        <tr>
+          <td>Estado</td>
+          <td>Pre-seed</td>
+          <td>Buscando €150K</td>
+        </tr>
+        <tr>
+          <td>Runway objetivo</td>
+          <td>18 meses</td>
+          <td>@ €8.3K/month burn rate</td>
+        </tr>
+      </table>
+
+      <h2 id="video-demo">El Video Demo</h2>
+
+      <p>Andrea ha creado un <strong>video demostrativo</strong> que muestra la experiencia central de la aplicación. Este video NO es parte del producto final, sino una herramienta de comunicación visual para que el equipo técnico entienda la estética deseada.</p>
+
+      <h3 id="concepto-ux">Concepto UX Clave</h3>
+
+      <p>El video muestra una metáfora visual poderosa:</p>
+
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="flow-number">1</div>
+          <span>Cápsula metálica cerrada (estado inicial)</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">2</div>
+          <span>Tap/click del usuario → cápsula se abre</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">3</div>
+          <span>De su interior salen polaroids fotográficas</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">4</div>
+          <span>Fotos flotan/animan hacia el usuario</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">5</div>
+          <span>Transición al contenido real de la cápsula</span>
+        </div>
+      </div>
+
+      <h4>Estética Deseada</h4>
+      <ul>
+        <li><strong>Física y tangible:</strong> La cápsula parece un objeto real de metal</li>
+        <li><strong>Nostálgica:</strong> Las polaroids evocan recuerdos físicos</li>
+        <li><strong>Moderna:</strong> Animaciones suaves, transiciones elegantes</li>
+        <li><strong>Dorada:</strong> El color oro (#D4AF37) como acento principal</li>
+      </ul>
+
+      <h2 id="stack-backend">Decisión: Stack Backend</h2>
+
+      <p>Imanol ha identificado que la elección del backend es crítica para controlar costes con una aplicación media-heavy. La comparación central es:</p>
+
+      <h3 id="supabase-vs-firebase">Supabase vs Firebase</h3>
+
+      <div class="comparison-grid">
+        <div class="comparison-card recommended">
+          <h4>Supabase <span class="tag tag-recommended">RECOMENDADO</span></h4>
+          <p><strong>Base:</strong> PostgreSQL relacional</p>
+          <p><strong>Precio:</strong> $25/mo (Pro) - predecible</p>
+
+          <div class="pros-cons" style="margin-top: 1rem;">
+            <div class="pros" style="padding: 0.5rem;">
+              <h5>Ventajas</h5>
+              <ul style="margin-left: 1rem; font-size: 0.8rem;">
+                <li>Precios predecibles</li>
+                <li>Mejor para media-heavy</li>
+                <li>Relacional (cápsulas relacionadas)</li>
+                <li>Open source</li>
+                <li>No vendor lock-in</li>
+              </ul>
+            </div>
+            <div class="cons" style="padding: 0.5rem;">
+              <h5>Desventajas</h5>
+              <ul style="margin-left: 1rem; font-size: 0.8rem;">
+                <li>Curva de aprendizaje</li>
+                <li>Migración desde Firebase</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-card">
+          <h4>Firebase <span class="tag tag-current">ACTUAL</span></h4>
+          <p><strong>Base:</strong> Firestore NoSQL</p>
+          <p><strong>Precio:</strong> Variable - puede ser 10x más caro</p>
+
+          <div class="pros-cons" style="margin-top: 1rem;">
+            <div class="pros" style="padding: 0.5rem;">
+              <h5>Ventajas</h5>
+              <ul style="margin-left: 1rem; font-size: 0.8rem;">
+                <li>Más simple para empezar</li>
+                <li>Ya implementado en código</li>
+                <li>Documentación extensa</li>
+              </ul>
+            </div>
+            <div class="cons" style="padding: 0.5rem;">
+              <h5>Desventajas</h5>
+              <ul style="margin-left: 1rem; font-size: 0.8rem;">
+                <li>Precios impredecibles</li>
+                <li>Vendor lock-in Google</li>
+                <li>Costes egress altos</li>
+                <li>NoSQL menos ideal para relaciones</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="video-ia">Generación de Video con IA</h2>
+
+      <p>Andrea menciona interés en <strong>"modelos de mundo"</strong> para generación de video con consistencia temporal. Esto podría usarse tanto para recrear el concepto del video demo como para futuras funcionalidades de avatar.</p>
+
+      <h3 id="herramientas-comparativa">Comparativa de Herramientas</h3>
+
+      <table>
+        <tr>
+          <th>Herramienta</th>
+          <th>Costo</th>
+          <th>Calidad</th>
+          <th>Mejor uso para NUCLEA</th>
+        </tr>
+        <tr>
+          <td><strong>Runway Gen-3</strong></td>
+          <td><span class="tag tag-premium">$28/mo</span></td>
+          <td>Muy alta</td>
+          <td>Video realista, consistencia temporal para avatares</td>
+        </tr>
+        <tr>
+          <td><strong>Luma Dream Machine</strong></td>
+          <td><span class="tag tag-free">Free tier</span></td>
+          <td>Alta</td>
+          <td>Rápido, buena calidad para prototipos</td>
+        </tr>
+        <tr>
+          <td><strong>Kling AI</strong></td>
+          <td><span class="tag tag-free">Free tier</span></td>
+          <td>Alta</td>
+          <td>Generación video-audio integrado</td>
+        </tr>
+        <tr>
+          <td><strong>Pika Labs</strong></td>
+          <td><span class="tag tag-premium">$8/mo</span></td>
+          <td>Alta</td>
+          <td>Animaciones estilizadas, efectos especiales</td>
+        </tr>
+        <tr>
+          <td><strong>Haiper AI</strong></td>
+          <td><span class="tag tag-free">Free tier</span></td>
+          <td>Media</td>
+          <td>Prototipos rápidos, iteración</td>
+        </tr>
+        <tr>
+          <td><strong>Stable Video Diffusion</strong></td>
+          <td><span class="tag tag-free">Open source</span></td>
+          <td>Media</td>
+          <td>Self-hosted, gratuito ilimitado</td>
+        </tr>
+      </table>
+
+      <h4>Recomendación para Video Demo</h4>
+      <p>Para recrear/ampliar el concepto de la cápsula abriéndose con polaroids:</p>
+      <ol>
+        <li><strong>Fase exploración:</strong> Luma Dream Machine (gratis) o Haiper AI para probar conceptos</li>
+        <li><strong>Fase producción:</strong> Runway Gen-3 para calidad profesional si se necesita para investor deck</li>
+        <li><strong>Futuro avatares:</strong> Runway Gen-3 o Kling AI para consistencia temporal en avatares EverLife</li>
+      </ol>
+
+      <h2 id="capsulas">Arquitectura: 6 Tipos de Cápsulas</h2>
+
+      <div class="capsule-types">
+        <div class="capsule-card">
+          <h5>Legacy</h5>
+          <p>Herencia post-mortem con avatar EverLife AI</p>
+        </div>
+        <div class="capsule-card">
+          <h5>Together</h5>
+          <p>Memorias compartidas entre parejas</p>
+        </div>
+        <div class="capsule-card">
+          <h5>Social</h5>
+          <p>Diario privado entre amigos</p>
+        </div>
+        <div class="capsule-card">
+          <h5>Pet</h5>
+          <p>Memorial y recuerdos de mascotas</p>
+        </div>
+        <div class="capsule-card">
+          <h5>Life Chapter</h5>
+          <p>Documentar etapas de vida</p>
+        </div>
+        <div class="capsule-card">
+          <h5>Origin</h5>
+          <p>Mensajes de padres a hijos</p>
+        </div>
+      </div>
+
+      <h2 id="flujo-ux">Flujo UX Prioritario</h2>
+
+      <p>Basado en el video demo de Andrea, el flujo prioritario a implementar es:</p>
+
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="flow-number">1</div>
+          <span><strong>Landing:</strong> Animación de cápsula cerrada con partículas doradas</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">2</div>
+          <span><strong>Interacción:</strong> Tap/click sobre la cápsula inicia apertura</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">3</div>
+          <span><strong>Animación:</strong> Cápsula se abre, polaroids salen flotando</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">4</div>
+          <span><strong>Transición:</strong> Fotos se dispersan revelando contenido</span>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">5</div>
+          <span><strong>Contenido:</strong> Visualización de mensajes, fotos, videos</span>
+        </div>
+      </div>
+
+      <h2 id="imagenes-ref">Imágenes de Referencia Disponibles</h2>
+
+      <table>
+        <tr>
+          <th>Recurso</th>
+          <th>Ubicación</th>
+          <th>Uso</th>
+        </tr>
+        <tr>
+          <td>Screenshots video demo</td>
+          <td>E:\DOWNLOADS\screenshots_20260203...</td>
+          <td>Frames de referencia para animación</td>
+        </tr>
+        <tr>
+          <td>Mockups UI (12 PDFs)</td>
+          <td>DISEÑO_ANDREA_PANTALLAS/</td>
+          <td>Diseño de pantallas por tipo de cápsula</td>
+        </tr>
+        <tr>
+          <td>SEDIMENTARY_MEMORY.png</td>
+          <td>PREREUNION_ANDREA/</td>
+          <td>Visualización concepto memoria</td>
+        </tr>
+        <tr>
+          <td>Demo HTML</td>
+          <td>PREREUNION_ANDREA/demo/</td>
+          <td>Landing con partículas doradas</td>
+        </tr>
+      </table>
+
+      <h2 id="proximos-pasos">Próximos Pasos Recomendados</h2>
+
+      <div class="action-items">
+        <h4>Decisiones Inmediatas</h4>
+
+        <div class="action-item">
+          <div class="action-checkbox"></div>
+          <div>
+            <strong>Definir stack definitivo</strong><br>
+            <span style="font-size: 0.9rem; color: var(--text-tertiary);">Supabase vs Firebase - implica migración si se cambia</span>
+          </div>
+        </div>
+
+        <div class="action-item">
+          <div class="action-checkbox"></div>
+          <div>
+            <strong>Crear prototipo animado web</strong><br>
+            <span style="font-size: 0.9rem; color: var(--text-tertiary);">Recrear el efecto cápsula → polaroids con Framer Motion + CSS</span>
+          </div>
+        </div>
+
+        <div class="action-item">
+          <div class="action-checkbox"></div>
+          <div>
+            <strong>Explorar generación video IA</strong><br>
+            <span style="font-size: 0.9rem; color: var(--text-tertiary);">Probar Luma Dream Machine o Runway con imágenes de referencia</span>
+          </div>
+        </div>
+
+        <div class="action-item">
+          <div class="action-checkbox"></div>
+          <div>
+            <strong>Definir estructura de datos</strong><br>
+            <span style="font-size: 0.9rem; color: var(--text-tertiary);">Esquema para las 6 cápsulas y sus relaciones</span>
+          </div>
+        </div>
+
+        <div class="action-item">
+          <div class="action-checkbox"></div>
+          <div>
+            <strong>Plan de migración (si aplica)</strong><br>
+            <span style="font-size: 0.9rem; color: var(--text-tertiary);">Firebase → Supabase: auth, datos, storage</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 id="recomendaciones">Recomendaciones Estratégicas</h3>
+
+      <div class="highlight-box">
+        <h4>Stack Técnico Recomendado</h4>
+        <p><strong>Frontend:</strong> Next.js 15+ + TypeScript + Tailwind CSS + Framer Motion</p>
+        <p style="margin-top: 0.5rem;"><strong>Backend:</strong> Supabase (PostgreSQL + Auth + Storage)</p>
+        <p style="margin-top: 0.5rem;"><strong>Animaciones:</strong> Framer Motion para la cápsula, GSAP para efectos avanzados</p>
+        <p style="margin-top: 0.5rem;"><strong>Video IA:</strong> Luma Dream Machine (prototipos) → Runway Gen-3 (producción)</p>
+      </div>
+
+      <div class="meta-box">
+        <strong>Nota importante:</strong> Las imágenes del video demo son referencia estética, no parte del producto final. Pueden usarse como input para generación de video con IA (img2video) para crear más contenido de marketing o explorar la experiencia de usuario.
+      </div>
+
+      <div class="timestamp">
+        Documento generado: 3 de febrero de 2026<br>
+        Fuente: Conversación WhatsApp + Análisis de codebase NUCLEA
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Scroll-aware navigation
+    const sections = document.querySelectorAll('[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Smooth scroll
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

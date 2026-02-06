@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUCLEA - Wireframes Interactivos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --accent-soft: rgba(233, 69, 96, 0.1);
+            --gold: #d4af37;
+            --text: #eaeaea;
+            --text-muted: #888;
+            --bg: #0f0f1a;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            background: var(--primary);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Screen Container */
+        .screens-container {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .screen {
+            display: none;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .screen-title {
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .screen-desc {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        /* Phone Mockup */
+        .phone-mockup {
+            background: var(--primary);
+            border-radius: 40px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            border: 3px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .phone-screen {
+            background: var(--secondary);
+            border-radius: 25px;
+            min-height: 600px;
+            overflow: hidden;
+        }
+
+        .phone-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .phone-logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .phone-menu {
+            display: flex;
+            gap: 5px;
+        }
+
+        .phone-menu-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--text-muted);
+            border-radius: 50%;
+        }
+
+        .phone-content {
+            padding: 25px 20px;
+        }
+
+        /* Landing Screen */
+        .landing-hero {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .landing-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .landing-title {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .landing-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--accent), #c13b54);
+            color: white;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Capsule Selection */
+        .capsule-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .capsule-option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .capsule-option:hover {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            transform: translateY(-3px);
+        }
+
+        .capsule-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .capsule-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .capsule-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .capsule-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .coming-soon {
+            font-size: 0.65rem;
+            color: var(--gold);
+            margin-top: 8px;
+        }
+
+        /* Wizard Steps */
+        .wizard-progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .wizard-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .wizard-step.active {
+            background: var(--accent);
+        }
+
+        .wizard-step.completed {
+            background: #10b981;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .upload-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* Date Picker */
+        .date-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .date-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .date-option:hover {
+            border-color: var(--accent);
+        }
+
+        .date-option.selected {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .date-radio {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+        }
+
+        .date-option.selected .date-radio {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+
+        /* Preview Card */
+        .preview-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .preview-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: var(--accent);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+        }
+
+        .preview-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .preview-recipient {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .preview-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .preview-stat {
+            text-align: center;
+        }
+
+        .preview-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .preview-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+        }
+
+        /* Dashboard */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .capsule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .capsule-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .capsule-item:hover {
+            border-color: var(--accent);
+        }
+
+        .capsule-thumb {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), #c13b54);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .capsule-info {
+            flex: 1;
+        }
+
+        .capsule-info-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .capsule-info-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .capsule-status {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        .status-draft {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-ready {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        /* Info box */
+        .info-box {
+            background: var(--primary);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .info-box h4 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .info-box p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-title">NUCLEA Wireframes</div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showScreen('landing')">Landing</button>
+            <button class="nav-tab" onclick="showScreen('select')">Seleccion</button>
+            <button class="nav-tab" onclick="showScreen('wizard1')">Paso 1</button>
+            <button class="nav-tab" onclick="showScreen('wizard2')">Paso 2</button>
+            <button class="nav-tab" onclick="showScreen('wizard3')">Paso 3</button>
+            <button class="nav-tab" onclick="showScreen('wizard4')">Preview</button>
+            <button class="nav-tab" onclick="showScreen('dashboard')">Dashboard</button>
+        </div>
+    </nav>
+
+    <div class="screens-container">
+        <!-- Screen 1: Landing -->
+        <div class="screen active" id="landing">
+            <div class="screen-title">Pantalla 1 de 7</div>
+            <h2>Landing Page</h2>
+            <p class="screen-desc">Primera impresion del usuario. Propuesta de valor emocional.</p>
+
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div class="phone-logo">NUCLEA</div>
+                        <div class="phone-menu">
+                            <div class="phone-menu-dot"></div>
+                            <div class="phone-menu-dot"></div>
+                            <div class="phone-menu-dot"></div>
+                        </div>
+                    </div>
+                    <div class="landing-hero">
+                        <div class="landing-icon">💊</div>
+                        <h1 class="landing-title">Somos las historias que recordamos</h1>
+                        <p class="landing-subtitle">"Haz que las tuyas permanezcan."</p>
+                        <button class="cta-button" onclick="showScreen('select')">Crear mi primera capsula</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>Notas de Diseno</h4>
+                <p>La landing debe transmitir emocion y proposito. Colores calidos, tipografia elegante. El CTA principal es claro y directo. Video explicativo opcional debajo.</p>
+            </div>
+        </div>
+
+        <!-- Screen 2: Capsule Selection -->
+        <div class="screen" id="select">
+            <div class="screen-title">Pantalla 2 de 7</div>
+            <h2>Seleccion de Capsula</h2>
+            <p class="screen-desc">Usuario elige que tipo de capsula crear.</p>
+
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div style="cursor: pointer;" onclick="showScreen('landing')">← Volver</div>
+                        <div class="phone-logo">NUCLEA</div>
+                    </div>
+                    <div class="phone-content">
+                        <h3 style="text-align: center; margin-bottom: 5px;">Que quieres preservar?</h3>
+                        <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 25px;">Elige el tipo de capsula</p>
+
+                        <div class="capsule-grid">
+                            <div class="capsule-option" onclick="showScreen('wizard1')">
+                                <div class="capsule-icon">🏛️</div>
+                                <div class="capsule-name">EverLife</div>
+                                <div class="capsule-desc">Tu legado para quienes amas</div>
+                            </div>
+                            <div class="capsule-option" onclick="showScreen('wizard1')">
+                                <div class="capsule-icon">📖</div>
+                                <div class="capsule-name">Life Chapter</div>
+                                <div class="capsule-desc">Una etapa especial como regalo</div>
+                            </div>
+                            <div class="capsule-option disabled">
+                                <div class="capsule-icon">👥</div>
+                                <div class="capsule-name">Social</div>
+                                <div class="capsule-desc">Tu dia a dia privado</div>
+                                <div class="coming-soon">Proximamente</div>
+                            </div>
+                            <div class="capsule-option disabled">
+                                <div class="capsule-icon">🐾</div>
+                                <div class="capsule-name">Pet</div>
+                                <div class="capsule-desc">Homenaje a tu mascota</div>
+                                <div class="coming-soon">Proximamente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>Notas de Diseno</h4>
+                <p>Demo incluye solo EverLife y Life Chapter. Las otras capsulas aparecen como "Proximamente" para mostrar la vision completa del ecosistema.</p>
+            </div>
+        </div>
+
+        <!-- Screen 3: Wizard Step 1 -->
+        <div class="screen" id="wizard1">
+            <div class="screen-title">Pantalla 3 de 7</div>
+            <h2>Crear Capsula - Paso 1</h2>
+            <p class="screen-desc">Informacion basica de la capsula.</p>
+
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div style="cursor: pointer;" onclick="showScreen('select')">← Volver</div>
+                        <div class="phone-logo">NUCLEA</div>
+                    </div>
+                    <div class="phone-content">
+                        <div class="wizard-progress">
+                            <div class="wizard-step active">1</div>
+                            <div class="wizard-step">2</div>
+                            <div class="wizard-step">3</div>
+                            <div class="wizard-step">4</div>
+                        </div>
+
+                        <h3 style="margin-bottom: 20px;">Informacion basica</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Nombre de tu capsula</label>
+                            <input type="text" class="form-input" placeholder="Ej: Para mi hija Maria">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Para quien es?</label>
+                            <input type="text" class="form-input" placeholder="Nombre del destinatario">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Mensaje inicial (opcional)</label>
+                            <textarea class="form-input form-textarea" placeholder="Escribe unas palabras..."></textarea>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('select')">Cancelar</button>
+                            <button class="btn btn-primary" onclick="showScreen('wizard2')">Siguiente →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Wizard Step 2 -->
+        <div class="screen" id="wizard2">
+            <div class="screen-title">Pantalla 4 de 7</div>
+            <h2>Crear Capsula - Paso 2</h2>
+            <p class="screen-desc">Subir contenido multimedia.</p>
+
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div style="cursor: pointer;" onclick="showScreen('wizard1')">← Volver</div>
+                        <div class="phone-logo">NUCLEA</div>
+                    </div>
+                    <div class="phone-content">
+                        <div class="wizard-progress">
+                            <div class="wizard-step completed">✓</div>
+                            <div class="wizard-step active">2</div>
+                            <div class="wizard-step">3</div>
+                            <div class="wizard-step">4</div>
+                        </div>
+
+                        <h3 style="margin-bottom: 20px;">Anade contenido</h3>
+
+                        <div class="upload-area">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-text">Toca para subir fotos o videos</div>
+                        </div>
+
+                        <div class="upload-preview">
+                            <div class="preview-item">📷</div>
+                            <div class="preview-item">📷</div>
+                            <div class="preview-item">📷</div>
+                            <div class="preview-item" style="font-size: 1rem; color: var(--text-muted);">+5</div>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('wizard1')">← Anterior</button>
+                            <button class="btn btn-primary" onclick="showScreen('wizard3')">Siguiente →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 5: Wizard Step 3 -->
+        <div class="screen" id="wizard3">
+            <div class="screen-title">Pantalla 5 de 7</div>
+            <h2>Crear Capsula - Paso 3</h2>
+            <p class="screen-desc">Programar fecha de entrega.</p>
+
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div style="cursor: pointer;" onclick="showScreen('wizard2')">← Volver</div>
+                        <div class="phone-logo">NUCLEA</div>
+                    </div>
+                    <div class="phone-content">
+                        <div class="wizard-progress">
+                            <div class="wizard-step completed">✓</div>
+                            <div class="wizard-step completed">✓</div>
+                            <div class="wizard-step active">3</div>
+                            <div class="wizard-step">4</div>
+                        </div>
+
+                        <h3 style="margin-bottom: 20px;">Cuando debe llegar?</h3>
+
+                        <div class="date-options">
+                            <div class="date-option selected">
+                                <div class="date-radio"></div>
+                                <div>
+                                    <div style="font-weight: 600;">Fecha especifica</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">15 de marzo de 2026</div>
+                                </div>
+                            </div>
+                            <div class="date-option">
+                                <div class="date-radio"></div>
+                                <div>
+                                    <div style="font-weight: 600;">Cuando ya no este</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Solo para EverLife</div>
+                                </div>
+                            </div>
+                            <div class="date-option">
+                                <div class="date-radio"></div>
+                                <div>
+                                    <div style="font-weight: 600;">En un evento especial</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Boda, graduacion, cumpleanos...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('wizard2')">← Anterior</button>
+                            <button class="btn btn-primary" onclick="showScreen('wizard4')">Siguiente →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 6: Preview -->
+        <div class="screen" id="wizard4">
+            <div class="screen-title">Pantalla 6 de 7</div>
+            <h2>Preview y Confirmar</h2>
+            <p class="screen-desc">Revision final antes de guardar.</p>
+
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div style="cursor: pointer;" onclick="showScreen('wizard3')">← Volver</div>
+                        <div class="phone-logo">NUCLEA</div>
+                    </div>
+                    <div class="phone-content">
+                        <div class="wizard-progress">
+                            <div class="wizard-step completed">✓</div>
+                            <div class="wizard-step completed">✓</div>
+                            <div class="wizard-step completed">✓</div>
+                            <div class="wizard-step active">4</div>
+                        </div>
+
+                        <h3 style="text-align: center; margin-bottom: 20px;">✨ Tu capsula esta lista</h3>
+
+                        <div class="preview-card">
+                            <div class="preview-badge">Life Chapter</div>
+                            <h4 class="preview-title">Para mi hija Maria</h4>
+                            <p class="preview-recipient">Destinatario: Maria Garcia</p>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                                📅 Entrega: 15 marzo 2026
+                            </div>
+                            <div class="preview-stats">
+                                <div class="preview-stat">
+                                    <div class="preview-stat-value">12</div>
+                                    <div class="preview-stat-label">Fotos</div>
+                                </div>
+                                <div class="preview-stat">
+                                    <div class="preview-stat-value">3</div>
+                                    <div class="preview-stat-label">Textos</div>
+                                </div>
+                                <div class="preview-stat">
+                                    <div class="preview-stat-value">1</div>
+                                    <div class="preview-stat-label">Video</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn btn-secondary" onclick="showScreen('wizard3')">← Editar</button>
+                            <button class="btn btn-primary" onclick="showScreen('dashboard')">Guardar ✓</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 7: Dashboard -->
+        <div class="screen" id="dashboard">
+            <div class="screen-title">Pantalla 7 de 7</div>
+            <h2>Dashboard</h2>
+            <p class="screen-desc">Vista de todas las capsulas del usuario.</p>
+
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div class="phone-logo">NUCLEA</div>
+                        <div style="font-size: 1.5rem; cursor: pointer;">👤</div>
+                    </div>
+                    <div class="phone-content">
+                        <div class="dashboard-header">
+                            <div class="dashboard-title">Mis Capsulas</div>
+                            <div class="add-btn" onclick="showScreen('select')">+</div>
+                        </div>
+
+                        <div class="capsule-list">
+                            <div class="capsule-item">
+                                <div class="capsule-thumb">📖</div>
+                                <div class="capsule-info">
+                                    <div class="capsule-info-title">Para mi hija Maria</div>
+                                    <div class="capsule-info-meta">Life Chapter · 15 mar 2026</div>
+                                </div>
+                                <div class="capsule-status status-ready">Lista</div>
+                            </div>
+                            <div class="capsule-item">
+                                <div class="capsule-thumb">🏛️</div>
+                                <div class="capsule-info">
+                                    <div class="capsule-info-title">Mi legado familiar</div>
+                                    <div class="capsule-info-meta">EverLife · Sin fecha</div>
+                                </div>
+                                <div class="capsule-status status-draft">Borrador</div>
+                            </div>
+                            <div class="capsule-item">
+                                <div class="capsule-thumb">📖</div>
+                                <div class="capsule-info">
+                                    <div class="capsule-info-title">Viaje a Japon 2024</div>
+                                    <div class="capsule-info-meta">Life Chapter · 1 ene 2025</div>
+                                </div>
+                                <div class="capsule-status status-ready">Lista</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>Notas de Diseno</h4>
+                <p>Dashboard muestra todas las capsulas con su estado. Colores indican estado: verde = lista, amarillo = borrador. El boton + permite crear nueva capsula.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Show target screen
+            document.getElementById(screenId).classList.add('active');
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Make date options clickable
+        document.querySelectorAll('.date-option').forEach(opt => {
+            opt.addEventListener('click', function() {
+                document.querySelectorAll('.date-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>
