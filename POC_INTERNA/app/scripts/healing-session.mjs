@@ -41,23 +41,44 @@ async function applyHealingActions(iteration) {
 }
 
 function parseIterationsArg() {
-  const arg = process.argv.find((a) => a.startsWith('--iterations='))
-  if (!arg) return 3
-  const value = Number(arg.split('=')[1])
+  const value = Number(readArgValue('iterations') ?? 3)
   if (!Number.isFinite(value) || value < 1) return 3
   return Math.min(10, value)
 }
 
+function readArgValue(name) {
+  const eqPrefix = `--${name}=`
+  const idx = process.argv.findIndex((a) => a === `--${name}` || a.startsWith(eqPrefix))
+  if (idx === -1) return null
+
+  const current = process.argv[idx]
+  if (current.startsWith(eqPrefix)) {
+    return current.slice(eqPrefix.length)
+  }
+
+  return process.argv[idx + 1] ?? null
+}
+
+function parseModeArg() {
+  const value = (readArgValue('mode') ?? 'heal').toLowerCase()
+  if (value === 'stability') return 'stability'
+  return 'heal'
+}
+
 async function main() {
   const maxIterations = parseIterationsArg()
+  const mode = parseModeArg()
   await mkdir(RESULTS_DIR, { recursive: true })
 
   const session = {
     startedAt: new Date().toISOString(),
+    mode,
     maxIterations,
     iterations: [],
     success: false,
   }
+
+  console.log(`[heal] mode: ${mode}`)
 
   for (let i = 1; i <= maxIterations; i += 1) {
     console.log(`\n[heal] ===== Iteration ${i}/${maxIterations} =====`)
@@ -70,12 +91,20 @@ async function main() {
     }
     session.iterations.push(entry)
 
-    if (result.code === 0) {
+    if (result.code === 0 && mode === 'heal') {
       session.success = true
+      console.log('[heal] first successful iteration reached; stopping in heal mode.')
       break
     }
 
-    await applyHealingActions(i)
+    if (result.code !== 0) {
+      await applyHealingActions(i)
+    }
+  }
+
+  if (mode === 'stability') {
+    session.success =
+      session.iterations.length === maxIterations && session.iterations.every((it) => it.success)
   }
 
   session.finishedAt = new Date().toISOString()
@@ -94,4 +123,3 @@ main().catch((err) => {
   console.error(err)
   process.exit(1)
 })
-

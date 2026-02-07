@@ -33,8 +33,8 @@ Open `http://localhost:3001`.
 | Lint | `npm run lint` | Run lint checks (if ESLint config is present) |
 | PDF alignment only | `npm run autocheck:pdf` | Validate key copy against source PDFs |
 | Full autocheck | `npm run autocheck` | Lint + build + runtime flow check + PDF alignment |
-| Healing session | `npm run heal:session` | Multi-iteration self-healing loop around `autocheck` |
-| Stability run (3x) | `powershell -Command "for ($i=1; $i -le 3; $i++) { npm run autocheck; if ($LASTEXITCODE -ne 0) { exit 1 } }"` | Stress-check repeated runs for flaky issues |
+| Healing session | `npm run heal:session` | Stops on first successful `autocheck`; cleans cache/screens between failed attempts |
+| Stability run (3x) | `npm run heal:stability` | Runs exactly 3 full `autocheck` iterations and fails if any iteration fails |
 
 ## Current route map
 
@@ -95,5 +95,5 @@ Screenshots are saved under `POC_INTERNA/app/screenshots/`.
    - Confirm app is running at `http://localhost:3001/onboarding`.
    - Confirm `playwright` is installed (already declared in dependencies).
 4. `autocheck` fails only on some runs:
-   - Execute the `Stability run (3x)` command to reproduce flaky behavior.
+   - Execute `npm run heal:stability` to reproduce flaky behavior under repeated full runs.
    - Inspect `test-results/full-autocheck-report.json` from the failed iteration.

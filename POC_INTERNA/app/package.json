@@ -9,7 +9,8 @@
     "lint": "next lint",
     "autocheck": "node scripts/full-autocheck.mjs",
     "autocheck:pdf": "python scripts/autocheck_pdf_alignment.py",
-    "heal:session": "node scripts/healing-session.mjs"
+    "heal:session": "node scripts/healing-session.mjs",
+    "heal:stability": "node scripts/healing-session.mjs --mode=stability --iterations=3"
   },
   "dependencies": {
     "framer-motion": "^11.15.0",
