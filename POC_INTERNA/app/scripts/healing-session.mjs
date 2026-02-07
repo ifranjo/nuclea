@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { access, copyFile, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { access, copyFile, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { constants as fsConstants } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -7,7 +7,9 @@ import process from 'node:process'
 const APP_ROOT = path.resolve(import.meta.dirname, '..')
 const RESULTS_DIR = path.join(APP_ROOT, 'test-results')
 const HEALING_HISTORY_DIR = path.join(RESULTS_DIR, 'healing-history')
+const HEALING_INSIGHTS_SCRIPT = path.join('scripts', 'healing-insights.mjs')
 const FULL_AUTOCHECK_SCRIPT = path.join('scripts', 'full-autocheck.mjs')
+const HEALING_INSIGHTS_FILE = path.join(RESULTS_DIR, 'healing-insights.json')
 
 function run(cmd, options = {}) {
   return new Promise((resolve) => {
@@ -118,6 +120,15 @@ async function pruneHistoryFiles(limit) {
   }
 }
 
+async function loadJson(filePath) {
+  try {
+    const raw = await readFile(filePath, 'utf-8')
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
+}
+
 async function main() {
   const maxIterations = parseIterationsArg()
   const mode = parseModeArg()
@@ -154,6 +165,7 @@ async function main() {
       reportCopied = true
     }
 
+    const copiedAutocheckReport = reportCopied ? await loadJson(autocheckReportDst) : null
     let logPath = null
     if (result.code !== 0) {
       logPath = path.join(HEALING_HISTORY_DIR, `iter-${iterationId}-${stamp}.log`)
@@ -166,6 +178,8 @@ async function main() {
       success: result.code === 0,
       autocheckReportPath: reportCopied ? autocheckReportDst : null,
       failureLogPath: logPath,
+      durationMs: copiedAutocheckReport?.timings?.totalMs ?? null,
+      failedChecks: copiedAutocheckReport?.failedChecks ?? null,
       finishedAt: new Date().toISOString(),
     }
     session.iterations.push(entry)
@@ -182,6 +196,12 @@ async function main() {
   }
 
   await pruneHistoryFiles(historyLimit)
+  const insightsRun = await run(`"${process.execPath}" ${HEALING_INSIGHTS_SCRIPT}`)
+  session.insightsPath = (await pathExists(HEALING_INSIGHTS_FILE)) ? HEALING_INSIGHTS_FILE : null
+  session.insightsUpdated = insightsRun.code === 0
+  if (insightsRun.code !== 0) {
+    console.warn('[heal] warning: failed to refresh healing insights')
+  }
 
   if (mode === 'stability') {
     session.success =

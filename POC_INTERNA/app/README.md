@@ -35,12 +35,14 @@ Open `http://localhost:3001`.
 | Full autocheck | `npm run autocheck` | Lint + build + runtime flow check + PDF alignment |
 | Healing session | `npm run heal:session` | Stops on first successful `autocheck`; cleans cache/screens between failed attempts |
 | Stability run (3x) | `npm run heal:stability` | Runs exactly 3 full `autocheck` iterations and fails if any iteration fails |
+| Healing insights | `npm run heal:insights` | Rebuilds aggregated trends from `healing-history` |
 
 `autocheck` uses `next start` (production runtime) by default for deterministic results.  
 Optional override: `AUTOCHECK_RUNTIME=dev npm run autocheck`.
 
 `heal:session` now stores one autocheck report per iteration under `test-results/healing-history/`  
 and writes failure logs there when an iteration fails.
+It also refreshes `test-results/healing-insights.json` automatically at the end of each run.
 
 Custom example:
 
@@ -53,6 +55,10 @@ Optional retention cap (default `60` files in `healing-history`):
 ```bash
 node scripts/healing-session.mjs --mode=stability --iterations=5 --history-limit=120
 ```
+
+`full-autocheck-report.json` now includes:
+- `timings` (`lintMs`, `buildMs`, `onboardingMs`, `pdfAlignmentMs`, `totalMs`)
+- `failedChecks` for quick failure triage
 
 ## Current route map
 

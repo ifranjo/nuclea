@@ -389,6 +389,7 @@ async function runOnboardingChecks(baseUrl) {
 }
 
 async function main() {
+  const totalStartMs = Date.now()
   await mkdir(RESULTS_DIR, { recursive: true })
   const report = {
     startedAt: new Date().toISOString(),
@@ -398,8 +399,16 @@ async function main() {
     pdfAlignment: { pass: false },
     runtimePort: null,
     runtimeMode: AUTOCHECK_RUNTIME === 'dev' ? 'dev' : 'start',
+    timings: {
+      lintMs: 0,
+      buildMs: 0,
+      onboardingMs: 0,
+      pdfAlignmentMs: 0,
+      totalMs: 0,
+    },
   }
 
+  const lintStartMs = Date.now()
   if (await hasEslintConfig()) {
     await runCommand(NPM_BIN, ['run', 'lint'])
     report.lint.pass = true
@@ -411,9 +420,12 @@ async function main() {
     }
     console.log('Lint step skipped: no ESLint config found.')
   }
+  report.timings.lintMs = Date.now() - lintStartMs
 
+  const buildStartMs = Date.now()
   report.build.attempts = await runBuildWithRetry(2)
   report.build.pass = true
+  report.timings.buildMs = Date.now() - buildStartMs
 
   let devProc = null
   const runtimePort = await findFreePort(AUTOCHECK_PORT)
@@ -421,6 +433,7 @@ async function main() {
   report.runtimePort = runtimePort
 
   try {
+    const onboardingStartMs = Date.now()
     const runtimeCmd =
       report.runtimeMode === 'dev'
         ? `${NPX_BIN} next dev -p ${runtimePort}`
@@ -435,8 +448,11 @@ async function main() {
     await waitForServer(`${baseUrl}/onboarding`)
 
     report.onboarding = await runOnboardingChecks(baseUrl)
+    report.timings.onboardingMs = Date.now() - onboardingStartMs
+    const pdfAlignmentStartMs = Date.now()
     await runCommand('python', ['scripts/autocheck_pdf_alignment.py'])
     report.pdfAlignment.pass = true
+    report.timings.pdfAlignmentMs = Date.now() - pdfAlignmentStartMs
   } finally {
     if (devProc) {
       await killProcessTree(devProc)
@@ -449,6 +465,8 @@ async function main() {
     report.build.pass &&
     report.pdfAlignment.pass &&
     report.onboarding.every((c) => c.pass)
+  report.failedChecks = report.onboarding.filter((c) => !c.pass).map((c) => c.check)
+  report.timings.totalMs = Date.now() - totalStartMs
 
   const reportFile = path.join(RESULTS_DIR, 'full-autocheck-report.json')
   await writeFile(reportFile, JSON.stringify(report, null, 2), 'utf-8')
