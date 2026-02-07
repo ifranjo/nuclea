@@ -20,21 +20,55 @@ export function P1CapsuleClosed({ onNext }: P1Props) {
           onNext()
         }
       }}
-      className="h-[100dvh] flex items-center justify-center cursor-pointer select-none"
+      className="h-[100dvh] flex flex-col items-center justify-center cursor-pointer select-none"
     >
+      {/* Capsule with floating + breathing animation */}
       <motion.div
-        animate={{ scale: [1, 1.02, 1] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        className="relative w-[260px] h-[130px] sm:w-[300px] sm:h-[150px]"
+        animate={{
+          y: [0, -6, 0],
+          scale: [1, 1.045, 1],
+        }}
+        transition={{
+          duration: 3.5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        className="relative"
       >
-        <Image
-          src="/images/capsule-closed-nobg.png"
-          alt="Cápsula NUCLEA cerrada"
-          fill
-          className="object-cover"
-          priority
+        {/* Pulsing glow shadow beneath the capsule */}
+        <motion.div
+          animate={{
+            opacity: [0.25, 0.5, 0.25],
+            scaleX: [0.85, 1, 0.85],
+          }}
+          transition={{
+            duration: 3.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[70%] h-[18px] rounded-[50%] bg-black/[0.08] blur-md pointer-events-none"
         />
+
+        <div className="relative w-[260px] h-[130px] sm:w-[300px] sm:h-[150px]">
+          <Image
+            src="/images/capsule-closed-nobg.png"
+            alt="Cápsula NUCLEA cerrada"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
       </motion.div>
+
+      {/* Hint text — fades in after 1.5s */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.8, ease: 'easeOut' }}
+        className="mt-8 font-sans text-[13px] text-nuclea-text-muted tracking-wide"
+      >
+        Toca para abrir
+      </motion.p>
     </div>
   )
 }

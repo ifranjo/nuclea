@@ -1,0 +1,7 @@
+test-results/
+
+# Temporary captures generated during design checks
+screenshots/*_current.png
+screenshots/*_desktop.png
+screenshots/capture_all.mjs
+

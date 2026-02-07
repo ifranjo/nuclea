@@ -30,7 +30,7 @@ Open `http://localhost:3001`.
 | Dev server | `npm run dev` | Start local app on port `3001` |
 | Production build | `npm run build` | Build app |
 | Production start | `npm run start` | Start built app on port `3001` |
-| Lint | `npm run lint` | Run Next.js lint checks |
+| Lint | `npm run lint` | Run lint checks (if ESLint config is present) |
 | PDF alignment only | `npm run autocheck:pdf` | Validate key copy against source PDFs |
 | Full autocheck | `npm run autocheck` | Lint + build + runtime flow check + PDF alignment |
 | Healing session | `npm run heal:session` | Multi-iteration self-healing loop around `autocheck` |
