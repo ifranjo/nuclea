@@ -58,3 +58,28 @@ Run a focused `opus4.6` batch using only:
 Then decide:
 - set status to `active`, or
 - keep `needs-tuning` and iterate.
+
+## REV-2026-02-07-003
+
+- Reviewer: `CTO PromptOps`
+- Scope: `New prompt generation + cleanup of completed artifacts`
+
+### New Prompts Added
+
+1. `PRM-UX-004` (capsule presence and placement system)
+2. `PRM-UX-005` (interactive hover/focus capsule behavior)
+3. `PRM-QUALITY-003` (ESLint diagnostics and remediation)
+4. `PRM-OPS-001` (OPUS4.6 work packet builder)
+
+### Cleanup Action
+
+- Completed:
+  - removed completed batch artifacts from `outputs/`
+  - kept directory with `.gitkeep` for next worker cycle
+
+### Next Iteration Objective
+
+Use `PRM-OPS-001` to issue focused worker packets for:
+- visual capsule density uplift
+- hover/focus interaction polish
+- lint reliability hardening

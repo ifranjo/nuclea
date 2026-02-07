@@ -16,6 +16,7 @@ Scope: product design, UX quality, implementation planning, QA gates, growth mes
   - `04_growth/`
   - `05_stakeholder/`
   - `06_trust/`
+  - `07_ops/`
 - `domains/_retired/`: Retired prompts kept for audit traceability.
 - `registry/PROMPT_STATUS.md`: Active/tuning/retired status board.
 - `registry/OPUS46_REVIEW_LOG.md`: Iteration-by-iteration result log.
@@ -33,6 +34,10 @@ Scope: product design, UX quality, implementation planning, QA gates, growth mes
 8. `domains/04_growth/Growth_Storytelling.md`
 9. `domains/05_stakeholder/Investor_Stakeholder_Update.md`
 10. `domains/06_trust/Legal_Trust_Messaging.md`
+11. `domains/02_experience/Capsule_Presence_Placement_System.md`
+12. `domains/02_experience/Interactive_Capsule_Hover_Design.md`
+13. `domains/03_quality/ESLint_Diagnostics_and_Remediation.md`
+14. `domains/07_ops/OPUS46_Work_Packet_Builder.md`
 
 ## Operating Model
 

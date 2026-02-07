@@ -11,3 +11,6 @@
 - Tuned `PRM-UX-002` to `v1.1.0` with strict tokenized output contract.
 - Tuned `PRM-QUALITY-001` to `v1.1.0` with explicit ESLint diagnostics and failure matrix.
 - Added review log entry `REV-2026-02-07-002`.
+- Added new prompts: `PRM-UX-004`, `PRM-UX-005`, `PRM-QUALITY-003`, `PRM-OPS-001`.
+- Added review log entry `REV-2026-02-07-003`.
+- Cleared completed worker outputs and reset `outputs/` with `.gitkeep`.

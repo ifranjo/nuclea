@@ -15,6 +15,10 @@
 | PRM-UX-003 | domains/02_experience/Onboarding_Copy_Engine.md | experience | active | 2026-02-07 | Monitor next worker run |
 | PRM-QUALITY-001 | domains/03_quality/QA_Regression_Gate.md | quality | needs-tuning | 2026-02-07 | Run focused validation on v1.1.0 ESLint diagnostics |
 | PRM-QUALITY-002 | domains/03_quality/PromptOps_Prompt_Reviewer.md | quality | active | 2026-02-07 | Use as default tuning engine |
+| PRM-QUALITY-003 | domains/03_quality/ESLint_Diagnostics_and_Remediation.md | quality | active | 2026-02-07 | Use when lint/config failures reappear |
 | PRM-GROWTH-001 | domains/04_growth/Growth_Storytelling.md | growth | active | 2026-02-07 | Monitor next worker run |
 | PRM-STAKEHOLDER-001 | domains/05_stakeholder/Investor_Stakeholder_Update.md | stakeholder | active | 2026-02-07 | Monitor next worker run |
 | PRM-TRUST-001 | domains/06_trust/Legal_Trust_Messaging.md | trust | active | 2026-02-07 | Monitor next worker run |
+| PRM-UX-004 | domains/02_experience/Capsule_Presence_Placement_System.md | experience | active | 2026-02-07 | Use for capsule-density iterations |
+| PRM-UX-005 | domains/02_experience/Interactive_Capsule_Hover_Design.md | experience | active | 2026-02-07 | Use for hover/focus refinement |
+| PRM-OPS-001 | domains/07_ops/OPUS46_Work_Packet_Builder.md | ops | active | 2026-02-07 | Default packet generator for worker runs |
