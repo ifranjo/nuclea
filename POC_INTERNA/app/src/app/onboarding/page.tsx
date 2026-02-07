@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { P1CapsuleClosed } from '@/components/onboarding/P1CapsuleClosed'
 import { P2CapsuleOpening } from '@/components/onboarding/P2CapsuleOpening'
@@ -18,6 +19,14 @@ const fadeTransition = { duration: 0.3 }
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<OnboardingStep>(1)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const requested = Number(params.get('step'))
+    if (Number.isInteger(requested) && requested >= 1 && requested <= 4) {
+      setStep(requested as OnboardingStep)
+    }
+  }, [])
 
   const next = useCallback(() => {
     setStep((prev) => (prev < 4 ? ((prev + 1) as OnboardingStep) : prev))

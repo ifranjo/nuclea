@@ -12,6 +12,38 @@ const RESULTS_DIR = path.join(APP_ROOT, 'test-results')
 const AUTOCHECK_PORT = Number(process.env.AUTOCHECK_PORT || 3101)
 const NPM_BIN = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 const NPX_BIN = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+const CAPSULE_ROUTES = [
+  {
+    name: 'Legacy Capsule',
+    slug: 'legacy',
+    summaryToken: 'diario personal',
+  },
+  {
+    name: 'Life Chapter Capsule',
+    slug: 'life-chapter',
+    summaryToken: 'etapas concretas',
+  },
+  {
+    name: 'Together Capsule',
+    slug: 'together',
+    summaryToken: 'historia de una relacion',
+  },
+  {
+    name: 'Social Capsule',
+    slug: 'social',
+    summaryToken: 'compartir momentos',
+  },
+  {
+    name: 'Pet Capsule',
+    slug: 'pet',
+    summaryToken: 'recuerdos de mascotas',
+  },
+  {
+    name: 'Origin Capsule',
+    slug: 'origin',
+    summaryToken: 'historia de sus hijos',
+  },
+]
 
 function runCommand(command, args, options = {}) {
   return new Promise((resolve, reject) => {
@@ -154,6 +186,49 @@ async function runOnboardingChecks(baseUrl) {
   await mkdir(artifactsDir, { recursive: true })
 
   const checks = []
+  const browserErrors = []
+  const ensureOnP4 = async () => {
+    for (let guard = 0; guard < 8; guard += 1) {
+      if ((await page.locator('text=Elige tu cápsula').count()) > 0) {
+        await injectDvhFix()
+        return
+      }
+
+      if ((await page.getByLabel('Toca para abrir la cápsula').count()) > 0) {
+        await page.getByLabel('Toca para abrir la cápsula').click()
+        continue
+      }
+
+      if ((await page.locator('text=Animación de apertura').count()) > 0) {
+        await page.waitForTimeout(4200)
+        continue
+      }
+
+      if ((await page.locator('button:has-text("Continuar")').count()) > 0) {
+        await page.click('button:has-text("Continuar")')
+        continue
+      }
+
+      await page.waitForTimeout(500)
+    }
+
+    await page.goto(`${baseUrl}/onboarding?step=4`, { waitUntil: 'networkidle' })
+    await injectDvhFix()
+    if ((await page.locator('text=Elige tu cápsula').count()) > 0) {
+      return
+    }
+
+    throw new Error('Could not reach P4 state during autocheck')
+  }
+
+  page.on('pageerror', (err) => {
+    browserErrors.push(`pageerror: ${err.message}`)
+  })
+  page.on('console', (msg) => {
+    if (msg.type() === 'error') {
+      browserErrors.push(`console.error: ${msg.text()}`)
+    }
+  })
 
   await page.goto(`${baseUrl}/onboarding`, { waitUntil: 'networkidle' })
   await injectDvhFix()
@@ -193,13 +268,40 @@ async function runOnboardingChecks(baseUrl) {
   })
   await page.screenshot({ path: path.join(artifactsDir, 'P4.png') })
 
-  await page.click('text=Legacy Capsule')
-  await page.waitForURL('**/onboarding/capsule/legacy')
+  for (const capsule of CAPSULE_ROUTES) {
+    await ensureOnP4()
+    await page.locator('button:has(h3)', { hasText: capsule.name }).first().click()
+    await page.waitForURL(`**/onboarding/capsule/${capsule.slug}`)
+
+    const headingVisible = (await page.locator(`h1:has-text("${capsule.name}")`).count()) > 0
+    const summaryHasToken = await page
+      .locator('main')
+      .innerText()
+      .then((txt) => txt.toLowerCase().includes(capsule.summaryToken))
+
+    checks.push({
+      check: `Capsule detail route works: ${capsule.slug}`,
+      pass: page.url().includes(`/onboarding/capsule/${capsule.slug}`),
+    })
+    checks.push({
+      check: `Capsule detail heading visible: ${capsule.slug}`,
+      pass: headingVisible,
+    })
+    checks.push({
+      check: `Capsule detail summary aligned: ${capsule.slug}`,
+      pass: summaryHasToken,
+    })
+
+    await page.screenshot({ path: path.join(artifactsDir, `${capsule.slug}.png`) })
+    await page.click('text=Volver')
+    await page.waitForURL('**/onboarding', { waitUntil: 'networkidle' })
+  }
+
   checks.push({
-    check: 'P4 selection navigates to detail route',
-    pass: page.url().includes('/onboarding/capsule/legacy'),
+    check: 'Browser console/page errors',
+    pass: browserErrors.length === 0,
+    details: browserErrors,
   })
-  await page.screenshot({ path: path.join(artifactsDir, 'LegacyDetail.png') })
 
   await browser.close()
   return checks

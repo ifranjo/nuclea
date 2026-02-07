@@ -54,6 +54,12 @@ def main() -> int:
             "Pet Capsule",
             "Life Chapter Capsule",
             "Origin Capsule",
+            "Legacy Capsule funciona como un diario personal",
+            "cápsula creada para guardar la historia de una relación",
+            "espacio para compartir momentos con amigos o familia",
+            "pensada para guardar recuerdos de mascotas como parte de la familia",
+            "creada por padres para guardar la historia de sus hijos desde el nacimiento",
+            "pensada para guardar etapas concretas de la vida",
         ],
     }
 
@@ -100,10 +106,9 @@ def main() -> int:
     print(f"PDF alignment coverage: {report['coverage_percent']}% ({matched}/{total})")
     print(f"Report: {out_file}")
 
-    # Hard fail if alignment drops below 85%
-    return 0 if coverage >= 85.0 else 1
+    # Hard fail if alignment drops below 90%
+    return 0 if coverage >= 90.0 else 1
 
 
 if __name__ == "__main__":
     sys.exit(main())
-

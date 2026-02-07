@@ -8,7 +8,8 @@
     "start": "next start -p 3001",
     "lint": "next lint",
     "autocheck": "node scripts/full-autocheck.mjs",
-    "autocheck:pdf": "python scripts/autocheck_pdf_alignment.py"
+    "autocheck:pdf": "python scripts/autocheck_pdf_alignment.py",
+    "heal:session": "node scripts/healing-session.mjs"
   },
   "dependencies": {
     "framer-motion": "^11.15.0",

@@ -33,6 +33,7 @@ Open `http://localhost:3001`.
 | Lint | `npm run lint` | Run Next.js lint checks |
 | PDF alignment only | `npm run autocheck:pdf` | Validate key copy against source PDFs |
 | Full autocheck | `npm run autocheck` | Lint + build + runtime flow check + PDF alignment |
+| Healing session | `npm run heal:session` | Multi-iteration self-healing loop around `autocheck` |
 
 ## Current route map
 
