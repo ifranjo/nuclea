@@ -29,7 +29,7 @@ export function CapsuleTypeCard({ capsuleType, onClick, isFirst, isLast }: Capsu
         <CapsuleIcon type={capsuleType.id} size={20} />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="text-[17px] font-normal text-nuclea-text leading-snug">
+        <h3 className="text-[17px] font-medium text-nuclea-text leading-snug">
           {capsuleType.name}
         </h3>
         <p className="text-[13px] text-nuclea-text-secondary mt-0.5 leading-snug">

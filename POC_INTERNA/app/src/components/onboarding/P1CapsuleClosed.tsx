@@ -49,7 +49,7 @@ export function P1CapsuleClosed({ onNext }: P1Props) {
           className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[70%] h-[18px] rounded-[50%] bg-black/[0.08] blur-md pointer-events-none"
         />
 
-        <div className="relative w-[260px] h-[130px] sm:w-[300px] sm:h-[150px]">
+        <div className="relative w-[240px] h-[120px] sm:w-[320px] sm:h-[160px]">
           <Image
             src="/images/capsule-closed-nobg.png"
             alt="Cápsula NUCLEA cerrada"

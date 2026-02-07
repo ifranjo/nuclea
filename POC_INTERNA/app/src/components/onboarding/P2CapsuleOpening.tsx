@@ -28,8 +28,8 @@ const polaroids = [
 /*  Capsule image dimensions — matching P1's container sizes.         */
 /*  The capsule seam is roughly at 45% from the left edge.            */
 /* ------------------------------------------------------------------ */
-const CAPSULE_W = 260
-const CAPSULE_H = 130
+const CAPSULE_W = 240
+const CAPSULE_H = 120
 
 /* Clip-path split point — the seam on the capsule PNG */
 const SEAM_PCT = 46
@@ -83,8 +83,8 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
           initial={{ x: 0, opacity: 1 }}
           animate={{ x: -60, opacity: 0 }}
           transition={{
-            x: { delay: 0.1, duration: 0.9, ease: [0.22, 1, 0.36, 1] },
-            opacity: { delay: 0.6, duration: 0.5, ease: 'easeOut' },
+            x: { delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+            opacity: { delay: 0.5, duration: 0.4, ease: 'easeOut' },
           }}
           className="absolute inset-0"
         >
@@ -98,8 +98,8 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
           initial={{ x: 0, opacity: 1 }}
           animate={{ x: 60, opacity: 0 }}
           transition={{
-            x: { delay: 0.1, duration: 0.9, ease: [0.22, 1, 0.36, 1] },
-            opacity: { delay: 0.6, duration: 0.5, ease: 'easeOut' },
+            x: { delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+            opacity: { delay: 0.5, duration: 0.4, ease: 'easeOut' },
           }}
           className="absolute inset-0"
         >
@@ -152,7 +152,7 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
           }}
           transition={{
             delay: p.delay,
-            duration: 1.6,
+            duration: 1.2,
             ease: [0.22, 1, 0.36, 1],
             opacity: {
               delay: p.delay,
