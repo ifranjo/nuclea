@@ -18,3 +18,6 @@
 - Promoted `PRM-UX-002` and `PRM-QUALITY-001` to active after focused evidence-based run.
 - Added new prompts: `PRM-PRODUCT-003`, `PRM-QUALITY-004`, `PRM-OPS-002`.
 - Cleared latest completed outputs and kept `outputs/.gitkeep`.
+- Added review log entry `REV-2026-02-07-005` for remediation output ingestion.
+- Tuned `PRM-OPS-002` to `v1.1.0` with stricter execution-evidence contract and command verification matrix.
+- Cleared processed outputs from `outputs/` and retained `.gitkeep`.

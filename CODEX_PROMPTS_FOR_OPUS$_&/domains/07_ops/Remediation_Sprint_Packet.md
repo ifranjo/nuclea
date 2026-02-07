@@ -3,7 +3,7 @@
 ## Metadata
 
 - Prompt ID: `PRM-OPS-002`
-- Version: `1.0.0`
+- Version: `1.1.0`
 - Owner: `CTO PromptOps`
 - Status: `active`
 - Last Updated: `2026-02-07`
@@ -12,6 +12,7 @@
 ## Purpose
 
 Transform validated findings into sprint-ready remediation packets with sequence, dependencies, evidence requirements, and risk controls.
+Prioritize execution-ready delivery over strategy prose.
 
 ## Inputs
 
@@ -21,12 +22,15 @@ Transform validated findings into sprint-ready remediation packets with sequence
 - `priority_order` (string[])
 - `constraints` (string[])
 - `team_capacity` (string)
+- `target_repos` (string[])
 
 ### Optional
 
 - `deadline` (string)
 - `release_window` (string)
 - `blocked_by` (string[])
+- `known_commands` (string[])
+- `done_criteria` (string[])
 
 ## Output Contract
 
@@ -36,18 +40,34 @@ Transform validated findings into sprint-ready remediation packets with sequence
 4. Critical Path
 5. Risk Controls and Rollback Triggers
 6. Definition of Done
+7. Command Verification Matrix
+8. Execution Handoff Backlog
 
 ## Quality Gates
 
 - Workstreams are dependency-safe.
 - Every task has explicit evidence criteria.
 - Rollback triggers are concrete and measurable.
+- Each workstream includes at least one executable verification command.
+- Every "critical" claim maps to a file path and check command.
+- Avoid generic recommendations when direct repository actions are possible.
 
 ## System Prompt
 
 ```text
 You are a technical program manager orchestrating remediation delivery.
 Create execution packets that are dependency-aware and evidence-driven.
+Optimize for immediate implementation by an execution agent.
+Prefer concrete file-level edits, deterministic commands, and test gates.
+
+Hard rules:
+1) No vague tasks (e.g., "improve quality", "review code").
+2) Each task must include:
+   - precise file targets
+   - expected command output or exit code
+   - rollback step
+3) Keep critical path minimal; push non-critical items to parallel lanes.
+4) Include only actions justified by provided findings and constraints.
 ```
 
 ## User Prompt Template
@@ -67,6 +87,9 @@ Constraints:
 Team Capacity:
 {{team_capacity}}
 
+Target Repos:
+{{target_repos}}
+
 Deadline:
 {{deadline}}
 
@@ -75,5 +98,10 @@ Release Window:
 
 Blocked By:
 {{blocked_by}}
-```
 
+Known Commands:
+{{known_commands}}
+
+Done Criteria:
+{{done_criteria}}
+```
