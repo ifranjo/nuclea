@@ -12,16 +12,25 @@ interface P2Props {
 /* ------------------------------------------------------------------ */
 /*  Polaroid destinations — where each polaroid drifts to after       */
 /*  emerging from the center split. Positions are in viewport %.      */
+/*  Each now carries a real photo src.                                 */
 /* ------------------------------------------------------------------ */
 const polaroids = [
-  { size: 80,  rotation: -12, x: '-38vw', y: '-32vh', delay: 0.7 },
-  { size: 100, rotation: 8,   x: '34vw',  y: '-28vh', delay: 0.85 },
-  { size: 90,  rotation: -5,  x: '-30vw', y: '28vh',  delay: 1.0 },
-  { size: 110, rotation: 15,  x: '32vw',  y: '24vh',  delay: 1.15 },
-  { size: 85,  rotation: -8,  x: '-42vw', y: '-2vh',  delay: 1.3 },
-  { size: 95,  rotation: 3,   x: '38vw',  y: '4vh',   delay: 1.45 },
-  { size: 75,  rotation: 10,  x: '-18vw', y: '-38vh', delay: 1.6 },
-  { size: 88,  rotation: -14, x: '20vw',  y: '34vh',  delay: 1.75 },
+  { size: 80,  rotation: -12, x: '-38vw', y: '-32vh', delay: 0.7,  src: '/images/polaroids/dinner.jpg',    alt: 'Cena al aire libre' },
+  { size: 100, rotation: 8,   x: '34vw',  y: '-28vh', delay: 0.85, src: '/images/polaroids/terrace.jpg',   alt: 'Terraza en Lanzarote' },
+  { size: 90,  rotation: -5,  x: '-30vw', y: '28vh',  delay: 1.0,  src: '/images/polaroids/beach.jpg',     alt: 'Playa y montañas' },
+  { size: 110, rotation: 15,  x: '32vw',  y: '24vh',  delay: 1.15, src: '/images/polaroids/group.jpg',     alt: 'Amigos en la entrada' },
+  { size: 85,  rotation: -8,  x: '-42vw', y: '-2vh',  delay: 1.3,  src: '/images/polaroids/friends.jpg',   alt: 'Amigos en la calle' },
+  { size: 95,  rotation: 3,   x: '38vw',  y: '4vh',   delay: 1.45, src: '/images/polaroids/cathedral.jpg', alt: 'Catedral' },
+  { size: 75,  rotation: 10,  x: '-18vw', y: '-38vh', delay: 1.6,  src: '/images/polaroids/adventure.jpg', alt: 'Aventura en la roca' },
+  { size: 88,  rotation: -14, x: '20vw',  y: '34vh',  delay: 1.75, src: '/images/polaroids/terrace2.jpg',  alt: 'Terraza con vistas' },
+]
+
+const floatingCapsules = [
+  { w: 86, h: 42, x: '-44vw', y: '-18vh', rotation: -20, delay: 0.95 },
+  { w: 74, h: 36, x: '42vw', y: '-12vh', rotation: 18, delay: 1.05 },
+  { w: 92, h: 46, x: '-34vw', y: '20vh', rotation: 16, delay: 1.18 },
+  { w: 80, h: 38, x: '40vw', y: '18vh', rotation: -14, delay: 1.28 },
+  { w: 68, h: 34, x: '-12vw', y: '34vh', rotation: -8, delay: 1.45 },
 ]
 
 /* ------------------------------------------------------------------ */
@@ -132,6 +141,7 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
       {/*  Polaroids — emerge from center, drift to scattered spots    */}
       {/*  Each starts at scale 0 in the center, then floats outward   */}
       {/*  with a gentle wobble and staggered timing.                  */}
+      {/*  Now with REAL photos and hover interactivity.               */}
       {/* ============================================================ */}
       {polaroids.map((p, i) => (
         <motion.div
@@ -176,8 +186,51 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
               ease: 'easeInOut',
             }}
           >
-            <PolaroidPlaceholder size={p.size} rotation={0} />
+            <PolaroidPlaceholder
+              size={p.size}
+              rotation={0}
+              src={p.src}
+              alt={p.alt}
+              interactive
+            />
           </motion.div>
+        </motion.div>
+      ))}
+
+      {floatingCapsules.map((pill, i) => (
+        <motion.div
+          key={`pill-${i}`}
+          initial={{ x: 0, y: 0, opacity: 0, scale: 0.45, rotate: 0 }}
+          animate={{
+            x: pill.x,
+            y: pill.y,
+            opacity: [0, 0.95, 0.8],
+            scale: [0.45, 1, 1],
+            rotate: pill.rotation,
+          }}
+          transition={{
+            delay: pill.delay,
+            duration: 1.05,
+            ease: [0.22, 1, 0.36, 1],
+            opacity: { delay: pill.delay, duration: 0.75 },
+          }}
+          className="absolute z-[22] pointer-events-none"
+          style={{ top: '50%', left: '50%', marginLeft: -(pill.w / 2), marginTop: -(pill.h / 2) }}
+        >
+          <div
+            className="relative rounded-full border border-[rgba(255,255,255,0.72)] overflow-hidden shadow-[0_10px_24px_rgba(10,10,16,0.22)]"
+            style={{
+              width: pill.w,
+              height: pill.h,
+              background: 'linear-gradient(132deg, #f4f5f8 0%, #d9dce4 48%, #b9bfcc 100%)',
+            }}
+          >
+            <div className="absolute inset-[1px] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.58),rgba(255,255,255,0.08))]" />
+            <div
+              className="absolute inset-y-[22%] left-[56%] w-[28%] rounded-full bg-[rgba(125,132,146,0.34)]"
+              style={{ filter: 'blur(0.4px)' }}
+            />
+          </div>
         </motion.div>
       ))}
 
