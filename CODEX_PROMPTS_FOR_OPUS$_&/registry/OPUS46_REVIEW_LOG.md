@@ -241,3 +241,43 @@ Run implementation-focused worker batch for:
 - `PRM-QUALITY-003` to close lint config gap in POC app
 
 Success condition: no lint-skip warning and full input-parity across hover-interactive surfaces.
+
+## REV-2026-02-07-008
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Prompt library expansion requested by user ("mas prompts")`
+- Trigger: `Need additional execution prompts aligned to current remediation gaps`
+
+### Outcome
+
+- Prompt coverage uplift: pass
+- Added:
+  1. `PRM-QUALITY-006` (`domains/03_quality/POC_ESLint_Baseline_Restore.md`)
+  2. `PRM-UX-006` (`domains/02_experience/Input_Parity_Hover_Focus_Touch.md`)
+  3. `PRM-UX-007` (`domains/02_experience/Capsule_Placement_Tokenization.md`)
+  4. `PRM-PRODUCT-004` (`domains/01_product/Cross_App_Component_Parity_Contract.md`)
+
+### Rationale
+
+`REV-2026-02-07-007` surfaced three operational gaps:
+1. Lint gate warning in POC due missing ESLint baseline.
+2. Input-parity gap in interaction surfaces (pointer-first behavior).
+3. Fragmented placement constants and mixed unit strategy.
+
+New prompts were added to convert each gap into deterministic worker instructions.
+
+### Prompt Actions
+
+- Registry updated with 4 new prompt IDs and next-action guidance.
+- Prompt inventory updated in `README.md`.
+- Changelog updated with expansion entry.
+
+### Next Iteration Objective
+
+Run focused worker batch:
+- `PRM-QUALITY-006`
+- `PRM-UX-006`
+- `PRM-UX-007`
+- `PRM-PRODUCT-004`
+
+Success condition: outputs include command-level lint restoration plan, input-parity implementation checklist, and placement token migration plan.

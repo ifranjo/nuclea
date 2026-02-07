@@ -26,3 +26,5 @@
 - Added review log entry `REV-2026-02-07-007` for focused Playwright/PDF + UX interaction batch ingestion.
 - Tuned `PRM-QUALITY-005` to `v1.1.0` with opacity-safe hidden-state checks and explicit lint gate classification.
 - Cleared processed outputs from `outputs/` and retained `.gitkeep`.
+- Added new prompts: `PRM-QUALITY-006`, `PRM-UX-006`, `PRM-UX-007`, `PRM-PRODUCT-004`.
+- Added review log entry `REV-2026-02-07-008` for prompt library expansion and next batch targeting.
