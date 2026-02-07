@@ -36,6 +36,9 @@ Open `http://localhost:3001`.
 | Healing session | `npm run heal:session` | Stops on first successful `autocheck`; cleans cache/screens between failed attempts |
 | Stability run (3x) | `npm run heal:stability` | Runs exactly 3 full `autocheck` iterations and fails if any iteration fails |
 
+`autocheck` uses `next start` (production runtime) by default for deterministic results.  
+Optional override: `AUTOCHECK_RUNTIME=dev npm run autocheck`.
+
 ## Current route map
 
 | Route | Behavior |

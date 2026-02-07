@@ -10,6 +10,7 @@ import process from 'node:process'
 const APP_ROOT = path.resolve(import.meta.dirname, '..')
 const RESULTS_DIR = path.join(APP_ROOT, 'test-results')
 const AUTOCHECK_PORT = Number(process.env.AUTOCHECK_PORT || 3101)
+const AUTOCHECK_RUNTIME = (process.env.AUTOCHECK_RUNTIME || 'start').toLowerCase()
 const NPM_BIN = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 const NPX_BIN = process.platform === 'win32' ? 'npx.cmd' : 'npx'
 const CAPSULE_ROUTES = [
@@ -396,6 +397,7 @@ async function main() {
     onboarding: [],
     pdfAlignment: { pass: false },
     runtimePort: null,
+    runtimeMode: AUTOCHECK_RUNTIME === 'dev' ? 'dev' : 'start',
   }
 
   if (await hasEslintConfig()) {
@@ -419,7 +421,11 @@ async function main() {
   report.runtimePort = runtimePort
 
   try {
-    devProc = spawn(`${NPX_BIN} next dev -p ${runtimePort}`, {
+    const runtimeCmd =
+      report.runtimeMode === 'dev'
+        ? `${NPX_BIN} next dev -p ${runtimePort}`
+        : `${NPX_BIN} next start -p ${runtimePort}`
+    devProc = spawn(runtimeCmd, {
       cwd: APP_ROOT,
       shell: true,
       stdio: 'pipe',
