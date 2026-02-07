@@ -41,6 +41,7 @@ Scope: product design, UX quality, implementation planning, QA gates, growth mes
 15. `domains/01_product/Type_System_Contract_Alignment.md`
 16. `domains/03_quality/Firebase_Secret_and_Runtime_Gate.md`
 17. `domains/07_ops/Remediation_Sprint_Packet.md`
+18. `domains/03_quality/Playwright_PDF_Alignment_Gate.md`
 
 ## Operating Model
 

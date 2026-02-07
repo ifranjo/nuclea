@@ -166,3 +166,34 @@ Run focused worker batch with:
 - `PRM-QUALITY-004`
 
 Success condition: execution packet includes deterministic command-level validation for each critical workstream.
+
+## REV-2026-02-07-006
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Gap closure for Playwright + PDF alignment workflow`
+- Trigger: `Need explicit prompt support for autonomous visual/interaction validation against POC PDF references`
+
+### Outcome
+
+- Prompt coverage uplift: pass
+- Added:
+  - `PRM-QUALITY-005` (`domains/03_quality/Playwright_PDF_Alignment_Gate.md`)
+
+### Rationale
+
+Existing quality prompts covered lint, runtime secrets, and QA regression framing, but lacked a dedicated contract for deterministic Playwright execution tied to PDF reference content and interaction states (hover/focus/touch).
+
+### Prompt Actions
+
+1. Added strict evidence contract (commands + screenshot artifacts).
+2. Added per-route/per-viewport gate schema.
+3. Added remediation queue requirement with file-level targets and rerun commands.
+
+### Next Iteration Objective
+
+Run worker batch using:
+- `PRM-QUALITY-005`
+- `PRM-UX-004`
+- `PRM-UX-005`
+
+Success condition: measurable PDF-to-UI alignment report with deterministic fail list and retest commands.

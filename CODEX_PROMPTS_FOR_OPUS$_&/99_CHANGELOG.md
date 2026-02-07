@@ -21,3 +21,5 @@
 - Added review log entry `REV-2026-02-07-005` for remediation output ingestion.
 - Tuned `PRM-OPS-002` to `v1.1.0` with stricter execution-evidence contract and command verification matrix.
 - Cleared processed outputs from `outputs/` and retained `.gitkeep`.
+- Added `PRM-QUALITY-005` for Playwright PDF alignment and interaction gates with evidence-first output contract.
+- Added review log entry `REV-2026-02-07-006`.

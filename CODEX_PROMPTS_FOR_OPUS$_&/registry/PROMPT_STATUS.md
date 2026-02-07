@@ -18,6 +18,7 @@
 | PRM-QUALITY-002 | domains/03_quality/PromptOps_Prompt_Reviewer.md | quality | active | 2026-02-07 | Use as default tuning engine |
 | PRM-QUALITY-003 | domains/03_quality/ESLint_Diagnostics_and_Remediation.md | quality | active | 2026-02-07 | Use when lint/config failures reappear |
 | PRM-QUALITY-004 | domains/03_quality/Firebase_Secret_and_Runtime_Gate.md | quality | active | 2026-02-07 | Use for runtime secret/500-risk validation |
+| PRM-QUALITY-005 | domains/03_quality/Playwright_PDF_Alignment_Gate.md | quality | active | 2026-02-07 | Use for PDF-to-UI visual and interaction gate with Playwright evidence |
 | PRM-GROWTH-001 | domains/04_growth/Growth_Storytelling.md | growth | active | 2026-02-07 | Monitor next worker run |
 | PRM-STAKEHOLDER-001 | domains/05_stakeholder/Investor_Stakeholder_Update.md | stakeholder | active | 2026-02-07 | Monitor next worker run |
 | PRM-TRUST-001 | domains/06_trust/Legal_Trust_Messaging.md | trust | active | 2026-02-07 | Monitor next worker run |
