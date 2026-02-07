@@ -39,6 +39,21 @@ Open `http://localhost:3001`.
 `autocheck` uses `next start` (production runtime) by default for deterministic results.  
 Optional override: `AUTOCHECK_RUNTIME=dev npm run autocheck`.
 
+`heal:session` now stores one autocheck report per iteration under `test-results/healing-history/`  
+and writes failure logs there when an iteration fails.
+
+Custom example:
+
+```bash
+node scripts/healing-session.mjs --mode=stability --iterations=5 --runtime=start
+```
+
+Optional retention cap (default `60` files in `healing-history`):
+
+```bash
+node scripts/healing-session.mjs --mode=stability --iterations=5 --history-limit=120
+```
+
 ## Current route map
 
 | Route | Behavior |
