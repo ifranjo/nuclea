@@ -38,6 +38,9 @@ Scope: product design, UX quality, implementation planning, QA gates, growth mes
 12. `domains/02_experience/Interactive_Capsule_Hover_Design.md`
 13. `domains/03_quality/ESLint_Diagnostics_and_Remediation.md`
 14. `domains/07_ops/OPUS46_Work_Packet_Builder.md`
+15. `domains/01_product/Type_System_Contract_Alignment.md`
+16. `domains/03_quality/Firebase_Secret_and_Runtime_Gate.md`
+17. `domains/07_ops/Remediation_Sprint_Packet.md`
 
 ## Operating Model
 
