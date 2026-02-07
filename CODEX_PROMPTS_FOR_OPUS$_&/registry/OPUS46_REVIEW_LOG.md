@@ -197,3 +197,47 @@ Run worker batch using:
 - `PRM-UX-005`
 
 Success condition: measurable PDF-to-UI alignment report with deterministic fail list and retest commands.
+
+## REV-2026-02-07-007
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Focused execution batch on PRM-QUALITY-005 + PRM-UX-004 + PRM-UX-005`
+- Inputs:
+  - `outputs/PRM-QUALITY-005_Playwright_PDF_Alignment_Gate.md`
+  - `outputs/PRM-UX-004_Capsule_Presence_Placement_System.md`
+  - `outputs/PRM-UX-005_Interactive_Capsule_Hover_Design.md`
+
+### Batch Validation Outcome
+
+- Completeness: pass (`3/3` outputs present)
+- Evidence quality: pass (command evidence + artifact paths included)
+- Core gate results:
+  1. Playwright/PDF alignment pass (`100%`, 16/16 phrases).
+  2. Route and interaction checks pass (hover/focus/touch).
+  3. Lint gate remains `warn` due missing ESLint config in POC app.
+
+### Findings
+
+1. `PRM-QUALITY-005` produced actionable evidence, but initial hidden-state detection can false-fail on `opacity: 0` UIs if using visibility-only checks.
+2. `PRM-UX-004` confirms strong capsule presence with deterministic arrays, but placement governance is fragmented (mixed units and distributed constants).
+3. `PRM-UX-005` confirms interactive behavior in capsule detail view; uncovered input-parity gap in `PolaroidPlaceholder` (pointer-first interaction model).
+
+### Prompt Actions
+
+- Tuned `PRM-QUALITY-005` to `v1.1.0`:
+  - require computed-style checks for hidden/revealed states
+  - require explicit lint gate classification (`pass`/`warn`/`fail`)
+  - add caveats section for known gate limitations
+
+### Cleanup Action
+
+- Removed processed outputs from `outputs/`.
+- Retained `outputs/.gitkeep`.
+
+### Next Iteration Objective
+
+Run implementation-focused worker batch for:
+- `PRM-UX-005` follow-through on input-parity fixes (`focus`, `keyboard`, `touch`) in `PolaroidPlaceholder`
+- `PRM-QUALITY-003` to close lint config gap in POC app
+
+Success condition: no lint-skip warning and full input-parity across hover-interactive surfaces.

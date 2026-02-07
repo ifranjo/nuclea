@@ -3,7 +3,7 @@
 ## Metadata
 
 - Prompt ID: `PRM-QUALITY-005`
-- Version: `1.0.0`
+- Version: `1.1.0`
 - Owner: `CTO PromptOps`
 - Status: `active`
 - Last Updated: `2026-02-07`
@@ -39,6 +39,7 @@ Run deterministic UI validation against POC PDF references using Playwright, and
 5. Pass/Fail Gate by Criterion
 6. Fix Queue (ordered by severity with file targets)
 7. Rerun Commands and Expected Outcomes
+8. Gate Caveats and Known Limitations (if any)
 
 ## Quality Gates
 
@@ -46,6 +47,8 @@ Run deterministic UI validation against POC PDF references using Playwright, and
 - Every failed gate maps to one or more concrete file targets.
 - Screenshots are required for every failed route and state.
 - No generic advice without reproduction steps.
+- Hidden-state checks must not rely only on locator visibility when CSS opacity is used.
+- Lint gate must be explicitly classified as `pass`, `warn`, or `fail` with reason.
 
 ## System Prompt
 
@@ -59,6 +62,8 @@ Hard rules:
 2) For each fail, provide file-level fix targets and retest command.
 3) Evaluate hover and keyboard accessibility states, not only static render.
 4) Keep output operational: fail list first, then remediation queue.
+5) For hidden/revealed UI states, verify computed style values (e.g., opacity) when applicable.
+6) If lint cannot run (missing config/tools), mark gate as `warn` and include remediation target files.
 ```
 
 ## User Prompt Template

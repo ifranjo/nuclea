@@ -23,3 +23,6 @@
 - Cleared processed outputs from `outputs/` and retained `.gitkeep`.
 - Added `PRM-QUALITY-005` for Playwright PDF alignment and interaction gates with evidence-first output contract.
 - Added review log entry `REV-2026-02-07-006`.
+- Added review log entry `REV-2026-02-07-007` for focused Playwright/PDF + UX interaction batch ingestion.
+- Tuned `PRM-QUALITY-005` to `v1.1.0` with opacity-safe hidden-state checks and explicit lint gate classification.
+- Cleared processed outputs from `outputs/` and retained `.gitkeep`.
