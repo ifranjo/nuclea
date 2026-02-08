@@ -32,3 +32,12 @@
 - Added new prompt: `PRM-QUALITY-007` (`Next16_Lint_CLI_Migration`) from production lint failure evidence.
 - Added review log entry `REV-2026-02-08-009`.
 - Cleared processed outputs from `outputs/` and retained `.gitkeep`.
+
+## 2026-02-08
+
+- Tuned `PRM-QUALITY-006` to `v1.1.0` with lint-failure evidence input, patch-ready config/package diffs, and strict gate classification.
+- Tuned `PRM-QUALITY-007` to `v1.1.0` with scripts snapshot input, explicit before/after script patching, and dual local/CI command-proof requirements.
+- Tuned `PRM-UX-006` to `v1.1.0` with route-scoped evidence contract and explicit hidden/revealed interaction-state requirements.
+- Updated `registry/PROMPT_STATUS.md` to reflect v1.1 next actions for `PRM-QUALITY-006`, `PRM-QUALITY-007`, and `PRM-UX-006`.
+- Added review log entry `REV-2026-02-08-010`.
+- Confirmed `outputs/` remains clean with only `.gitkeep`.

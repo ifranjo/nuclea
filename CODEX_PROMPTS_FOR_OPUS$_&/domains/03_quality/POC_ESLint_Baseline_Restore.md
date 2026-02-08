@@ -3,10 +3,10 @@
 ## Metadata
 
 - Prompt ID: `PRM-QUALITY-006`
-- Version: `1.0.0`
+- Version: `1.1.0`
 - Owner: `CTO PromptOps`
 - Status: `active`
-- Last Updated: `2026-02-07`
+- Last Updated: `2026-02-08`
 - Approved By: `CTO`
 
 ## Purpose
@@ -22,27 +22,32 @@ Restore deterministic lint quality gates in `POC_INTERNA/app` using a compatible
 - `tsconfig_path` (string)
 - `package_json_path` (string)
 - `strictness_policy` (string)
+- `current_lint_command_output` (string)
 
 ### Optional
 
 - `autofix_allowed` (boolean)
 - `rule_exceptions` (string[])
 - `ci_target` (string)
+- `target_node_version` (string)
 
 ## Output Contract
 
-1. Dependency Compatibility Audit
-2. ESLint Config Plan (`eslint.config.*`)
-3. Package Changes (exact versions and scripts)
-4. Lint Execution Matrix (commands + exit codes)
-5. Findings and Rule Exception Log
-6. CI Handoff Notes
+1. Root Cause Snapshot (why lint is non-deterministic today)
+2. Dependency Compatibility Audit (`next`, `eslint`, `eslint-config-next`)
+3. Config Patch Plan (`eslint.config.*` exact content or diff)
+4. Package/Scripts Patch Plan (exact JSON diff)
+5. Lint Execution Matrix (pre/post commands + expected exit codes)
+6. Findings and Rule Exception Log (file-level)
+7. CI Handoff Notes + Rollback
 
 ## Quality Gates
 
 - `npm run lint` must execute (not skip) in target app.
 - Version compatibility between `next`, `eslint`, and `eslint-config-next` must be explicit.
 - Every exception must include rationale and file targets.
+- Must classify final state as `pass`, `warn`, or `fail`.
+- Must include one strict gate command (`--max-warnings=0` or equivalent).
 
 ## System Prompt
 
@@ -55,6 +60,8 @@ Hard rules:
 1) No generic advice; produce exact file and package changes.
 2) Every claim must include command evidence.
 3) If lint cannot be fully green, classify result as pass/warn/fail and explain why.
+4) Include patch-ready output for `package.json` and `eslint.config.*`.
+5) Include one rollback path that restores prior lint behavior in one command sequence.
 ```
 
 ## User Prompt Template
@@ -77,6 +84,9 @@ Package JSON Path:
 Strictness Policy:
 {{strictness_policy}}
 
+Current Lint Command Output:
+{{current_lint_command_output}}
+
 Autofix Allowed:
 {{autofix_allowed}}
 
@@ -85,5 +95,7 @@ Rule Exceptions:
 
 CI Target:
 {{ci_target}}
-```
 
+Target Node Version:
+{{target_node_version}}
+```

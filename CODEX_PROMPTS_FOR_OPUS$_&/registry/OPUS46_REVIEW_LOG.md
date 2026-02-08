@@ -322,3 +322,51 @@ Run focused worker batch with:
 - `PRM-PRODUCT-004`
 
 Success condition: lint commands deterministic in both apps and input-parity gap closed on interactive polaroids.
+
+## REV-2026-02-08-010
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Prompt hardening before next remediation execution batch`
+- Trigger: `Continue CTO prompt-ops cycle with stricter command-proof and parity evidence contracts`
+- Inputs:
+  - `domains/03_quality/POC_ESLint_Baseline_Restore.md`
+  - `domains/03_quality/Next16_Lint_CLI_Migration.md`
+  - `domains/02_experience/Input_Parity_Hover_Focus_Touch.md`
+
+### Batch Validation Outcome
+
+- Output ingestion: none (`outputs/` contained only `.gitkeep`)
+- Prompt hardening completeness: pass (`3/3` targeted prompts tuned)
+- Registry alignment: pass (status board updated with v1.1 actions)
+
+### Prompt Actions
+
+1. Tuned `PRM-QUALITY-006` to `v1.1.0`:
+   - added required lint-failure evidence input
+   - added patch-ready config/package diff requirement
+   - added strict gate requirement and final pass/warn/fail classification
+2. Tuned `PRM-QUALITY-007` to `v1.1.0`:
+   - added required scripts snapshot input
+   - added explicit before/after scripts patch output
+   - added dual local/CI command-proof and cache-reset requirement
+3. Tuned `PRM-UX-006` to `v1.1.0`:
+   - added required target routes input
+   - added component patch plan + evidence contract sections
+   - added explicit hidden/revealed behavior requirements (`opacity`, `visibility`, `pointer-events`)
+
+### Cleanup Action
+
+- No cleanup required (already only `outputs/.gitkeep` present).
+
+### Next Iteration Objective
+
+Run focused worker batch with:
+- `PRM-QUALITY-006 v1.1.0`
+- `PRM-QUALITY-007 v1.1.0`
+- `PRM-UX-006 v1.1.0`
+- `PRM-PRODUCT-004`
+
+Success condition:
+- deterministic lint gate evidence in both apps,
+- input-parity closure evidence for interactive polaroids,
+- explicit cross-app capsule naming/type parity remediation backlog.
