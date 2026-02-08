@@ -30,3 +30,4 @@
 | PRM-OPS-001 | domains/07_ops/OPUS46_Work_Packet_Builder.md | ops | active | 2026-02-07 | Default packet generator for worker runs |
 | PRM-OPS-002 | domains/07_ops/Remediation_Sprint_Packet.md | ops | active | 2026-02-07 | v1.1 tuned; validate command-evidence strictness on next worker batch |
 | PRM-QUALITY-006 | domains/03_quality/POC_ESLint_Baseline_Restore.md | quality | active | 2026-02-07 | Use to restore deterministic lint execution in POC app |
+| PRM-QUALITY-007 | domains/03_quality/Next16_Lint_CLI_Migration.md | quality | active | 2026-02-08 | Use when Next16 projects fail with deprecated/broken `next lint` commands |

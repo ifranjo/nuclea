@@ -46,6 +46,7 @@ Scope: product design, UX quality, implementation planning, QA gates, growth mes
 20. `domains/02_experience/Input_Parity_Hover_Focus_Touch.md`
 21. `domains/02_experience/Capsule_Placement_Tokenization.md`
 22. `domains/01_product/Cross_App_Component_Parity_Contract.md`
+23. `domains/03_quality/Next16_Lint_CLI_Migration.md`
 
 ## Operating Model
 

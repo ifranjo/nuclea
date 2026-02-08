@@ -281,3 +281,44 @@ Run focused worker batch:
 - `PRM-PRODUCT-004`
 
 Success condition: outputs include command-level lint restoration plan, input-parity implementation checklist, and placement token migration plan.
+
+## REV-2026-02-08-009
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Execution run for newly added remediation prompts`
+- Inputs:
+  - `outputs/PRM-QUALITY-006_POC_ESLint_Baseline_Restore.md`
+  - `outputs/PRM-UX-006_Input_Parity_Hover_Focus_Touch.md`
+  - `outputs/PRM-UX-007_Capsule_Placement_Tokenization.md`
+  - `outputs/PRM-PRODUCT-004_Cross_App_Component_Parity_Contract.md`
+
+### Batch Validation Outcome
+
+- Completeness: pass (`4/4` outputs present)
+- Evidence quality: pass (command evidence and file targets included)
+- Consolidated findings:
+  1. POC lint is non-deterministic due missing config + version mismatch.
+  2. `PolaroidPlaceholder` remains pointer-first (no input parity).
+  3. Placement constants are distributed and mixed-unit across P2/P3/P4.
+  4. Cross-app capsule type contract still diverges (`everlife` vs `legacy` + missing `together` in production).
+
+### Prompt Actions
+
+- Added `PRM-QUALITY-007` (`Next16_Lint_CLI_Migration`) from observed production lint failure:
+  - command evidence: `npm run lint` in production resolves to invalid `next lint` behavior on Next 16.
+  - objective: deterministic ESLint CLI migration for Next16 apps.
+
+### Cleanup Action
+
+- Removed processed outputs from `outputs/`.
+- Retained `outputs/.gitkeep`.
+
+### Next Iteration Objective
+
+Run focused worker batch with:
+- `PRM-QUALITY-006`
+- `PRM-QUALITY-007`
+- `PRM-UX-006`
+- `PRM-PRODUCT-004`
+
+Success condition: lint commands deterministic in both apps and input-parity gap closed on interactive polaroids.
