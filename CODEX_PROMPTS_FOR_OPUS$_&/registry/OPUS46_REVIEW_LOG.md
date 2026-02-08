@@ -370,3 +370,53 @@ Success condition:
 - deterministic lint gate evidence in both apps,
 - input-parity closure evidence for interactive polaroids,
 - explicit cross-app capsule naming/type parity remediation backlog.
+
+## REV-2026-02-08-011
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Prompt library expansion for uncovered quality and compliance domains`
+- Trigger: `All prompts active, no outputs pending; gap analysis identified 3 uncovered areas`
+
+### Outcome
+
+- Output ingestion: none (`outputs/` contained only `.gitkeep`)
+- Gap analysis completeness: pass (3 new domains identified)
+- Prompt creation: pass (`3/3` new prompts authored and registered)
+
+### Gap Analysis
+
+1. **Performance/Web Vitals**: No prompt existed for bundle size, Lighthouse, or Core Web Vitals auditing. Critical for POC demo quality.
+2. **Responsive Viewport Audit**: No systematic multi-breakpoint testing prompt. Existing PRM-UX-006 covers input parity but not layout/sizing compliance across viewports.
+3. **GDPR/LOPD Privacy Compliance**: PRM-TRUST-001 covers legal messaging copy but not actual data handling compliance. Digital legacy platform handles post-mortem data, AI avatars, and sensitive personal content requiring explicit privacy audit.
+
+### Prompt Actions
+
+1. Added `PRM-QUALITY-008` (`domains/03_quality/Performance_Budget_Gate.md`):
+   - bundle analysis, Lighthouse matrix, CWV per viewport
+   - explicit Framer Motion bundle cost measurement
+   - gate decision with pass/warn/fail classification
+2. Added `PRM-UX-008` (`domains/02_experience/Responsive_Viewport_Audit.md`):
+   - route x viewport matrix with deterministic Playwright commands
+   - touch target compliance (44x44px minimum)
+   - capsule sizing compliance against DESIGN_SYSTEM.md spec
+3. Added `PRM-TRUST-002` (`domains/06_trust/Privacy_Data_Handling_Compliance.md`):
+   - GDPR article-by-article checklist tailored to digital legacy
+   - LOPD/LOPDGDD Spain-specific requirements
+   - post-mortem data rights and AI avatar data handling analysis
+   - capsule closure model (download-then-delete) compliance evaluation
+
+### Cleanup Action
+
+- No cleanup required (`outputs/` remains clean with `.gitkeep` only).
+
+### Next Iteration Objective
+
+Run focused worker batch with:
+- `PRM-QUALITY-008`
+- `PRM-UX-008`
+- `PRM-TRUST-002`
+
+Success condition:
+- performance budget baseline established for both apps,
+- responsive compliance matrix for all POC onboarding routes,
+- privacy remediation backlog with file-level targets and legal risk classification.

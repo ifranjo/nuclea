@@ -41,3 +41,10 @@
 - Updated `registry/PROMPT_STATUS.md` to reflect v1.1 next actions for `PRM-QUALITY-006`, `PRM-QUALITY-007`, and `PRM-UX-006`.
 - Added review log entry `REV-2026-02-08-010`.
 - Confirmed `outputs/` remains clean with only `.gitkeep`.
+
+- Added `PRM-QUALITY-008` (`Performance_Budget_Gate`) for bundle/Lighthouse/CWV auditing with gate classification.
+- Added `PRM-UX-008` (`Responsive_Viewport_Audit`) for systematic multi-breakpoint layout and touch-target compliance.
+- Added `PRM-TRUST-002` (`Privacy_Data_Handling_Compliance`) for GDPR/LOPD audit of capsule data flows and AI avatar handling.
+- Updated `registry/PROMPT_STATUS.md` with 3 new prompt entries.
+- Added review log entry `REV-2026-02-08-011`.
+- Confirmed `outputs/` remains clean with only `.gitkeep`.

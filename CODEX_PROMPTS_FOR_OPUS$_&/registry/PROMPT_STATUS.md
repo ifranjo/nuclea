@@ -31,3 +31,6 @@
 | PRM-OPS-002 | domains/07_ops/Remediation_Sprint_Packet.md | ops | active | 2026-02-07 | v1.1 tuned; validate command-evidence strictness on next worker batch |
 | PRM-QUALITY-006 | domains/03_quality/POC_ESLint_Baseline_Restore.md | quality | active | 2026-02-08 | v1.1 tuned; enforce patch-ready config diff and strict lint gate evidence |
 | PRM-QUALITY-007 | domains/03_quality/Next16_Lint_CLI_Migration.md | quality | active | 2026-02-08 | v1.1 tuned; enforce script-before/after patch and dual local/CI validation evidence |
+| PRM-QUALITY-008 | domains/03_quality/Performance_Budget_Gate.md | quality | active | 2026-02-08 | Use for bundle/Lighthouse/CWV audits before demo milestones |
+| PRM-UX-008 | domains/02_experience/Responsive_Viewport_Audit.md | experience | active | 2026-02-08 | Use for systematic multi-breakpoint layout and sizing compliance |
+| PRM-TRUST-002 | domains/06_trust/Privacy_Data_Handling_Compliance.md | trust | active | 2026-02-08 | Use for GDPR/LOPD compliance audit of capsule data flows and AI avatar handling |
