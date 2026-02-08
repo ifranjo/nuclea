@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Prompt ID: 
-- Version: 
-- Owner: 
-- Status: 
-- Last Updated: 
-- Approved By: 
+- Prompt ID: `PRM-QUALITY-008`
+- Version: `1.0.1`
+- Owner: `CTO PromptOps`
+- Status: `active`
+- Last Updated: `2026-02-08`
+- Approved By: `CTO`
 
 ## Purpose
 
@@ -17,18 +17,18 @@ Evaluate bundle size, Lighthouse scores, and Core Web Vitals for NUCLEA apps aga
 
 ### Required
 
--  (string)
--  (string[])
--  (string[])
--  (object): LCP, FID, CLS, bundle size limits
--  (string)
+- `target_app_path` (string)
+- `target_routes` (string[])
+- `viewport_profiles` (string[])
+- `budget_thresholds` (object): LCP, INP/FID, CLS, bundle size limits
+- `build_output_path` (string)
 
 ### Optional
 
--  (object): previous Lighthouse scores for regression comparison
--  (string)
--  (string)
--  (string)
+- `baseline_scores` (object): previous Lighthouse scores for regression comparison
+- `ci_target` (string)
+- `image_optimization_policy` (string)
+- `font_loading_strategy` (string)
 
 ## Output Contract
 
@@ -38,7 +38,7 @@ Evaluate bundle size, Lighthouse scores, and Core Web Vitals for NUCLEA apps aga
 4. Budget Compliance Table (metric vs threshold, pass/warn/fail per item)
 5. Remediation Backlog (ordered by impact, file-level targets)
 6. Verification Commands (exact CLI commands to reproduce measurements)
-7. Gate Decision (, ,  with rationale)
+7. Gate Decision (`pass`, `warn`, `fail` with rationale)
 
 ## Quality Gates
 

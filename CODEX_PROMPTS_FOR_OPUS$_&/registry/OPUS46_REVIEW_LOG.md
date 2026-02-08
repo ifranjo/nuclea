@@ -420,3 +420,103 @@ Success condition:
 - performance budget baseline established for both apps,
 - responsive compliance matrix for all POC onboarding routes,
 - privacy remediation backlog with file-level targets and legal risk classification.
+
+## REV-2026-02-08-012
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Integrity hotfix for PRM-QUALITY-008 after REV-011`
+- Trigger: `Detected incomplete metadata/input contract fields in Performance_Budget_Gate prompt`
+
+### Batch Validation Outcome
+
+- Output ingestion: none (`outputs/` contained only `.gitkeep`)
+- Prompt integrity: pass after hotfix
+- Registry alignment: pass
+
+### Prompt Actions
+
+1. Tuned `PRM-QUALITY-008` to `v1.0.1`:
+   - restored required metadata fields (`Prompt ID`, `Version`, `Owner`, `Status`, `Last Updated`, `Approved By`)
+   - restored named input contract fields for required/optional sections
+   - fixed gate decision enumeration to explicit `pass/warn/fail`
+
+### Cleanup Action
+
+- No cleanup required (`outputs/` remains clean with `.gitkeep` only).
+
+### Next Iteration Objective
+
+Run focused worker batch with:
+- `PRM-QUALITY-008 v1.0.1`
+- `PRM-UX-008`
+- `PRM-TRUST-002`
+
+Success condition:
+- performance gate outputs are schema-complete and executable,
+- responsive and privacy outputs align with same evidence-first contract style.
+
+## REV-2026-02-08-013
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Worker batch execution for performance, responsive, and privacy audit prompts`
+- Inputs:
+  - `outputs/PRM-QUALITY-008_Performance_Budget_Gate.md`
+  - `outputs/PRM-UX-008_Responsive_Viewport_Audit.md`
+  - `outputs/PRM-TRUST-002_Privacy_Data_Handling_Compliance.md`
+
+### Batch Validation Outcome
+
+- Completeness: pass (`3/3` outputs present)
+- Evidence quality: pass (file-level targets, command evidence, severity-ordered backlogs)
+- Schema compliance: pass (all outputs follow gate classification with pass/warn/fail)
+
+### Gate Results
+
+1. **PRM-QUALITY-008** (Performance Budget Gate):
+   - PREREUNION_ANDREA: **FAIL** (vendor bundle ~489KB gzipped; Firebase SDK dominates at ~270KB)
+   - POC_INTERNA/app: **WARN** (9.4MB capsule PNG assets; JS bundle ~60KB acceptable)
+   - Both apps: no bundle analyzer configured, 9 font files each, 100% client components
+   - P2 animation load: 25 simultaneous animations risk main-thread blocking
+
+2. **PRM-UX-008** (Responsive Viewport Audit):
+   - Overall: **FAIL** (27 violations across 10 component files)
+   - Critical: Tailwind breakpoints use defaults (sm:640) instead of spec values (sm:375) — every responsive class triggers at wrong screen size
+   - 4 touch target failures below 44x44px minimum (PolaroidPlaceholder buttons ~26px, CapsuleTypeCard ~36px)
+   - 5/9 text sizes deviate from spec (55% failure rate, 1-2px deviations)
+   - 3 different padding values (20, 24, 32px) instead of standard 24px
+
+3. **PRM-TRUST-002** (Privacy & Data Handling Compliance):
+   - Overall: **FAIL** (compliance score 32/100)
+   - Privacy policy and Terms of Service: dead links (404)
+   - Registration consent checkbox NOT persisted to Firestore
+   - Google OAuth creates users without consent prompt
+   - AI Avatar biometric data (voice, face) collected without Art. 9 explicit consent
+   - Firebase defaults to us-central1 (no EU region configured)
+   - No DPAs signed with Firebase, ElevenLabs, or Vercel
+   - Capsule deletion orphans Storage files (hard delete in DB only)
+
+### Findings
+
+1. All 3 prompts produced actionable, evidence-backed output with file-level targets and reproducible verification commands.
+2. Privacy audit is the highest-risk area — EU launch is legally blocked without privacy policy (Art. 13) and biometric consent (Art. 9).
+3. Responsive audit uncovered a systemic root cause: Tailwind breakpoint misconfiguration affects ALL responsive styling across the codebase.
+4. Performance audit confirms POC is demo-acceptable but production app needs Firebase lazy-loading and image optimization.
+
+### Prompt Actions
+
+- All 3 prompts remain `active` — outputs are schema-complete with clear evidence contracts.
+- No tuning required; prompts performed as designed.
+- Registry updated with P0 remediation targets from each output.
+
+### Cleanup Action
+
+- Output files retained in `outputs/` for commit (will be cleared after next ingestion cycle).
+
+### Next Iteration Objective
+
+Execute P0 remediation tasks identified across all 3 audits:
+1. **Privacy (blocking)**: Create privacy policy page, persist consent to Firestore, configure Firebase EU region.
+2. **Responsive (critical)**: Override Tailwind breakpoints in `tailwind.config.ts`, fix 4 touch targets to 44x44px minimum.
+3. **Performance (high)**: Optimize capsule PNGs from 9.4MB to <400KB, install `@next/bundle-analyzer`.
+
+Success condition: re-run all 3 prompts and achieve at minimum WARN on responsive and privacy gates.
