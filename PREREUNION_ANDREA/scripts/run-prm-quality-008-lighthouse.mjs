@@ -11,6 +11,7 @@ const appDir = resolve(__dirname, '..');
 const docsDir = resolve(appDir, 'docs', 'quality');
 const tempDir = resolve(appDir, '.next', 'lighthouse');
 const reportPath = resolve(docsDir, 'PRM-QUALITY-008_Lighthouse_Baseline.md');
+const analyzeSnapshotDir = resolve(docsDir, 'analyze');
 
 const port = Number(process.env.QUALITY_PORT || 3100);
 const url = `http://localhost:${port}`;
@@ -164,11 +165,19 @@ try {
     'npm run quality:prm-008',
     '```',
     '',
+    '## Full Rerun (Analyzer + Lighthouse)',
+    '',
+    '```bash',
+    'cd PREREUNION_ANDREA',
+    'npm run quality:prm-008:full',
+    '```',
+    '',
     '## Evidence',
     '',
     `- URL tested: \`${url}\``,
     `- Mobile JSON: \`${mobileJsonPath}\``,
     `- Desktop JSON: \`${desktopJsonPath}\``,
+    `- Analyzer snapshot (from full rerun): \`${analyzeSnapshotDir}\\client.html\`, \`${analyzeSnapshotDir}\\edge.html\`, \`${analyzeSnapshotDir}\\nodejs.html\``,
     '',
     '## Metrics',
     '',

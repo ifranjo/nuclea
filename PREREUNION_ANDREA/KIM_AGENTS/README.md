@@ -9,7 +9,8 @@ KIM_AGENTS/
 ├── README.md                    # Este archivo
 ├── AGENTS_INDEX.md              # Indice de todos los agentes
 ├── WORKFLOWS.md                 # Flujos de trabajo automatizados
-└── DELEGATION_PATTERNS.md       # Patrones de delegacion
+├── DELEGATION_PATTERNS.md       # Patrones de delegacion
+└── PROMPTS_KY/                  # Prompts operativos para Kimi
 ```
 
 ## Proposito

@@ -18,13 +18,13 @@ nuclea/
 ├── POC_INTERNA/                 # Internal POC
 │   ├── 01_SPECS/                # Source of truth: design system, user flows, capsule types
 │   └── app/                     # Onboarding POC — port 3001, white theme, no backend
-├── docs/                        # Target architecture docs (Supabase)
-├── POC_INVERSION_NUCLEA/        # Investor documentation (5 folders)
-├── DISEÑO_ANDREA_PANTALLAS/     # UI mockups (12 PDFs from Andrea)
+├── docs/                        # Target architecture docs (Supabase — NOT current state)
+├── POC_INVERSION_NUCLEA/        # Investor documentation
+├── DISEÑO_ANDREA_PANTALLAS/     # UI mockups (12 PDFs from Andrea — authoritative reference)
 └── *.html                       # Generated reports
 ```
 
-Each app directory has its own `CLAUDE.md` with technical details. This root file covers cross-cutting concerns.
+Each app has its own `CLAUDE.md` with tech details. Sub-app CLAUDE.md files are the reference for app-specific architecture, types, design tokens, and environment variables. This root file covers cross-cutting concerns only.
 
 ## Two Applications
 
@@ -33,27 +33,73 @@ Each app directory has its own `CLAUDE.md` with technical details. This root fil
 | **Port** | 3000 | 3001 |
 | **Theme** | Dark (`#0D0D12`) | White (`#FFFFFF`) |
 | **Backend** | Firebase (Auth, Firestore, Storage) | None (pure UI) |
-| **Next.js** | 16.1.4 | 15+ |
+| **Next.js** | 16.1.4 | 15.1.0+ |
 | **React** | 18 | 19 |
 | **Body Font** | DM Sans | Inter |
-| **Purpose** | Functional MVP with auth, CRUD, payments | Emotional onboarding demo |
+| **State** | Zustand | useState only |
+| **Path Alias** | `@/*` → `./src/*` | `@/*` → `./src/*` |
 
-### Development Commands
+## Development Commands
+
+### Production App
 
 ```bash
-# Production app
-cd PREREUNION_ANDREA && npm install && npm run dev    # localhost:3000
-npm run build        # Production build
-npm run lint         # ESLint
-npm run deploy       # Vercel deploy
-
-# POC app
-cd POC_INTERNA/app && npm install && npm run dev      # localhost:3001
+cd PREREUNION_ANDREA && npm install
+npm run dev              # localhost:3000
+npm run build            # Production build
+npm run lint             # ESLint
+npm run deploy           # Vercel deploy (--prod)
 ```
+
+### POC App
+
+```bash
+cd POC_INTERNA/app && npm install
+npm run dev              # localhost:3001
+npm run build            # Production build
+npm run lint             # ESLint
+```
+
+### POC Autocheck & Healing (automated test-fix loops)
+
+```bash
+cd POC_INTERNA/app
+npm run autocheck        # Lint + build + runtime flow check + PDF alignment
+npm run autocheck:pdf    # Validate copy against source PDFs only
+npm run heal:session     # Stops on first successful autocheck; cleans cache between attempts
+npm run heal:stability   # 3 full autocheck iterations; fails if any fails
+npm run heal:insights    # Rebuild aggregated trends from healing-history/
+```
+
+`autocheck` uses `next start` (production runtime) by default. Override: `AUTOCHECK_RUNTIME=dev npm run autocheck`.
+
+### POC Visual Regression Tests (Playwright)
+
+Requires dev server running on port 3001.
+
+```bash
+# Python visual regression (28 assertions, P1-P4 + design system)
+cd POC_INTERNA/app && python tests/test_onboarding_visual.py
+
+# Playwright screenshot capture
+cd POC_INTERNA/app && node screenshots/capture_onboarding.js
+```
+
+Screenshots saved to `POC_INTERNA/app/screenshots/` and `screenshots/regression/`.
 
 ## Core Concept
 
 The capsule is a **physical emotional object** that opens and releases memories (floating polaroids). This is NOT a file-management app — it's a digital ritual. After capsule closure: download locally, delete from server, zero ongoing storage cost.
+
+## Framer Motion + Headless Browser Gotchas
+
+When working with Playwright or headless browsers against the POC:
+
+- `initial={{ opacity: 0 }}` stays at 0 in headless — rAF-based animations don't fire reliably
+- **Solution:** Use `reducedMotion: 'reduce'` in browser context — Framer Motion jumps to final `animate` state instantly, and AnimatePresence `exit` completes instantly
+- Do NOT use `forceVisible()` hacks that set all opacity:0 to 1 — breaks AnimatePresence multi-step flows
+- React 19 hydration: `Math.random()` in render causes server/client mismatch — use deterministic values like `((i * 37) % 100)`
+- `.next` cache corrupts frequently during rapid Playwright sessions on Windows — delete `.next` before restart, add warmup hit before captures, add delays (2-3s) between navigations
 
 ## Known Discrepancies
 
@@ -71,8 +117,8 @@ Key differences: Production uses `everlife` instead of `legacy`, and is missing 
 
 - **Current (production code):** Firebase SDK (Auth, Firestore, Storage)
 - **Target (docs/):** Supabase (Auth, PostgreSQL, Storage, Edge Functions)
+- `docs/` describes the Supabase target — **not** the current Firebase state
 - Decision documented in `STACK_DECISION_FIREBASE_VS_SUPABASE.html`
-- `docs/DATABASE_SCHEMA.md` and `docs/ARCHITECTURE.md` describe the Supabase target — not the current Firebase state
 
 ## Capsule Types (Canonical — 6 types)
 
@@ -98,12 +144,14 @@ Detailed specs in `POC_INTERNA/01_SPECS/CAPSULE_TYPES.md`. Per-type docs in `doc
 
 Defined in code at `PREREUNION_ANDREA/src/types/index.ts` as `PLANS`.
 
-## Team
+## POC Work Rules
 
-| Role | Name |
-|------|------|
-| CEO/Founder | Andrea Box López |
-| CTO/Technical | Imanol Franjo Álvarez |
+When working on `POC_INTERNA/app/`:
+- **Read specs first** — always read `01_SPECS/DESIGN_SYSTEM.md` before implementing UI
+- **Aesthetics over functionality** — demonstrates the emotional experience
+- **Mobile-first** — design for mobile, adapt to desktop
+- **Spanish nativo** — all copy in Spain Spanish
+- **Follow Andrea's PDFs literally** — do not improvise UI (see `DISEÑO_ANDREA_PANTALLAS/`)
 
 ## Multi-Agent Delegation
 
@@ -124,33 +172,11 @@ This project uses multiple AI coding agents. See `POC_INTERNA/DELEGATION_WORKFLO
 - PDF-optimized with `@media print` rules
 - Sources section with URLs
 
-### Market Data
-When updating market data, use JARVIS research protocol (5+ web searches) to verify. Current verified data is in `NUCLEA_POC_DOCUMENTATION.html`.
-
-```bash
-# Open key documents
-start "" "NUCLEA_POC_DOCUMENTATION.html"
-start "" "GUIA_PRACTICA_IA_NUCLEA.html"
-```
-
-## POC Work Rules
-
-When working on `POC_INTERNA/app/`:
-- **Aesthetics over functionality** — demonstrates the emotional experience
-- **Mobile-first** — design for mobile, adapt to desktop
-- **Spanish nativo** — all copy in Spain Spanish
-- **Follow Andrea's PDFs literally** — do not improvise UI (see `DISEÑO_ANDREA_PANTALLAS/`)
-
 ## Known Issues
 
-**Windows reserved filename:** `nul` file may exist in root. Remove with:
-```bash
-bash -c "rm -f nul"
-```
+**Windows reserved filename:** `nul` file may appear in root. Remove with `bash -c "rm -f nul"`.
 
-**No testing infrastructure** — neither app has Jest/Vitest config or test files.
-
-**No CI/CD** — deployment is manual via `npm run deploy` (Vercel).
+**No CI/CD** — deployment is manual via `npm run deploy` (Vercel) in PREREUNION_ANDREA.
 
 ---
 

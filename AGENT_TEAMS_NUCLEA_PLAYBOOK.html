@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Teams Playbook - NUCLEA</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --accent-gold: #D4AF37;
+      --accent-blue: #5D7A99;
+      --accent-green: #6B8E6B;
+      --accent-purple: #8B6B8B;
+      --accent-brown: #8B7355;
+      --accent-red: #C0392B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-page);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .doc-sidebar {
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .sidebar-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .sidebar-logo {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+
+    .sidebar-sub {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .nav-group-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.4rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.35rem 0;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 0.75rem;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      border-left-color: var(--border-light);
+    }
+
+    .nav-link.active {
+      color: var(--text-primary);
+      border-left-color: var(--border-heavy);
+      font-weight: 500;
+    }
+
+    .nav-sub {
+      padding-left: 1.25rem;
+      font-size: 0.78rem;
+    }
+
+    /* Content */
+    .doc-content {
+      padding: 3rem 4rem;
+      max-width: 920px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .doc-subtitle {
+      font-size: 1rem;
+      color: var(--text-tertiary);
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-primary);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.8rem;
+      color: var(--text-primary);
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    p { margin-bottom: 1rem; }
+
+    ul, ol {
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+    }
+
+    li { margin-bottom: 0.3rem; }
+
+    code {
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      font-size: 0.85em;
+      background: var(--bg-code);
+      padding: 0.15em 0.4em;
+      border-radius: 3px;
+    }
+
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      margin-bottom: 1.2rem;
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: var(--bg-code);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border-light);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--text-secondary);
+    }
+
+    td {
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) { background: #FAFAF8; }
+
+    /* Boxes */
+    .config-box {
+      background: var(--bg-note);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .config-box h4 {
+      margin-top: 0;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .capability-box {
+      background: #F8F8F5;
+      border-left: 3px solid var(--accent-green);
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.2rem;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .capability-box h4 {
+      margin-top: 0;
+      color: var(--accent-green);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .warning-box {
+      background: #FFF8F0;
+      border-left: 3px solid #E67E22;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.2rem;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .warning-box h4 {
+      margin-top: 0;
+      color: #E67E22;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .cost-box {
+      background: #F8F0F0;
+      border-left: 3px solid var(--accent-red);
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.2rem;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .cost-box h4 {
+      margin-top: 0;
+      color: var(--accent-red);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    /* Prompt blocks */
+    .prompt-block {
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      margin-bottom: 1.2rem;
+      overflow: hidden;
+    }
+
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.8rem;
+      background: var(--bg-code);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .prompt-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+    }
+
+    .copy-btn {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 0.25rem 0.6rem;
+      border: 1px solid var(--copy-btn);
+      background: transparent;
+      color: var(--copy-btn);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover {
+      background: var(--copy-btn);
+      color: white;
+    }
+
+    .copy-btn.copied {
+      background: var(--copy-btn);
+      color: white;
+    }
+
+    .prompt-content {
+      padding: 1rem 1.2rem;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      background: white;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      margin-right: 0.3rem;
+      vertical-align: middle;
+    }
+
+    .badge-teammates { background: var(--accent-blue); color: white; }
+    .badge-cost { background: var(--accent-red); color: white; }
+    .badge-time { background: var(--accent-green); color: white; }
+    .badge-scope { background: var(--accent-purple); color: white; }
+    .badge-gold { background: var(--accent-gold); color: white; }
+    .badge-brown { background: var(--accent-brown); color: white; }
+
+    /* Flow diagrams (ASCII-based) */
+    .flow-diagram {
+      background: #1A1A1A;
+      color: #E0E0E0;
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+    }
+
+    .flow-diagram .highlight { color: var(--accent-gold); }
+    .flow-diagram .green { color: #6BCB77; }
+    .flow-diagram .blue { color: #74B9FF; }
+    .flow-diagram .purple { color: #D5AAFF; }
+    .flow-diagram .red { color: #FF6B6B; }
+
+    /* Comparison grid */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .compare-card {
+      background: white;
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 1.2rem;
+    }
+
+    .compare-card h4 {
+      margin-top: 0;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .next-stage {
+      background: var(--bg-code);
+      padding: 0.8rem 1rem;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+    }
+
+    .next-stage a {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .next-stage a:hover { text-decoration: underline; }
+
+    /* Decision matrix */
+    .decision-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 0.5rem;
+      padding: 0.8rem;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.88rem;
+    }
+
+    .decision-row:first-child {
+      font-weight: 600;
+      background: var(--bg-code);
+    }
+
+    /* Footer */
+    .doc-footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+    }
+
+    /* Print */
+    @media print {
+      .doc-sidebar { display: none; }
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-content { padding: 1rem; max-width: 100%; }
+      .copy-btn { display: none; }
+      h2 { break-before: page; }
+    }
+
+    /* Mobile */
+    @media (max-width: 900px) {
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-sidebar { display: none; }
+      .doc-content { padding: 1.5rem; }
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <!-- SIDEBAR -->
+    <aside class="doc-sidebar">
+      <div class="sidebar-logo">NUCLEA</div>
+      <div class="sidebar-sub">Agent Teams Playbook &middot; Feb 2026</div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Fundamentos</div>
+        <a class="nav-link" href="#overview">Qu&eacute; son Agent Teams</a>
+        <a class="nav-link" href="#prerequisites">Requisitos previos</a>
+        <a class="nav-link" href="#nuclea-landscape">Mapa del proyecto</a>
+        <a class="nav-link" href="#decision-matrix">Matriz de decisi&oacute;n</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">7 Configuraciones</div>
+        <a class="nav-link" href="#config-1">1. Full Project Sprint</a>
+        <a class="nav-link nav-sub" href="#c1-flow">Flujo de trabajo</a>
+        <a class="nav-link" href="#config-2">2. POC Onboarding Blitz</a>
+        <a class="nav-link nav-sub" href="#c2-flow">Flujo de trabajo</a>
+        <a class="nav-link" href="#config-3">3. Supabase Migration</a>
+        <a class="nav-link nav-sub" href="#c3-flow">Flujo de trabajo</a>
+        <a class="nav-link" href="#config-4">4. Code Review Tridente</a>
+        <a class="nav-link nav-sub" href="#c4-flow">Flujo de trabajo</a>
+        <a class="nav-link" href="#config-5">5. Type Alignment Fix</a>
+        <a class="nav-link" href="#config-6">6. Testing From Zero</a>
+        <a class="nav-link" href="#config-7">7. Investor Deck Refresh</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Operaciones</div>
+        <a class="nav-link" href="#prompts">Prompts listos para copiar</a>
+        <a class="nav-link" href="#cost-analysis">An&aacute;lisis de coste</a>
+        <a class="nav-link" href="#limitations">Limitaciones en Windows</a>
+        <a class="nav-link" href="#hybrid">Modo h&iacute;brido (cy+gy+ky)</a>
+        <a class="nav-link" href="#best-practices">Buenas pr&aacute;cticas</a>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="doc-content">
+      <h1>Agent Teams Playbook</h1>
+      <p class="doc-subtitle">7 configuraciones de equipos de agentes para acelerar NUCLEA &mdash; proyecto completo y POC</p>
+
+      <!-- ============================================================ -->
+      <h2 id="overview">Qu&eacute; son Agent Teams</h2>
+
+      <p>Agent Teams es una feature experimental de Claude Code (Opus 4.6) que permite coordinar <strong>m&uacute;ltiples instancias independientes</strong> de Claude Code trabajando como un equipo. Una sesi&oacute;n act&uacute;a como <em>lead</em> (orquestador) y las dem&aacute;s como <em>teammates</em> (ejecutores).</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Subagents (Task tool)</h4>
+          <ul>
+            <li>Corren <strong>dentro</strong> de tu sesi&oacute;n</li>
+            <li>Solo reportan al agente padre</li>
+            <li>Comparten context window</li>
+            <li>No puedes interactuar directamente</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <h4>Agent Teams (nuevo)</h4>
+          <ul>
+            <li>Cada uno tiene su <strong>propio</strong> context window</li>
+            <li>Puedes hablar con cada teammate directamente</li>
+            <li>Comparten tareas via sistema de tasks</li>
+            <li>Trabajan en paralelo real</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <h4>Experimental</h4>
+        <p>Habilitado con <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> en <code>settings.json</code>. No soporta session resumption, tiene latencia en status de tareas, y en Windows solo funciona en modo <strong>in-process</strong> (sin split panes).</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="prerequisites">Requisitos previos</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Requisito</th>
+            <th>Estado</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code></td>
+            <td><span class="badge badge-green" style="background:#6BCB77;color:white">ACTIVO</span></td>
+            <td>En <code>~/.claude/settings.json</code> &rarr; <code>env</code></td>
+          </tr>
+          <tr>
+            <td>Claude Code con Opus 4.6</td>
+            <td><span class="badge badge-green" style="background:#6BCB77;color:white">OK</span></td>
+            <td>Model: <code>opus</code> en settings.json</td>
+          </tr>
+          <tr>
+            <td>Modo display</td>
+            <td><span class="badge badge-gold">IN-PROCESS</span></td>
+            <td>Windows Terminal no soporta tmux/split panes</td>
+          </tr>
+          <tr>
+            <td>NUCLEA repo clonado</td>
+            <td><span class="badge badge-green" style="background:#6BCB77;color:white">OK</span></td>
+            <td><code>C:\Users\Kaos\scripts\nuclea</code></td>
+          </tr>
+          <tr>
+            <td>Node.js + npm</td>
+            <td><span class="badge badge-green" style="background:#6BCB77;color:white">OK</span></td>
+            <td>Para ambas apps (Next.js 15 + 16)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="nuclea-landscape">Mapa del proyecto NUCLEA</h2>
+
+      <p>Antes de elegir configuraci&oacute;n, el inventario completo del proyecto:</p>
+
+      <div class="flow-diagram">
+<span class="highlight">NUCLEA/</span>
+<span class="blue">&boxdr;&boxh;&boxh; PREREUNION_ANDREA/</span>        <span class="green">Production app</span>  &middot;  Port 3000  &middot;  Next.js 16 + React 18 + Firebase
+<span class="blue">&boxv;</span>   &boxdr;&boxh; 7 pages (landing, login, registro, dashboard, 2 API routes)
+<span class="blue">&boxv;</span>   &boxdr;&boxh; 17 components (Header, Footer, CapsuleCard, 5 landing sections...)
+<span class="blue">&boxv;</span>   &boxdr;&boxh; 3 hooks (useAuth, useCapsules, store/Zustand)
+<span class="blue">&boxv;</span>   &boxur;&boxh; 5 capsule types (falta <span class="red">legacy</span> y <span class="red">together</span>)
+<span class="blue">&boxv;</span>
+<span class="purple">&boxdr;&boxh;&boxh; POC_INTERNA/</span>               <span class="green">Source of truth + POC app</span>
+<span class="purple">&boxv;</span>   &boxdr;&boxh; <span class="purple">01_SPECS/</span>             5 spec files (DESIGN_SYSTEM, CAPSULE_TYPES, USER_FLOWS...)
+<span class="purple">&boxv;</span>   &boxdr;&boxh; <span class="purple">02-05/</span>                UI screens, animation, backend, prompts
+<span class="purple">&boxv;</span>   &boxdr;&boxh; <span class="purple">ASSETS/</span>               Brand assets, PDFs, video frames
+<span class="purple">&boxv;</span>   &boxur;&boxh; <span class="purple">app/</span>                  Port 3001  &middot;  Next.js 15 + React 19  &middot;  No backend
+<span class="purple">&boxv;</span>       &boxdr;&boxh; 10 components (P1-P4 onboarding, CapsulePlaceholder, PolaroidPlaceholder...)
+<span class="purple">&boxv;</span>       &boxur;&boxh; 6 capsule types (canonical)
+<span class="purple">&boxv;</span>
+&boxdr;&boxh;&boxh; <span class="highlight">docs/</span>                    Target architecture (Supabase)
+&boxv;   &boxdr;&boxh; ARCHITECTURE.md, DATABASE_SCHEMA.md, DESIGN_SYSTEM.md
+&boxv;   &boxdr;&boxh; api/, capsules/ (6 subdirs), flows/, prompts/, spec/
+&boxv;   &boxur;&boxh; ~30 files total
+&boxv;
+&boxdr;&boxh;&boxh; POC_INVERSION_NUCLEA/    Investor deck (5 folders, ~20 docs)
+&boxdr;&boxh;&boxh; CODEX_PROMPTS*/          Opus prompt registry + standards
+&boxdr;&boxh;&boxh; DISE&Ntilde;O_ANDREA*/         12 PDFs de mockups UI
+&boxur;&boxh;&boxh; 5x *.html                Generated reports
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>&Aacute;rea</th>
+            <th>Archivos TS/TSX</th>
+            <th>Docs</th>
+            <th>Complejidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Production app</td>
+            <td>22</td>
+            <td>1 CLAUDE.md</td>
+            <td><span class="badge badge-cost">ALTA</span> Firebase auth, Zustand, API routes</td>
+          </tr>
+          <tr>
+            <td>POC app</td>
+            <td>16</td>
+            <td>1 CLAUDE.md + 5 specs</td>
+            <td><span class="badge badge-gold">MEDIA</span> Pure UI, Framer Motion</td>
+          </tr>
+          <tr>
+            <td>Target architecture</td>
+            <td>0</td>
+            <td>~30 files</td>
+            <td><span class="badge badge-teammates">DOCS</span> Supabase schema, API specs</td>
+          </tr>
+          <tr>
+            <td>Investor docs</td>
+            <td>0</td>
+            <td>~20 files</td>
+            <td><span class="badge badge-scope">BUSINESS</span> Market data, financials</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="decision-matrix">Matriz de decisi&oacute;n: &iquest;Cu&aacute;l configuraci&oacute;n usar?</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Si necesitas...</th>
+            <th>Usa</th>
+            <th>Teammates</th>
+            <th>Coste token</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Avanzar todo el proyecto en una sesi&oacute;n</td>
+            <td><a href="#config-1"><strong>1. Full Project Sprint</strong></a></td>
+            <td>4</td>
+            <td><span class="badge badge-cost">$$$</span></td>
+          </tr>
+          <tr>
+            <td>Pulir la demo onboarding del POC</td>
+            <td><a href="#config-2"><strong>2. POC Onboarding Blitz</strong></a></td>
+            <td>3</td>
+            <td><span class="badge badge-gold">$$</span></td>
+          </tr>
+          <tr>
+            <td>Migrar Firebase &rarr; Supabase</td>
+            <td><a href="#config-3"><strong>3. Supabase Migration</strong></a></td>
+            <td>3</td>
+            <td><span class="badge badge-cost">$$$</span></td>
+          </tr>
+          <tr>
+            <td>Revisi&oacute;n de calidad profunda</td>
+            <td><a href="#config-4"><strong>4. Code Review Tridente</strong></a></td>
+            <td>3</td>
+            <td><span class="badge badge-gold">$$</span></td>
+          </tr>
+          <tr>
+            <td>Resolver el mismatch de 5 vs 6 tipos</td>
+            <td><a href="#config-5"><strong>5. Type Alignment</strong></a></td>
+            <td>2</td>
+            <td><span class="badge badge-time">$</span></td>
+          </tr>
+          <tr>
+            <td>A&ntilde;adir tests desde cero</td>
+            <td><a href="#config-6"><strong>6. Testing From Zero</strong></a></td>
+            <td>3</td>
+            <td><span class="badge badge-gold">$$</span></td>
+          </tr>
+          <tr>
+            <td>Actualizar materiales de inversi&oacute;n</td>
+            <td><a href="#config-7"><strong>7. Investor Deck Refresh</strong></a></td>
+            <td>3</td>
+            <td><span class="badge badge-gold">$$</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <!-- CONFIG 1 -->
+      <h2 id="config-1">1. Full Project Sprint</h2>
+      <p>
+        <span class="badge badge-teammates">4 TEAMMATES</span>
+        <span class="badge badge-cost">COSTE ALTO</span>
+        <span class="badge badge-scope">WHOLE PROJECT</span>
+      </p>
+
+      <p>La configuraci&oacute;n m&aacute;s ambiciosa: 4 teammates trabajando en paralelo sobre las 4 &aacute;reas principales del proyecto. Ideal para sprints intensivos de 1-2 horas donde quieres avanzar en todos los frentes.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Teammate</th>
+            <th>Scope</th>
+            <th>Archivos que toca</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Backend Engineer</strong></td>
+            <td>Supabase schema, API routes, auth hooks</td>
+            <td><code>docs/DATABASE_SCHEMA.md</code>, <code>docs/api/</code>, production API routes</td>
+          </tr>
+          <tr>
+            <td><strong>Frontend POC</strong></td>
+            <td>Onboarding P1-P4, animations, responsive</td>
+            <td><code>POC_INTERNA/app/src/components/</code></td>
+          </tr>
+          <tr>
+            <td><strong>Frontend Production</strong></td>
+            <td>Landing, dashboard, capsule CRUD UI</td>
+            <td><code>PREREUNION_ANDREA/src/components/</code>, <code>src/app/</code></td>
+          </tr>
+          <tr>
+            <td><strong>Docs & QA</strong></td>
+            <td>Specs, design system, type alignment</td>
+            <td><code>POC_INTERNA/01_SPECS/</code>, <code>docs/</code>, types files</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 id="c1-flow">Flujo de trabajo</h3>
+
+      <div class="flow-diagram">
+<span class="highlight">LEAD (t&uacute;)</span>
+  &boxv;
+  &boxdr;&boxh; spawn <span class="blue">"Backend Engineer"</span>    &rarr; "Read docs/DATABASE_SCHEMA.md and docs/ARCHITECTURE.md.
+  &boxv;                                  Generate executable SQL for Supabase migration.
+  &boxv;                                  Include RLS policies and triggers."
+  &boxv;
+  &boxdr;&boxh; spawn <span class="purple">"Frontend POC"</span>        &rarr; "Read POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md first.
+  &boxv;                                  Then improve P2CapsuleOpening.tsx animations.
+  &boxv;                                  Use reducedMotion-safe patterns."
+  &boxv;
+  &boxdr;&boxh; spawn <span class="green">"Frontend Production"</span> &rarr; "Add the missing 'together' capsule type to
+  &boxv;                                  PREREUNION_ANDREA. Update types, icons,
+  &boxv;                                  and landing page Capsules section."
+  &boxv;
+  &boxur;&boxh; spawn <span class="red">"Docs & QA"</span>           &rarr; "Audit all capsule type definitions across
+                                     POC_INTERNA/app/src/types/index.ts and
+                                     PREREUNION_ANDREA/src/types/index.ts.
+                                     Create alignment report."
+      </div>
+
+      <div class="warning-box">
+        <h4>Riesgo de conflictos</h4>
+        <p>Si dos teammates editan el mismo archivo (ej. <code>types/index.ts</code>), habr&aacute; conflictos. Asigna archivos exclusivos a cada teammate. El lead debe coordinar la integraci&oacute;n.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- CONFIG 2 -->
+      <h2 id="config-2">2. POC Onboarding Blitz</h2>
+      <p>
+        <span class="badge badge-teammates">3 TEAMMATES</span>
+        <span class="badge badge-gold">COSTE MEDIO</span>
+        <span class="badge badge-scope">POC ONLY</span>
+      </p>
+
+      <p>Enfocada en pulir la experiencia de onboarding del POC. Cada teammate posee un subconjunto de pantallas y componentes sin solapamiento. Ideal antes de una demo a Andrea o inversores.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Teammate</th>
+            <th>Scope</th>
+            <th>Archivos exclusivos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Capsule Animator</strong></td>
+            <td>P1 (c&aacute;psula cerrada) + P2 (apertura)</td>
+            <td><code>P1CapsuleClosed.tsx</code>, <code>P2CapsuleOpening.tsx</code>, <code>CapsulePlaceholder.tsx</code></td>
+          </tr>
+          <tr>
+            <td><strong>Content Designer</strong></td>
+            <td>P3 (manifiesto) + P4 (selecci&oacute;n)</td>
+            <td><code>P3Manifesto.tsx</code>, <code>P4CapsuleSelection.tsx</code>, <code>CapsuleTypeCard.tsx</code></td>
+          </tr>
+          <tr>
+            <td><strong>QA & Screenshots</strong></td>
+            <td>Playwright captures, responsive testing</td>
+            <td><code>capture_all.mjs</code>, nuevos test files</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 id="c2-flow">Flujo de trabajo</h3>
+
+      <div class="flow-diagram">
+<span class="highlight">LEAD</span>: "Read POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md and share key specs with all teammates"
+  &boxv;
+  &boxdr;&boxh; <span class="blue">Capsule Animator</span>
+  &boxv;     &boxdr;&boxh; Read P1CapsuleClosed.tsx
+  &boxv;     &boxdr;&boxh; Add hover glow effect (box-shadow: 0 0 40px rgba(212,175,55,0.3))
+  &boxv;     &boxdr;&boxh; Read P2CapsuleOpening.tsx
+  &boxv;     &boxur;&boxh; Refine split animation timing (800ms open, 1200ms polaroid float)
+  &boxv;
+  &boxdr;&boxh; <span class="purple">Content Designer</span>
+  &boxv;     &boxdr;&boxh; Read P3Manifesto.tsx
+  &boxv;     &boxdr;&boxh; Adjust typography: Cormorant Garamond 20px italic for tagline
+  &boxv;     &boxdr;&boxh; Read P4CapsuleSelection.tsx
+  &boxv;     &boxur;&boxh; Ensure all 6 cards: 240px mobile, 320px desktop
+  &boxv;
+  &boxur;&boxh; <span class="green">QA & Screenshots</span>
+        &boxdr;&boxh; Wait for Animator + Designer to finish
+        &boxdr;&boxh; Run dev server on port 3001
+        &boxdr;&boxh; Execute capture_all.mjs (warmup + delays)
+        &boxur;&boxh; Report visual regressions to lead
+      </div>
+
+      <div class="capability-box">
+        <h4>Por qu&eacute; funciona bien</h4>
+        <ul>
+          <li>Archivos estrictamente separados &mdash; cero conflictos</li>
+          <li>QA espera a que los otros terminen &mdash; test despu&eacute;s de implementar</li>
+          <li>3 teammates es manejable en modo in-process (Shift+Up/Down)</li>
+        </ul>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- CONFIG 3 -->
+      <h2 id="config-3">3. Supabase Migration Team</h2>
+      <p>
+        <span class="badge badge-teammates">3 TEAMMATES</span>
+        <span class="badge badge-cost">COSTE ALTO</span>
+        <span class="badge badge-scope">WHOLE PROJECT</span>
+      </p>
+
+      <p>El salto cr&iacute;tico: migrar de Firebase a Supabase. Requiere cambios coordinados en schema, autenticaci&oacute;n, y frontend. Los docs en <code>docs/</code> ya describen la arquitectura target.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Teammate</th>
+            <th>Scope</th>
+            <th>Lee de</th>
+            <th>Escribe en</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Schema Architect</strong></td>
+            <td>SQL schema, RLS, triggers</td>
+            <td><code>docs/DATABASE_SCHEMA.md</code></td>
+            <td>Nuevo <code>supabase/migrations/</code></td>
+          </tr>
+          <tr>
+            <td><strong>Auth Migrator</strong></td>
+            <td>Firebase Auth &rarr; Supabase Auth</td>
+            <td><code>PREREUNION_ANDREA/src/hooks/useAuth.ts</code></td>
+            <td>Nuevo <code>src/lib/supabase.ts</code>, refactor hooks</td>
+          </tr>
+          <tr>
+            <td><strong>Storage Migrator</strong></td>
+            <td>Firebase Storage &rarr; Supabase Storage</td>
+            <td><code>PREREUNION_ANDREA/src/hooks/useCapsules.ts</code></td>
+            <td>Refactor upload/download, nuevas policies</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 id="c3-flow">Flujo de trabajo</h3>
+
+      <div class="flow-diagram">
+<span class="highlight">LEAD</span>
+  &boxv;
+  &boxdr;&boxh; <span class="blue">Schema Architect</span> [FIRST &mdash; others wait]
+  &boxv;     &boxdr;&boxh; Read docs/DATABASE_SCHEMA.md + docs/ARCHITECTURE.md
+  &boxv;     &boxdr;&boxh; Generate supabase/migrations/001_initial.sql
+  &boxv;     &boxdr;&boxh; Generate supabase/migrations/002_rls_policies.sql
+  &boxv;     &boxur;&boxh; Signal: "Schema ready, auth and storage can begin"
+  &boxv;
+  &boxdr;&boxh; <span class="purple">Auth Migrator</span> [AFTER schema]
+  &boxv;     &boxdr;&boxh; Read current useAuth.ts (Firebase patterns)
+  &boxv;     &boxdr;&boxh; Create src/lib/supabase.ts (client init)
+  &boxv;     &boxdr;&boxh; Rewrite useAuth.ts (Supabase Auth)
+  &boxv;     &boxur;&boxh; Update login/page.tsx + registro/page.tsx
+  &boxv;
+  &boxur;&boxh; <span class="green">Storage Migrator</span> [AFTER schema]
+        &boxdr;&boxh; Read current useCapsules.ts (Firestore patterns)
+        &boxdr;&boxh; Rewrite with Supabase client (PostgreSQL + Storage)
+        &boxdr;&boxh; Update API routes (capsules/route.ts)
+        &boxur;&boxh; Add storage bucket policies
+      </div>
+
+      <div class="cost-box">
+        <h4>Consideraci&oacute;n de coste</h4>
+        <p>Esta configuraci&oacute;n es la m&aacute;s cara por la complejidad y cantidad de archivos que cada teammate necesita leer. Schema Architect va primero (serial), luego Auth y Storage en paralelo. Estima ~3x el coste de una sesi&oacute;n normal.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- CONFIG 4 -->
+      <h2 id="config-4">4. Code Review Tridente</h2>
+      <p>
+        <span class="badge badge-teammates">3 TEAMMATES</span>
+        <span class="badge badge-gold">COSTE MEDIO</span>
+        <span class="badge badge-scope">WHOLE PROJECT</span>
+      </p>
+
+      <p>Tres revisores simult&aacute;neos, cada uno con un enfoque especializado. Solo leen &mdash; no modifican c&oacute;digo. Producen reportes que el lead consolida.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Teammate</th>
+            <th>Enfoque</th>
+            <th>Qu&eacute; busca</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Security Auditor</strong></td>
+            <td>Vulnerabilidades, secrets, OWASP</td>
+            <td>Firebase keys en c&oacute;digo, XSS en inputs, API routes sin auth, .env expuestos</td>
+          </tr>
+          <tr>
+            <td><strong>Performance Analyst</strong></td>
+            <td>Bundle size, renders, re-renders</td>
+            <td>Zustand re-renders, image optimization, React 19 hydration issues, unused deps</td>
+          </tr>
+          <tr>
+            <td><strong>Design Compliance</strong></td>
+            <td>Spec vs implementaci&oacute;n</td>
+            <td>DESIGN_SYSTEM.md vs c&oacute;digo real: colores, tipograf&iacute;a, spacing, componentes</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 id="c4-flow">Flujo de trabajo</h3>
+
+      <div class="flow-diagram">
+<span class="highlight">LEAD</span>: "Create a review team. Each reviewer reads ALL source files but produces
+       a focused report. Do NOT modify any files."
+  &boxv;
+  &boxdr;&boxh; <span class="red">Security Auditor</span>     &rarr; Report: vulnerabilities.md
+  &boxdr;&boxh; <span class="blue">Performance Analyst</span>  &rarr; Report: performance.md
+  &boxur;&boxh; <span class="purple">Design Compliance</span>   &rarr; Report: design-audit.md
+
+<span class="highlight">LEAD</span> consolidates &rarr; unified-review.md &rarr; action items for next sprint
+      </div>
+
+      <div class="capability-box">
+        <h4>Mejor relaci&oacute;n calidad/coste</h4>
+        <ul>
+          <li>Solo lectura = cero riesgo de conflictos o bugs</li>
+          <li>Paralelismo perfecto: sin dependencias entre teammates</li>
+          <li>Cada reviewer aporta perspectiva que un solo agente no cubre en profundidad</li>
+          <li><strong>Recomendada como primera prueba de Agent Teams</strong></li>
+        </ul>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- CONFIG 5 -->
+      <h2 id="config-5">5. Type Alignment Fix</h2>
+      <p>
+        <span class="badge badge-teammates">2 TEAMMATES</span>
+        <span class="badge badge-time">COSTE BAJO</span>
+        <span class="badge badge-scope">CROSS-APP</span>
+      </p>
+
+      <p>Resuelve el mismatch cr&iacute;tico: Production tiene 5 tipos (<code>everlife</code> en lugar de <code>legacy</code>, falta <code>together</code>). El POC tiene los 6 can&oacute;nicos. Cada teammate posee una app.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Teammate</th>
+            <th>App</th>
+            <th>Tarea</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>POC Validator</strong></td>
+            <td>POC_INTERNA/app</td>
+            <td>Confirmar que los 6 tipos est&aacute;n correctos vs specs. Listar cualquier discrepancia en nombres/taglines.</td>
+          </tr>
+          <tr>
+            <td><strong>Production Fixer</strong></td>
+            <td>PREREUNION_ANDREA</td>
+            <td>Renombrar <code>everlife</code> &rarr; <code>legacy</code>. A&ntilde;adir tipo <code>together</code>. Actualizar types, icons, landing, PLANS.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="next-stage">
+        <strong>Resultado:</strong> Ambas apps con los mismos 6 tipos can&oacute;nicos &mdash; <a href="#config-4">luego ejecutar Config 4</a> para verificar compliance
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- CONFIG 6 -->
+      <h2 id="config-6">6. Testing From Zero</h2>
+      <p>
+        <span class="badge badge-teammates">3 TEAMMATES</span>
+        <span class="badge badge-gold">COSTE MEDIO</span>
+        <span class="badge badge-scope">WHOLE PROJECT</span>
+      </p>
+
+      <p>Ninguna de las dos apps tiene tests. Este team configura la infraestructura y escribe los primeros tests en paralelo.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Teammate</th>
+            <th>Scope</th>
+            <th>Entregable</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Test Infra</strong></td>
+            <td>Configurar Vitest + testing-library en ambas apps</td>
+            <td><code>vitest.config.ts</code>, <code>setupTests.ts</code>, scripts en <code>package.json</code></td>
+          </tr>
+          <tr>
+            <td><strong>Unit Tests Production</strong></td>
+            <td>Tests para hooks (useAuth, useCapsules) y componentes</td>
+            <td><code>__tests__/</code> en PREREUNION_ANDREA</td>
+          </tr>
+          <tr>
+            <td><strong>E2E Tests POC</strong></td>
+            <td>Playwright E2E para el flujo P1&rarr;P4 completo</td>
+            <td><code>e2e/onboarding.spec.ts</code> en POC_INTERNA/app</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warning-box">
+        <h4>Dependencia serial</h4>
+        <p><strong>Test Infra</strong> debe terminar primero (instalar Vitest, crear configs). Luego los otros dos arrancan en paralelo. Usa el sistema de tasks del lead para marcar esta dependencia.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- CONFIG 7 -->
+      <h2 id="config-7">7. Investor Deck Refresh</h2>
+      <p>
+        <span class="badge badge-teammates">3 TEAMMATES</span>
+        <span class="badge badge-gold">COSTE MEDIO</span>
+        <span class="badge badge-scope">DOCS ONLY</span>
+      </p>
+
+      <p>Actualizar los materiales de inversi&oacute;n con datos reales de Feb 2026. Solo documentos, no c&oacute;digo.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Teammate</th>
+            <th>Folder</th>
+            <th>Tarea</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Market Researcher</strong></td>
+            <td><code>03_MARKET_VALIDATION/</code></td>
+            <td>Actualizar TAM/SAM 2026, verificar competidores, digital legacy trends</td>
+          </tr>
+          <tr>
+            <td><strong>Financial Modeler</strong></td>
+            <td><code>04_BUSINESS_MODEL/</code></td>
+            <td>Revisar unit economics, proyecciones Y1-Y3, sensibilidad de pricing</td>
+          </tr>
+          <tr>
+            <td><strong>Tech Writer</strong></td>
+            <td><code>01_EXECUTIVE_SUMMARY/</code> + <code>02_TECHNICAL_ARCHITECTURE/</code></td>
+            <td>Actualizar executive summary, refrescar stack diagram, a&ntilde;adir Opus 4.6 capabilities</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="prompts">Prompts listos para copiar</h2>
+
+      <p>Cada prompt es real y completo &mdash; pega directamente en la sesi&oacute;n lead de Claude Code.</p>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Config 2 &mdash; POC Onboarding Blitz</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">Create an agent team for the NUCLEA POC onboarding app at POC_INTERNA/app/.
+
+Spawn 3 teammates:
+
+1. "Capsule Animator" - Read POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md first. Then improve P1CapsuleClosed.tsx (add subtle floating animation, golden glow on hover) and P2CapsuleOpening.tsx (refine split animation: 800ms open, 1200ms polaroid float). Use reducedMotion-safe Framer Motion patterns. Do NOT touch P3 or P4 files.
+
+2. "Content Designer" - Read POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md and CAPSULE_TYPES.md first. Improve P3Manifesto.tsx (Cormorant Garamond 20px italic tagline, proper spacing) and P4CapsuleSelection.tsx (all 6 capsule type cards, 240px mobile / 320px desktop). Do NOT touch P1 or P2 files.
+
+3. "QA Screenshotter" - Wait until both other teammates finish. Then start the dev server on port 3001, run the capture script at POC_INTERNA/app/screenshots/capture_all.mjs, and report any visual issues back to me. Remember: delete .next cache before starting, add warmup navigation, use 2500ms delays between captures.
+
+Important: Each teammate owns EXCLUSIVE files. No overlapping edits.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Config 4 &mdash; Code Review Tridente</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">Create an agent team to review the NUCLEA codebase. This is READ-ONLY - no file modifications.
+
+Spawn 3 teammates:
+
+1. "Security Auditor" - Scan both PREREUNION_ANDREA/ and POC_INTERNA/app/ for security issues: exposed Firebase keys, API routes without auth validation, XSS vectors in user inputs, missing CORS config, hardcoded secrets. Check .env handling. Write findings to a task report.
+
+2. "Performance Analyst" - Analyze both apps for performance: bundle size (check package.json deps), unnecessary re-renders (Zustand selectors, React 19 patterns), image optimization, Framer Motion perf (reducedMotion handling), hydration mismatches. Write findings to a task report.
+
+3. "Design Compliance" - Compare actual code against POC_INTERNA/01_SPECS/DESIGN_SYSTEM.md and CAPSULE_TYPES.md. Check: color values match specs, typography (Inter for POC body, DM Sans for Production), spacing (24px mobile padding), button styles (transparent + 1.5px border + 8px radius), capsule card sizes. Write findings to a task report.
+
+After all three finish, synthesize their reports into a unified action-items list.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Config 5 &mdash; Type Alignment Fix</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">Create an agent team to fix the capsule type mismatch between our two apps.
+
+The canonical 6 types (from POC_INTERNA/01_SPECS/CAPSULE_TYPES.md) are:
+legacy, together, social, pet, life-chapter, origin
+
+Spawn 2 teammates:
+
+1. "POC Validator" - Read POC_INTERNA/app/src/types/index.ts and all components in POC_INTERNA/app/src/components/. Verify all 6 types are present with correct Spanish names. Report any discrepancies but do NOT modify files unless something is wrong.
+
+2. "Production Fixer" - Read PREREUNION_ANDREA/src/types/index.ts. It currently has 5 types with 'everlife' instead of 'legacy' and is missing 'together'. Rename everlife to legacy, add the together type with proper Spanish copy, update CapsuleIcons.tsx, and update the landing/Capsules.tsx section. Ensure PLANS pricing still references legacy for the EverLife plan.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Config 1 &mdash; Full Project Sprint</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">Create an agent team for a full NUCLEA project sprint. 4 teammates, each owns a separate area.
+
+CRITICAL: No two teammates should edit the same file. If unsure, ask me first.
+
+Spawn 4 teammates:
+
+1. "Backend Engineer" - Read docs/DATABASE_SCHEMA.md and docs/ARCHITECTURE.md. Generate executable SQL migration files in a new supabase/migrations/ directory. Include: tables, RLS policies, storage bucket policies, and edge function stubs. Reference docs/api/ENDPOINTS.md for the API surface.
+
+2. "Frontend POC" - Owns ONLY POC_INTERNA/app/src/. Read DESIGN_SYSTEM.md first. Polish P1-P4 onboarding components: floating animations, proper typography, responsive capsule cards. Use Framer Motion with reducedMotion safety. Target: demo-ready quality.
+
+3. "Frontend Production" - Owns ONLY PREREUNION_ANDREA/src/. Fix the type mismatch (add legacy + together types). Improve landing page sections. Ensure dark theme consistency (#0D0D12 bg, #D4AF37 gold, DM Sans body).
+
+4. "Docs & QA" - Read-only on code. Update POC_INTERNA/01_SPECS/ files to reflect current implementation state. Run capture_all.mjs after frontends finish. Create a discrepancy report comparing specs vs reality.</div>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="cost-analysis">An&aacute;lisis de coste</h2>
+
+      <p>Cada teammate consume tokens independientemente. La ecuaci&oacute;n es:</p>
+
+      <pre><code>Coste total &asymp; (N teammates + 1 lead) &times; tokens_por_sesion</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Config</th>
+            <th>Teammates</th>
+            <th>Multiplicador estimado</th>
+            <th>Cu&aacute;ndo vale la pena</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Full Sprint</td>
+            <td>4</td>
+            <td>~5x</td>
+            <td>Sprint pre-demo con deadline ajustado</td>
+          </tr>
+          <tr>
+            <td>2. POC Blitz</td>
+            <td>3</td>
+            <td>~3.5x</td>
+            <td>Preparar demo para Andrea/inversores</td>
+          </tr>
+          <tr>
+            <td>3. Supabase</td>
+            <td>3</td>
+            <td>~4x</td>
+            <td>Migraci&oacute;n completa (alto contexto por teammate)</td>
+          </tr>
+          <tr>
+            <td>4. Review</td>
+            <td>3</td>
+            <td>~2.5x</td>
+            <td><strong>Siempre</strong> &mdash; mejor ROI por ser solo lectura</td>
+          </tr>
+          <tr>
+            <td>5. Type Align</td>
+            <td>2</td>
+            <td>~2x</td>
+            <td>Fix r&aacute;pido de 30min, bajo riesgo</td>
+          </tr>
+          <tr>
+            <td>6. Testing</td>
+            <td>3</td>
+            <td>~3x</td>
+            <td>Cuando se decide invertir en calidad</td>
+          </tr>
+          <tr>
+            <td>7. Investor</td>
+            <td>3</td>
+            <td>~3x</td>
+            <td>Pre-reuni&oacute;n con inversores</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="capability-box">
+        <h4>Regla de oro</h4>
+        <ul>
+          <li>Si la tarea se puede hacer bien con 1 agente en &lt;30 min &rarr; <strong>no uses Agent Teams</strong></li>
+          <li>Si necesitas paralelismo real + perspectivas distintas &rarr; <strong>Agent Teams</strong></li>
+          <li>Empieza con <strong>Config 4 (Review)</strong> como primera prueba: bajo riesgo, alto valor</li>
+        </ul>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="limitations">Limitaciones en Windows</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Limitaci&oacute;n</th>
+            <th>Impacto</th>
+            <th>Workaround</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sin split panes (tmux)</td>
+            <td>No ves teammates en paneles separados</td>
+            <td>Modo in-process: <code>Shift+Up/Down</code> para navegar</td>
+          </tr>
+          <tr>
+            <td>Sin session resumption</td>
+            <td>Si se desconecta, pierdes el team</td>
+            <td>Mantener sesiones cortas y enfocadas</td>
+          </tr>
+          <tr>
+            <td>Task status lag</td>
+            <td>Teammates a veces no marcan tareas como completadas</td>
+            <td>Lead puede forzar status manualmente</td>
+          </tr>
+          <tr>
+            <td>Port conflicts</td>
+            <td>Si teammate lanza dev server en puerto ocupado</td>
+            <td><code>netstat -ano | findstr :PORT</code> antes de spawn</td>
+          </tr>
+          <tr>
+            <td>.next cache</td>
+            <td>Corrupci&oacute;n si m&uacute;ltiples teammates tocan el mismo app</td>
+            <td>Asignar UNA app por teammate frontend</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="hybrid">Modo h&iacute;brido: Agent Teams + Multi-Provider (cy+gy+ky)</h2>
+
+      <p>NUCLEA ya usa un sistema multi-agente con <code>gy</code> (GLM-4.7), <code>ky</code> (Kimi K2), y <code>my</code> (MiniMax). Agent Teams de Claude Code es <em>complementario</em>, no sustituto.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Multi-Provider (actual)</h4>
+          <ul>
+            <li>Cada proveedor es una CLI independiente</li>
+            <li>Coordinaci&oacute;n manual via <code>/delegate</code></li>
+            <li>Modelos distintos con fortalezas distintas</li>
+            <li>No comparten tareas autom&aacute;ticamente</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <h4>Agent Teams (Claude only)</h4>
+          <ul>
+            <li>Todos son Claude (Opus 4.6 o Sonnet 4.5)</li>
+            <li>Coordinaci&oacute;n autom&aacute;tica via task system</li>
+            <li>Misma capacidad per teammate</li>
+            <li>Comparten tareas + mensajer&iacute;a nativa</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Estrategia combinada</h3>
+
+      <div class="flow-diagram">
+<span class="highlight">NIVEL 1: Multi-Provider (estrategia de equipo)</span>
+  &boxdr;&boxh; <span class="blue">cy (Claude)</span>  &rarr;  Orquestaci&oacute;n + decisiones cr&iacute;ticas
+  &boxdr;&boxh; <span class="green">gy (GLM)</span>    &rarr;  Backend, SQL, l&oacute;gica de negocio
+  &boxdr;&boxh; <span class="purple">ky (Kimi)</span>   &rarr;  Documentaci&oacute;n, specs, QA largo
+  &boxur;&boxh; <span class="red">my (MiniMax)</span> &rarr;  Frontend, UI, prototipos r&aacute;pidos
+
+<span class="highlight">NIVEL 2: Agent Teams (dentro de Claude)</span>
+  <span class="blue">cy</span> puede internamente crear teammates para:
+  &boxdr;&boxh; Revisar c&oacute;digo generado por gy/ky/my
+  &boxdr;&boxh; Paralelizar sub-tareas dentro de su scope
+  &boxur;&boxh; Code review multi-perspectiva del trabajo de otros agentes
+      </div>
+
+      <div class="capability-box">
+        <h4>Caso de uso ideal</h4>
+        <ul>
+          <li><code>gy</code> genera el SQL schema de Supabase</li>
+          <li><code>my</code> implementa los componentes frontend</li>
+          <li><code>cy</code> crea un Agent Team de 3 reviewers para auditar todo en paralelo</li>
+          <li><code>ky</code> actualiza la documentaci&oacute;n basado en los cambios</li>
+        </ul>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="best-practices">Buenas pr&aacute;cticas</h2>
+
+      <h3>Antes de spawnar</h3>
+      <ol>
+        <li><strong>Define archivos exclusivos</strong> por teammate &mdash; evita conflictos de edici&oacute;n</li>
+        <li><strong>Mata procesos</strong> en puertos que vas a usar: <code>netstat -ano | findstr :3001</code></li>
+        <li><strong>Git commit</strong> antes de lanzar el team &mdash; crea un punto de retorno seguro</li>
+        <li><strong>Lee los specs primero</strong> y comparte contexto con todos los teammates en el prompt inicial</li>
+      </ol>
+
+      <h3>Durante la ejecuci&oacute;n</h3>
+      <ol>
+        <li>Usa <code>Shift+Up/Down</code> para monitorear progreso de cada teammate</li>
+        <li>Si un teammate se atasca, usa <code>Shift+Tab</code> (modo coordinaci&oacute;n) y redirigelo</li>
+        <li>El lead NO debe hacer trabajo directo &mdash; solo coordinar</li>
+        <li>Si detectas conflicto de archivos, para al teammate inmediatamente</li>
+      </ol>
+
+      <h3>Despu&eacute;s de terminar</h3>
+      <ol>
+        <li><strong>"Clean up the team"</strong> &mdash; siempre desde el lead</li>
+        <li><code>git diff</code> para revisar todos los cambios antes de commit</li>
+        <li>Ejecutar el app (dev server) para verificar que nada se rompi&oacute;</li>
+        <li>Si algo falla, <code>git stash</code> o <code>git checkout .</code> para volver al punto seguro</li>
+      </ol>
+
+      <h3>Keyboard shortcuts (modo in-process)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Atajo</th>
+            <th>Acci&oacute;n</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>Shift+Up</code></td><td>Seleccionar teammate anterior</td></tr>
+          <tr><td><code>Shift+Down</code></td><td>Seleccionar teammate siguiente</td></tr>
+          <tr><td><code>Shift+Tab</code></td><td>Modo coordinaci&oacute;n (solo lead)</td></tr>
+          <tr><td><code>Ctrl+T</code></td><td>Ver lista de tareas</td></tr>
+        </tbody>
+      </table>
+
+      <!-- FOOTER -->
+      <div class="doc-footer">
+        <p><strong>NUCLEA Agent Teams Playbook</strong> &mdash; Generado por Claude Opus 4.6 &middot; Febrero 2026</p>
+        <p>Proyecto bajo NDA. Informaci&oacute;n confidencial de stakeholders.</p>
+        <p>Configuraci&oacute;n activa en: <code>~/.claude/settings.json</code> &rarr; <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code></p>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Copy to clipboard
+    function copyPrompt(button) {
+      const content = button.closest('.prompt-block')
+        .querySelector('.prompt-content').textContent;
+      navigator.clipboard.writeText(content.trim()).then(() => {
+        const original = button.textContent;
+        button.textContent = 'COPIED!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Scroll-aware navigation
+    const sections = document.querySelectorAll('[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (scrollY >= section.offsetTop - 120) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle('active',
+          link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>

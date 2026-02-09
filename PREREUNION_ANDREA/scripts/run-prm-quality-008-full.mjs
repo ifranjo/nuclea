@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process'
+import { cpSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -10,6 +11,8 @@ const appDir = resolve(__dirname, '..')
 
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+const analyzeSourceDir = resolve(appDir, '.next', 'analyze')
+const analyzeSnapshotDir = resolve(appDir, 'docs', 'quality', 'analyze')
 
 function run(command, args, options = {}) {
   return new Promise((resolveRun, rejectRun) => {
@@ -40,6 +43,14 @@ async function main() {
     },
   })
 
+  if (!existsSync(analyzeSourceDir)) {
+    throw new Error(`Analyze output not found at ${analyzeSourceDir}`)
+  }
+
+  mkdirSync(analyzeSnapshotDir, { recursive: true })
+  cpSync(analyzeSourceDir, analyzeSnapshotDir, { recursive: true, force: true })
+  console.log(`[quality-full] Analyzer snapshot saved at ${analyzeSnapshotDir}`)
+
   console.log('\n[quality-full] Step 2/2 - Lighthouse baseline script')
   await run(npmCmd, ['run', 'quality:prm-008'])
 
@@ -50,4 +61,3 @@ main().catch((error) => {
   console.error('\n[quality-full] Failed:', error)
   process.exitCode = 1
 })
-
