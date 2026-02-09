@@ -48,6 +48,7 @@ curl -X DELETE "http://localhost:3000/api/privacy/account" \
 - Optional:
   - `source`
   - `consentVersion` (default: `1.0`)
+- Response includes `unsubscribeUrl` with tokenized opt-out link
 
 Example:
 
@@ -55,6 +56,26 @@ Example:
 curl -X POST "http://localhost:3000/api/waitlist" \
   -H "Content-Type: application/json" \
   -d "{\"email\":\"user@example.com\",\"acceptedPrivacy\":true,\"source\":\"landing-page\",\"consentVersion\":\"1.0\"}"
+```
+
+### 4) Waitlist Unsubscribe (Tokenized)
+
+- Method: `GET` or `POST`
+- Path: `/api/waitlist/unsubscribe`
+- Input:
+  - GET: `?token=<unsubscribeToken>`
+  - POST body: `{ "token": "<unsubscribeToken>" }`
+
+Examples:
+
+```bash
+curl -X GET "http://localhost:3000/api/waitlist/unsubscribe?token=<TOKEN>"
+```
+
+```bash
+curl -X POST "http://localhost:3000/api/waitlist/unsubscribe" \
+  -H "Content-Type: application/json" \
+  -d "{\"token\":\"<TOKEN>\"}"
 ```
 
 ## Notes

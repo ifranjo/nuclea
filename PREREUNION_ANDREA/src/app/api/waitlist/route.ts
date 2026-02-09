@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
+import { randomUUID } from 'crypto'
 
 // Initialize Firebase Admin
 if (!getApps().length) {
@@ -42,6 +43,8 @@ export async function POST(request: NextRequest) {
     }
 
     const db = getFirestore()
+    const unsubscribeToken = randomUUID()
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin
 
     // Check if email already exists
     const existingQuery = await db
@@ -63,6 +66,8 @@ export async function POST(request: NextRequest) {
       source,
       createdAt: FieldValue.serverTimestamp(),
       notified: false,
+      unsubscribeToken,
+      unsubscribedAt: null,
       consentVersion,
       consentSource: source,
       privacyAcceptedAt: FieldValue.serverTimestamp(),
@@ -76,7 +81,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message: 'Te has unido a la lista de espera',
-        id: docRef.id
+        id: docRef.id,
+        unsubscribeUrl: `${appUrl}/api/waitlist/unsubscribe?token=${unsubscribeToken}`,
       },
       { status: 201 }
     )

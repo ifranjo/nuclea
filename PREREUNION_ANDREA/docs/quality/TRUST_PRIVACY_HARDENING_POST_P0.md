@@ -32,6 +32,7 @@ Implemented in current hardening pass:
 - Capsule deletion now performs best-effort Storage cleanup before Firestore delete.
 - Added authenticated DSAR export endpoint (`GET /api/privacy/export`) returning user + capsule data.
 - Added authenticated account deletion endpoint (`DELETE /api/privacy/account`) for core Firestore + Auth cleanup.
+- Added tokenized waitlist unsubscribe endpoint (`GET/POST /api/waitlist/unsubscribe`).
 
 ## P1/P2 Backlog
 

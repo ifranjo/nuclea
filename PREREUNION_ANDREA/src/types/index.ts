@@ -68,6 +68,8 @@ export interface WaitlistEntry {
     ip?: string
     userAgent?: string
   }
+  unsubscribeToken?: string
+  unsubscribedAt?: Date | null
 }
 
 export interface Interaction {
