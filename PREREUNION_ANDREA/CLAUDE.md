@@ -51,9 +51,9 @@ Zustand store → UI state, modals, capsule creation flow, notifications
 
 ### Auth (`src/hooks/useAuth.ts`)
 
-Returns: `user`, `firebaseUser`, `loading`, `error`, `signInWithGoogle()`, `signInWithEmail(email, password)`, `signUpWithEmail(email, password, displayName)`, `signOut()`
+Returns: `user`, `firebaseUser`, `loading`, `error`, `signInWithGoogle(acceptedTerms?)`, `signInWithEmail(email, password)`, `signUpWithEmail(email, password, displayName, acceptedTerms?)`, `signOut()`
 
-Auto-creates user document in Firestore on first sign-in.
+Does not auto-create profile documents from `onAuthStateChanged`. Profile creation now happens only in explicit registration flows that also persist consent metadata (`termsAcceptedAt`, `privacyAcceptedAt`, `consentVersion`).
 
 ### Capsules (`src/hooks/useCapsules.ts`)
 
@@ -126,6 +126,7 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_REGION=europe-west1
 
 # Server-side (API routes — Firebase Admin)
 FIREBASE_PROJECT_ID=
@@ -134,6 +135,14 @@ FIREBASE_PRIVATE_KEY=
 ```
 
 Demo fallback values are hardcoded in `src/lib/firebase.ts` — the app runs locally without real Firebase credentials.
+
+## Legal Routes
+
+Static legal pages available in App Router:
+- `/privacidad`
+- `/terminos`
+- `/consentimiento`
+- `/contacto`
 
 ## Landing Page Structure
 

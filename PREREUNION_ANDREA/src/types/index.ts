@@ -9,6 +9,9 @@ export interface User {
   createdAt: Date
   capsuleCount: number
   storageUsed: number // in bytes
+  termsAcceptedAt?: Date
+  privacyAcceptedAt?: Date
+  consentVersion?: string
 }
 
 export interface Capsule {

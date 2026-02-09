@@ -3,6 +3,8 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
+const FIREBASE_REGION = process.env.NEXT_PUBLIC_FIREBASE_REGION || 'europe-west1'
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "demo-api-key",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "nuclea-demo.firebaseapp.com",
@@ -14,9 +16,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
+
+// Region is configured at Firebase project level; this keeps deployment intent explicit.
+if (FIREBASE_REGION !== 'europe-west1' && process.env.NODE_ENV !== 'production') {
+  console.warn(`Expected NEXT_PUBLIC_FIREBASE_REGION=europe-west1, received "${FIREBASE_REGION}"`)
+}
+
 const auth = getAuth(app)
 const db = getFirestore(app)
 const storage = getStorage(app)
 const googleProvider = new GoogleAuthProvider()
 
-export { app, auth, db, storage, googleProvider }
+export { app, auth, db, storage, googleProvider, FIREBASE_REGION }

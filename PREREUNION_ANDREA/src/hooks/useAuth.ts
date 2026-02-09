@@ -29,21 +29,10 @@ export function useAuth() {
           if (userDoc.exists()) {
             setUser({ id: fbUser.uid, ...userDoc.data() } as User)
           } else {
-            // Create new user document
-            const newUser: Omit<User, 'id'> = {
-              email: fbUser.email || '',
-              displayName: fbUser.displayName || 'Usuario',
-              photoURL: fbUser.photoURL || undefined,
-              plan: 'free',
-              createdAt: new Date(),
-              capsuleCount: 0,
-              storageUsed: 0
-            }
-            await setDoc(doc(db, 'users', fbUser.uid), {
-              ...newUser,
-              createdAt: serverTimestamp()
-            })
-            setUser({ id: fbUser.uid, ...newUser })
+            // Do not auto-create profiles here. Account creation flows must
+            // explicitly persist consent before profile creation.
+            setUser(null)
+            setError('Perfil no encontrado. Completa el registro desde /registro.')
           }
         } catch (err) {
           console.error('Error fetching user:', err)
@@ -59,10 +48,40 @@ export function useAuth() {
     return () => unsubscribe()
   }, [])
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (acceptedTerms = false) => {
     setError(null)
     try {
-      await signInWithPopup(auth, googleProvider)
+      const { user: fbUser } = await signInWithPopup(auth, googleProvider)
+      const userRef = doc(db, 'users', fbUser.uid)
+      const existingUser = await getDoc(userRef)
+
+      if (!existingUser.exists()) {
+        if (!acceptedTerms) {
+          await firebaseSignOut(auth)
+          throw new Error('Debes aceptar terminos y privacidad para crear una cuenta nueva')
+        }
+
+        const now = new Date()
+        const newUser: Omit<User, 'id'> = {
+          email: fbUser.email || '',
+          displayName: fbUser.displayName || 'Usuario',
+          photoURL: fbUser.photoURL || undefined,
+          plan: 'free',
+          createdAt: now,
+          capsuleCount: 0,
+          storageUsed: 0,
+          termsAcceptedAt: now,
+          privacyAcceptedAt: now,
+          consentVersion: '1.0',
+        }
+
+        await setDoc(userRef, {
+          ...newUser,
+          createdAt: serverTimestamp(),
+          termsAcceptedAt: serverTimestamp(),
+          privacyAcceptedAt: serverTimestamp(),
+        })
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al iniciar sesion'
       setError(message)
@@ -81,23 +100,33 @@ export function useAuth() {
     }
   }
 
-  const signUpWithEmail = async (email: string, password: string, displayName: string) => {
+  const signUpWithEmail = async (email: string, password: string, displayName: string, acceptedTerms = false) => {
     setError(null)
     try {
+      if (!acceptedTerms) {
+        throw new Error('Debes aceptar terminos y privacidad para crear una cuenta')
+      }
+
       const { user: fbUser } = await createUserWithEmailAndPassword(auth, email, password)
 
+      const now = new Date()
       const newUser: Omit<User, 'id'> = {
         email,
         displayName,
         plan: 'free',
-        createdAt: new Date(),
+        createdAt: now,
         capsuleCount: 0,
-        storageUsed: 0
+        storageUsed: 0,
+        termsAcceptedAt: now,
+        privacyAcceptedAt: now,
+        consentVersion: '1.0',
       }
 
       await setDoc(doc(db, 'users', fbUser.uid), {
         ...newUser,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        termsAcceptedAt: serverTimestamp(),
+        privacyAcceptedAt: serverTimestamp(),
       })
 
       setUser({ id: fbUser.uid, ...newUser })

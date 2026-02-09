@@ -41,7 +41,7 @@ export default function RegisterPage() {
     setSubmitting(true)
 
     try {
-      await signUpWithEmail(email, password, name)
+      await signUpWithEmail(email, password, name, acceptedTerms)
       toast.success('Cuenta creada correctamente')
       router.push('/dashboard')
     } catch (error: unknown) {
@@ -59,7 +59,7 @@ export default function RegisterPage() {
     }
 
     try {
-      await signInWithGoogle()
+      await signInWithGoogle(true)
       toast.success('Cuenta creada correctamente')
       router.push('/dashboard')
     } catch (error) {
