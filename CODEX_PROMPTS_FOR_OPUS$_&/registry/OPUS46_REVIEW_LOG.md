@@ -564,3 +564,59 @@ Execute P0 remediation workstreams from REV-013, then re-run:
 Success condition:
 - performance output uses measured command evidence only,
 - responsive and privacy gates improve from `FAIL` to at least `WARN`.
+
+## REV-2026-02-09-015
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Post-remediation re-run of all 3 audit prompts with measured-only evidence`
+- Inputs:
+  - `outputs/PRM-QUALITY-008_Performance_Budget_Gate.md`
+  - `outputs/PRM-UX-008_Responsive_Viewport_Audit.md`
+  - `outputs/PRM-TRUST-002_Privacy_Data_Handling_Compliance.md`
+
+### Batch Validation Outcome
+
+- Completeness: pass (`3/3` outputs present, all with measured command evidence)
+- Evidence quality: pass (Lighthouse CLI 13.0.1, `ANALYZE=true` builds, `tsc --noEmit`, `ls -lh` image verification)
+- Schema compliance: pass (all outputs follow gate classification with pass/warn/fail)
+- Version stamp: pass (`PRM-QUALITY-008 v1.0.1` correctly stamped in output metadata)
+
+### Gate Results (REV-013 → REV-015)
+
+1. **PRM-QUALITY-008** (Performance Budget Gate):
+   - PREREUNION_ANDREA: **FAIL → WARN** (Perf 75 <80, LCP 8.8s on dev server, but bundle analyzer configured + images optimized)
+   - POC_INTERNA/app: **WARN → WARN** (Perf 53, LCP 14.9s, TBT 1,010ms; images 310KB <500KB budget)
+   - Measured: Lighthouse 13.0.1 headless, `ANALYZE=true` builds, chunk sizes via `du -ch`
+   - Blocker: `next start` ENOENT prerender-manifest.json (Next 16 issue)
+
+2. **PRM-UX-008** (Responsive Viewport Audit):
+   - Overall: **FAIL → WARN** (27 violations → 10; 10 FAIL → 0 FAIL)
+   - P0 fixes verified: Tailwind breakpoints (5 overrides), touch targets (4 elements ≥44px), header padding/text
+   - Remaining: 4 text sizes ±1px, 2 padding inconsistencies, 1 hardcoded P2 capsule, 1 max-width missing
+
+3. **PRM-TRUST-002** (Privacy & Data Handling Compliance):
+   - Overall: **FAIL → WARN** (32/100 → 58/100)
+   - P0 fixes verified: /privacidad (10 RGPD sections), /terminos (12 sections), consent persistence with serverTimestamp(), onAuthStateChanged no auto-create
+   - Remaining: Art. 15/17/20 (data rights), Art. 28 (DPAs), Art. 9 (biometric WARN), Art. 44 (transfers WARN)
+
+### Findings
+
+1. All 3 gates improved from FAIL to WARN — success condition from REV-014 met.
+2. Performance metrics are dev-server-only (no production Lighthouse possible due Next 16 `next start` failure).
+3. Privacy score doubled (32→58) but data rights and DPAs remain legally blocking for production launch.
+4. Responsive audit achieved zero FAIL items — only cosmetic WARN remain.
+
+### Prompt Actions
+
+- Set `PRM-QUALITY-008` to `needs-tuning`: prompt audit revealed ambiguity in dev-server vs production evidence requirements and Turbopack/Webpack build command flexibility. Proposed patch to v1.1.0.
+- Keep `PRM-UX-008` and `PRM-TRUST-002` `active` — both performed as designed.
+
+### Cleanup Action
+
+- Output files retained in `outputs/` for commit.
+
+### Next Iteration Objective
+
+1. Apply `PRM-QUALITY-008` v1.1.0 patch (dev/prod evidence split, Turbopack compatibility).
+2. Execute REV-016 remediation plan (P1/P2 tasks per front) without code changes — plan only.
+3. After remediation implementation, re-run all 3 prompts targeting PASS gates.
