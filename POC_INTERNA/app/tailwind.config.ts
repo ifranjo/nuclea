@@ -5,6 +5,13 @@ const config: Config = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    screens: {
+      'sm': '375px',
+      'md': '428px',
+      'lg': '768px',
+      'xl': '1024px',
+      '2xl': '1280px',
+    },
     extend: {
       colors: {
         'nuclea-bg': '#FFFFFF',

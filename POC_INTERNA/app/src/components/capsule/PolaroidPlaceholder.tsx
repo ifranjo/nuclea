@@ -68,22 +68,22 @@ export function PolaroidPlaceholder({
             }}
           >
             <button
-              className="p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+              className="p-[10px] rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Me gusta"
             >
-              <Heart size={iconSize} strokeWidth={1.8} className="text-[#3A3A3A]" />
+              <Heart size={20} strokeWidth={1.8} className="text-[#3A3A3A]" />
             </button>
             <button
-              className="p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+              className="p-[10px] rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Ampliar"
             >
-              <Maximize2 size={iconSize} strokeWidth={1.8} className="text-[#3A3A3A]" />
+              <Maximize2 size={20} strokeWidth={1.8} className="text-[#3A3A3A]" />
             </button>
             <button
-              className="p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+              className="p-[10px] rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Compartir"
             >
-              <Share2 size={iconSize} strokeWidth={1.8} className="text-[#3A3A3A]" />
+              <Share2 size={20} strokeWidth={1.8} className="text-[#3A3A3A]" />
             </button>
           </div>
         )}

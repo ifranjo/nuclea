@@ -16,9 +16,10 @@ export function CapsuleTypeCard({ capsuleType, onClick, isFirst, isLast }: Capsu
     <button
       onClick={() => onClick(capsuleType)}
       className={`
-        group w-full flex items-center px-4 py-[15px]
+        group w-full flex items-center px-4 py-4 min-h-[44px]
         bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,249,252,0.96))] text-left
-        transition-all duration-200
+        transition-colors duration-200
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nuclea-gold focus-visible:ring-inset
         hover:bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(244,246,252,1))]
         active:bg-[#F2F2F7]
         ${isFirst ? 'rounded-t-[16px]' : ''}
