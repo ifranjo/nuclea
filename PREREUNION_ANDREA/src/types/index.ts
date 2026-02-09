@@ -60,6 +60,14 @@ export interface WaitlistEntry {
   createdAt: Date
   source: string
   notified: boolean
+  consentVersion?: string
+  consentSource?: string
+  privacyAcceptedAt?: Date
+  termsAcceptedAt?: Date
+  requestMeta?: {
+    ip?: string
+    userAgent?: string
+  }
 }
 
 export interface Interaction {

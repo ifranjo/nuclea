@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
+import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 
 // Initialize Firebase Admin
 if (!getApps().length) {
@@ -19,11 +19,24 @@ if (!getApps().length) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, source = 'api' } = await request.json()
+    const payload = await request.json()
+    const email = typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
+    const source = typeof payload?.source === 'string' ? payload.source : 'api'
+    const acceptedPrivacy = payload?.acceptedPrivacy === true
+    const consentVersion = typeof payload?.consentVersion === 'string' ? payload.consentVersion : '1.0'
+    const forwardedFor = request.headers.get('x-forwarded-for')
+    const requestIp = forwardedFor?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
+    const userAgent = request.headers.get('user-agent') || 'unknown'
 
     if (!email || !email.includes('@')) {
       return NextResponse.json(
         { error: 'Email invalido' },
+        { status: 400 }
+      )
+    }
+    if (!acceptedPrivacy) {
+      return NextResponse.json(
+        { error: 'Debes aceptar privacidad y terminos para unirte a la lista' },
         { status: 400 }
       )
     }
@@ -48,8 +61,16 @@ export async function POST(request: NextRequest) {
     const docRef = await db.collection('waitlist').add({
       email,
       source,
-      createdAt: new Date(),
-      notified: false
+      createdAt: FieldValue.serverTimestamp(),
+      notified: false,
+      consentVersion,
+      consentSource: source,
+      privacyAcceptedAt: FieldValue.serverTimestamp(),
+      termsAcceptedAt: FieldValue.serverTimestamp(),
+      requestMeta: {
+        ip: requestIp,
+        userAgent,
+      },
     })
 
     return NextResponse.json(

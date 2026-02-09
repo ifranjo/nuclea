@@ -22,6 +22,14 @@ Evidence reviewed:
 4. Capsule deletion removes Firestore document but does not guarantee Storage object deletion.
 5. Region intent is declared client-side, but there is no server-side runtime guard for non-EU infra.
 
+## Progress Update
+
+Implemented in current hardening pass:
+- Waitlist is now API-first (client no longer writes directly to Firestore).
+- Waitlist requires explicit privacy/terms acceptance before insert.
+- Waitlist records now persist `consentVersion`, `consentSource`, acceptance timestamps, and request metadata.
+- Login view now includes legal links to `/terminos` and `/privacidad`.
+
 ## P1/P2 Backlog
 
 | Priority | Severity | Gap | Evidence | File Target | Done Criteria |

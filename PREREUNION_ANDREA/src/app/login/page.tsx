@@ -138,6 +138,18 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <p className="text-center text-white/45 text-xs mt-4 leading-relaxed">
+            Al continuar confirmas que conoces nuestros{' '}
+            <Link href="/terminos" className="text-nuclea-gold hover:underline">
+              terminos
+            </Link>{' '}
+            y nuestra{' '}
+            <Link href="/privacidad" className="text-nuclea-gold hover:underline">
+              politica de privacidad
+            </Link>
+            .
+          </p>
+
           <p className="text-center text-white/50 text-sm mt-6">
             ¿No tienes cuenta?{' '}
             <Link href="/registro" className="text-nuclea-gold hover:text-nuclea-gold-light">
