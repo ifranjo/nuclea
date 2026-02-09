@@ -65,10 +65,10 @@ All 6 capsule types are defined here (production code only has 5 — see root `C
 
 ```
 / → redirect → /onboarding
-P1 (tap capsule) → P2 (auto 4s timer) → P3 (tap "Continuar") → P4 (tap card → console.log)
+P1 (tap capsule) → P2 (auto 4s timer, pausable) → P3 (tap "Continuar") → P4 (tap card → console.log)
 ```
 
-All managed by `useState` in `app/src/app/onboarding/page.tsx` — no URL changes.
+Managed by `useState` in `app/src/app/onboarding/page.tsx` with URL sync via `?step=N` and lightweight step telemetry (`nuclea:onboarding-step` custom event).
 
 ### Component Map
 

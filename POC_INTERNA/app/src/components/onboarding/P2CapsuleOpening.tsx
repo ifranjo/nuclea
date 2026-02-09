@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { PolaroidPlaceholder } from '@/components/capsule/PolaroidPlaceholder'
@@ -42,12 +42,30 @@ const CAPSULE_H = 120
 
 /* Clip-path split point — the seam on the capsule PNG */
 const SEAM_PCT = 46
+const TOTAL_DURATION_MS = 4000
+const TICK_MS = 50
 
 export function P2CapsuleOpening({ onNext }: P2Props) {
+  const [elapsedMs, setElapsedMs] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const hasAdvancedRef = useRef(false)
+
   useEffect(() => {
-    const timer = setTimeout(onNext, 4000)
-    return () => clearTimeout(timer)
-  }, [onNext])
+    if (paused || hasAdvancedRef.current) return
+    const timer = setInterval(() => {
+      setElapsedMs((previous) => Math.min(previous + TICK_MS, TOTAL_DURATION_MS))
+    }, TICK_MS)
+    return () => clearInterval(timer)
+  }, [paused])
+
+  useEffect(() => {
+    if (elapsedMs < TOTAL_DURATION_MS || hasAdvancedRef.current) return
+    hasAdvancedRef.current = true
+    onNext()
+  }, [elapsedMs, onNext])
+
+  const progressPercent = Math.round((elapsedMs / TOTAL_DURATION_MS) * 100)
+  const remainingSeconds = Math.max(0, Math.ceil((TOTAL_DURATION_MS - elapsedMs) / 1000))
 
   return (
     <div className="h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden bg-nuclea-bg">
@@ -275,21 +293,27 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
       {/* ============================================================ */}
       {/*  Progress bar — same style as original, reliable timing      */}
       {/* ============================================================ */}
-      <div className="absolute bottom-0 left-0 right-0 safe-bottom px-8 pb-4 z-40">
+      <div className="absolute bottom-0 left-0 right-0 safe-bottom px-8 pb-4 z-40 space-y-2">
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => setPaused((current) => !current)}
+            className="text-[12px] font-medium text-nuclea-text/70 hover:text-nuclea-text transition-colors"
+            aria-label={paused ? 'Reanudar apertura' : 'Pausar apertura'}
+          >
+            {paused ? 'Reanudar' : 'Pausar'}
+          </button>
+          <span className="text-[12px] text-nuclea-text-muted">
+            {paused ? 'Pausado' : `Continua en ${remainingSeconds}s`}
+          </span>
+        </div>
         <div className="h-[3px] bg-[#E5E5EA] rounded-full overflow-hidden">
           <div
             className="h-full bg-nuclea-text rounded-full"
-            style={{ animation: 'p2-progress-fill 4s linear forwards' }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
-
-      <style>{`
-        @keyframes p2-progress-fill {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
     </div>
   )
 }

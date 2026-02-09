@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { P1CapsuleClosed } from '@/components/onboarding/P1CapsuleClosed'
 import { P2CapsuleOpening } from '@/components/onboarding/P2CapsuleOpening'
@@ -19,6 +18,7 @@ const fadeTransition = { duration: 0.3 }
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<OnboardingStep>(1)
+  const didInitFromUrl = useRef(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -26,11 +26,30 @@ export default function OnboardingPage() {
     if (Number.isInteger(requested) && requested >= 1 && requested <= 4) {
       setStep(requested as OnboardingStep)
     }
+    didInitFromUrl.current = true
   }, [])
 
   const next = useCallback(() => {
     setStep((prev) => (prev < 4 ? ((prev + 1) as OnboardingStep) : prev))
   }, [])
+
+  useEffect(() => {
+    if (!didInitFromUrl.current) return
+
+    const currentUrl = new URL(window.location.href)
+    currentUrl.searchParams.set('step', String(step))
+    window.history.replaceState(null, '', currentUrl.toString())
+
+    const detail = {
+      step,
+      source: 'onboarding-flow',
+      timestamp: new Date().toISOString(),
+    }
+
+    window.dispatchEvent(new CustomEvent('nuclea:onboarding-step', { detail }))
+    // Keep lightweight instrumentation available during prototype iterations.
+    console.info('[onboarding-step]', detail)
+  }, [step])
 
   return (
     <AnimatePresence mode="wait">
