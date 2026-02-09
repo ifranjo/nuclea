@@ -520,3 +520,47 @@ Execute P0 remediation tasks identified across all 3 audits:
 3. **Performance (high)**: Optimize capsule PNGs from 9.4MB to <400KB, install `@next/bundle-analyzer`.
 
 Success condition: re-run all 3 prompts and achieve at minimum WARN on responsive and privacy gates.
+
+## REV-2026-02-09-014
+
+- Reviewer: `CTO PromptOps`
+- Scope: `REV-013 ingestion closure + outputs hygiene reset`
+- Inputs:
+  - `outputs/PRM-QUALITY-008_Performance_Budget_Gate.md`
+  - `outputs/PRM-UX-008_Responsive_Viewport_Audit.md`
+  - `outputs/PRM-TRUST-002_Privacy_Data_Handling_Compliance.md`
+
+### Batch Validation Outcome
+
+- Completeness: pass (`3/3` outputs ingested)
+- Registry/changelog alignment: pass
+- Outputs hygiene: pass after cleanup (reset to `.gitkeep`)
+
+### Findings
+
+1. `PRM-QUALITY-008` output reports `v1.0.0` metadata while active prompt is `v1.0.1`.
+2. `PRM-QUALITY-008` output contains estimated metrics and a non-executed Lighthouse section; treat this as execution-evidence shortfall (not prompt schema failure).
+3. `PRM-UX-008` and `PRM-TRUST-002` outputs remain actionable for P0 remediation backlog execution.
+
+### Prompt Actions
+
+- No prompt retirement.
+- Keep `PRM-QUALITY-008` `active`; enforce next-run requirement:
+  - exact active prompt version stamp in output metadata
+  - measured command-backed metrics for Lighthouse/CWV (no estimate-only gate claims)
+
+### Cleanup Action
+
+- Removed REV-013 output files from `outputs/`.
+- Retained `outputs/.gitkeep`.
+
+### Next Iteration Objective
+
+Execute P0 remediation workstreams from REV-013, then re-run:
+- `PRM-QUALITY-008 v1.0.1`
+- `PRM-UX-008`
+- `PRM-TRUST-002`
+
+Success condition:
+- performance output uses measured command evidence only,
+- responsive and privacy gates improve from `FAIL` to at least `WARN`.
