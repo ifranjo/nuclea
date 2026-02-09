@@ -1,0 +1,71 @@
+name: quality-gates
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+
+jobs:
+  prereunion-quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: PREREUNION_ANDREA
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: PREREUNION_ANDREA/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Production build (Turbopack)
+        run: npm run build
+
+      - name: Analyze build (Webpack)
+        env:
+          ANALYZE: 'true'
+        run: npx next build --webpack
+
+      - name: Upload analyze reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: prereunion-analyze-report
+          path: PREREUNION_ANDREA/.next/analyze/*
+          if-no-files-found: error
+
+  poc-quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: POC_INTERNA/app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: POC_INTERNA/app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Production build
+        run: npm run build
