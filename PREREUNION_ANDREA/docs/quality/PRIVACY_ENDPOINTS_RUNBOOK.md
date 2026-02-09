@@ -86,3 +86,10 @@ curl -X POST "http://localhost:3000/api/waitlist/unsubscribe" \
 - Dashboard now exposes self-service actions:
   - `Exportar mis datos` calls `/api/privacy/export`
   - `Eliminar mi cuenta` calls `/api/privacy/account` (requires typed confirmation)
+
+## Auth/Error Semantics
+
+- Protected endpoints (`/api/privacy/export`, `/api/privacy/account`, `/api/capsules`) return:
+  - `401` for missing or invalid bearer token
+  - `500` only for unexpected server/runtime errors
+- This allows downstream quality gates to distinguish authentication failures from backend failures.

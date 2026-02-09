@@ -3,6 +3,15 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getAuth } from 'firebase-admin/auth'
 
+class AuthError extends Error {
+  status: number
+
+  constructor(message: string, status = 401) {
+    super(message)
+    this.status = status
+  }
+}
+
 if (!getApps().length) {
   try {
     initializeApp({
@@ -20,13 +29,17 @@ if (!getApps().length) {
 async function verifyToken(request: NextRequest) {
   const authHeader = request.headers.get('Authorization')
   if (!authHeader?.startsWith('Bearer ')) {
-    throw new Error('No authorization token')
+    throw new AuthError('No authorization token', 401)
   }
 
   const token = authHeader.split('Bearer ')[1]
   const auth = getAuth()
-  const decodedToken = await auth.verifyIdToken(token)
-  return decodedToken.uid
+  try {
+    const decodedToken = await auth.verifyIdToken(token)
+    return decodedToken.uid
+  } catch (_error) {
+    throw new AuthError('Invalid authorization token', 401)
+  }
 }
 
 export async function DELETE(request: NextRequest) {
@@ -55,6 +68,13 @@ export async function DELETE(request: NextRequest) {
       deletedCapsules: capsulesSnapshot.size,
     })
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status }
+      )
+    }
+
     console.error('Privacy account delete error:', error)
     return NextResponse.json(
       { error: 'No se pudo completar la eliminacion de cuenta' },
