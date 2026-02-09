@@ -14,7 +14,8 @@ import {
   serverTimestamp,
   increment
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { deleteObject, ref as storageRef } from 'firebase/storage'
+import { db, storage } from '@/lib/firebase'
 import type { Capsule, CapsuleType, CapsuleContent } from '@/types'
 
 export function useCapsules(userId: string | undefined) {
@@ -111,6 +112,24 @@ export function useCapsules(userId: string | undefined) {
     if (!userId) throw new Error('Usuario no autenticado')
 
     try {
+      const capsule = capsules.find((item) => item.id === capsuleId)
+      const urls = capsule?.contents
+        .map((content) => content.url)
+        .filter((url): url is string => Boolean(url))
+        .filter((url) => url.startsWith('gs://') || url.includes('firebasestorage.googleapis.com')) ?? []
+
+      if (urls.length > 0) {
+        const cleanupResults = await Promise.allSettled(
+          urls.map((url) => deleteObject(storageRef(storage, url)))
+        )
+
+        cleanupResults.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            console.warn('Storage cleanup warning:', urls[index], result.reason)
+          }
+        })
+      }
+
       await deleteDoc(doc(db, 'capsules', capsuleId))
 
       // Update user's capsule count
@@ -121,7 +140,7 @@ export function useCapsules(userId: string | undefined) {
       console.error('Error deleting capsule:', err)
       throw new Error('Error al eliminar la capsula')
     }
-  }, [userId])
+  }, [userId, capsules])
 
   const addContent = useCallback(async (
     capsuleId: string,

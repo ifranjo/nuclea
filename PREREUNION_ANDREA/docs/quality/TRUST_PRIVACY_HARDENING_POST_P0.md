@@ -29,6 +29,7 @@ Implemented in current hardening pass:
 - Waitlist requires explicit privacy/terms acceptance before insert.
 - Waitlist records now persist `consentVersion`, `consentSource`, acceptance timestamps, and request metadata.
 - Login view now includes legal links to `/terminos` and `/privacidad`.
+- Capsule deletion now performs best-effort Storage cleanup before Firestore delete.
 
 ## P1/P2 Backlog
 
