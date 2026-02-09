@@ -12,6 +12,7 @@ All commands run from this directory (`PREREUNION_ANDREA/`):
 npm install              # Install dependencies
 npm run dev              # Dev server at http://localhost:3000
 npm run build            # Production build
+ANALYZE=true npm run build # Build + bundle analyzer
 npm run start            # Start production server
 npm run lint             # ESLint
 npm run deploy           # Deploy to Vercel (--prod)
@@ -156,6 +157,7 @@ Landing sections are in `src/components/landing/`.
 - `reactStrictMode: true`
 - Image remote patterns: `firebasestorage.googleapis.com`, `lh3.googleusercontent.com`
 - App env: `NEXT_PUBLIC_APP_NAME=NUCLEA`, `NEXT_PUBLIC_APP_VERSION=1.0.0`
+- Optional bundle analysis via `@next/bundle-analyzer` when `ANALYZE=true`
 
 ## No Testing Infrastructure
 
