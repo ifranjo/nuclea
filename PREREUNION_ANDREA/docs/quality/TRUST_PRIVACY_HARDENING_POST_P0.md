@@ -30,6 +30,7 @@ Implemented in current hardening pass:
 - Waitlist records now persist `consentVersion`, `consentSource`, acceptance timestamps, and request metadata.
 - Login view now includes legal links to `/terminos` and `/privacidad`.
 - Capsule deletion now performs best-effort Storage cleanup before Firestore delete.
+- Added authenticated DSAR export endpoint (`GET /api/privacy/export`) returning user + capsule data.
 
 ## P1/P2 Backlog
 
