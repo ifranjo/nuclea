@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "quality:prm-008": "node scripts/run-prm-quality-008-lighthouse.mjs",
+    "quality:prm-008:full": "node scripts/run-prm-quality-008-full.mjs",
     "start": "next start",
     "lint": "next lint",
     "deploy": "vercel --prod"

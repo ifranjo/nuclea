@@ -23,6 +23,7 @@ cd PREREUNION_ANDREA
 npx tsc --noEmit
 npm run build
 ANALYZE=true npx next build --webpack
+npm run quality:prm-008:full
 
 cd ../POC_INTERNA/app
 npx tsc --noEmit

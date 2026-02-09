@@ -1,6 +1,6 @@
 # PRM-QUALITY-008 Lighthouse Baseline
 
-Generated: 2026-02-09T02:32:44.023Z
+Generated: 2026-02-09T03:08:03.693Z
 
 ## Repro Command
 
@@ -19,5 +19,5 @@ npm run quality:prm-008
 
 | Profile | Perf Score | LCP (s) | CLS | INP (ms) | TBT (ms) |
 |---|---:|---:|---:|---:|---:|
-| mobile | 89 | 3.81 | 0 | n/a | 54 |
-| desktop | 100 | 0.8 | 0 | n/a | 0 |
+| mobile | 92 | 3.43 | 0 | n/a | 32 |
+| desktop | 100 | 0.81 | 0 | n/a | 0 |
