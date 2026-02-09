@@ -30,7 +30,7 @@ Onboarding POC — 4 screens demonstrating the emotional capsule experience.
 
 ```bash
 cd app && npm install && npm run dev   # http://localhost:3001
-cd app && ANALYZE=true npm run build   # genera reportes de bundle-analyzer
+cd app && npm install && $env:ANALYZE='true'; npm run build   # PowerShell + bundle-analyzer
 ```
 
 | Aspect | Value |

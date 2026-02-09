@@ -12,7 +12,7 @@ All commands run from this directory (`PREREUNION_ANDREA/`):
 npm install              # Install dependencies
 npm run dev              # Dev server at http://localhost:3000
 npm run build            # Production build
-ANALYZE=true npm run build # Build + bundle analyzer
+$env:ANALYZE='true'; npx next build --webpack # Build + bundle analyzer (PowerShell, Next16)
 npm run start            # Start production server
 npm run lint             # ESLint
 npm run deploy           # Deploy to Vercel (--prod)
