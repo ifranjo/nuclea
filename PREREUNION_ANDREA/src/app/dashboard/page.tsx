@@ -3,17 +3,18 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Plus, Search, Filter, Grid, List } from 'lucide-react'
+import { Plus, Search, Grid, List, Download, UserX } from 'lucide-react'
 import Header from '@/components/Header'
 import CapsuleCard from '@/components/CapsuleCard'
 import { useAuth } from '@/hooks/useAuth'
 import { useCapsules } from '@/hooks/useCapsules'
 import { CAPSULE_TYPES, PLANS } from '@/types'
 import type { CapsuleType } from '@/types'
+import toast from 'react-hot-toast'
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
+  const { user, firebaseUser, loading: authLoading, signOut } = useAuth()
   const { capsules, loading: capsulesLoading, createCapsule, deleteCapsule } = useCapsules(user?.id)
 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -25,6 +26,8 @@ export default function DashboardPage() {
     description: ''
   })
   const [creating, setCreating] = useState(false)
+  const [exportingData, setExportingData] = useState(false)
+  const [deletingAccount, setDeletingAccount] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -69,6 +72,71 @@ export default function DashboardPage() {
     }
   }
 
+  const getAuthToken = async () => {
+    if (!firebaseUser) throw new Error('Sesion no disponible')
+    return firebaseUser.getIdToken(true)
+  }
+
+  const handleExportData = async () => {
+    setExportingData(true)
+    try {
+      const token = await getAuthToken()
+      const response = await fetch('/api/privacy/export', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const payload = await response.json()
+      if (!response.ok) {
+        throw new Error(payload?.error || 'No se pudo exportar la informacion')
+      }
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+      const downloadUrl = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = downloadUrl
+      anchor.download = `nuclea-export-${new Date().toISOString().slice(0, 10)}.json`
+      anchor.click()
+      URL.revokeObjectURL(downloadUrl)
+      toast.success('Exportacion descargada')
+    } catch (error) {
+      console.error('Export data error:', error)
+      toast.error('Error al exportar los datos')
+    } finally {
+      setExportingData(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    const confirmation = window.prompt('Escribe ELIMINAR para confirmar la eliminacion de tu cuenta:')
+    if (confirmation !== 'ELIMINAR') return
+
+    setDeletingAccount(true)
+    try {
+      const token = await getAuthToken()
+      const response = await fetch('/api/privacy/account', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const payload = await response.json()
+      if (!response.ok) {
+        throw new Error(payload?.error || 'No se pudo eliminar la cuenta')
+      }
+
+      toast.success('Cuenta eliminada correctamente')
+      await signOut()
+      router.push('/')
+    } catch (error) {
+      console.error('Delete account error:', error)
+      toast.error('Error al eliminar la cuenta')
+    } finally {
+      setDeletingAccount(false)
+    }
+  }
+
   return (
     <main className="min-h-screen pb-20">
       <Header />
@@ -98,6 +166,31 @@ export default function DashboardPage() {
         </div>
 
         {/* Filters */}
+        <div className="glass rounded-2xl p-5 mb-8 border border-white/10">
+          <h2 className="text-lg font-semibold text-white mb-2">Privacidad y datos</h2>
+          <p className="text-white/55 text-sm mb-4">
+            Puedes exportar tus datos personales o solicitar la eliminacion completa de tu cuenta.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={handleExportData}
+              disabled={exportingData || deletingAccount}
+              className="btn-secondary flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Download size={16} />
+              {exportingData ? 'Exportando...' : 'Exportar mis datos'}
+            </button>
+            <button
+              onClick={handleDeleteAccount}
+              disabled={deletingAccount || exportingData}
+              className="px-4 py-2 rounded-xl border border-red-400/40 text-red-300 hover:bg-red-500/10 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <UserX size={16} />
+              {deletingAccount ? 'Eliminando...' : 'Eliminar mi cuenta'}
+            </button>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative flex-1">
             <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />

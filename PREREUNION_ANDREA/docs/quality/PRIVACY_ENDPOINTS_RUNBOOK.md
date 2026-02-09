@@ -62,3 +62,6 @@ curl -X POST "http://localhost:3000/api/waitlist" \
 - In local/dev environments without valid Firebase Admin credentials, route initialization logs PEM warnings but build can still complete.
 - `useCapsules.deleteCapsule` now attempts best-effort Storage cleanup before Firestore deletion.
 - Account deletion currently targets core user/capsule records; review third-party processor deletion workflows separately.
+- Dashboard now exposes self-service actions:
+  - `Exportar mis datos` calls `/api/privacy/export`
+  - `Eliminar mi cuenta` calls `/api/privacy/account` (requires typed confirmation)
