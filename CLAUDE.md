@@ -56,18 +56,19 @@ nuclea/
 
 Each app has its own `CLAUDE.md` with tech details. Sub-app CLAUDE.md files are the reference for app-specific architecture, types, design tokens, and environment variables.
 
-## Two Applications
+## Three Applications
 
-| | Production (`PREREUNION_ANDREA/`) | POC (`POC_INTERNA/app/`) |
-|---|---|---|
-| **Port** | 3000 | 3001 |
-| **Theme** | Dark (`#0D0D12`) | White (`#FFFFFF`) |
-| **Backend** | Firebase (Auth, Firestore, Storage) | None (pure UI) |
-| **Next.js** | 16.1.4 | 15.1.0+ |
-| **React** | 18 | 19 |
-| **Body Font** | DM Sans | Inter |
-| **State** | Zustand | useState only |
-| **Path Alias** | `@/*` → `./src/*` | `@/*` → `./src/*` |
+| | Production (`PREREUNION_ANDREA/`) | POC UI (`POC_INTERNA/app/`) | POC Real (`POC_REAL/`) |
+|---|---|---|---|
+| **Port** | 3000 | 3001 | 3002 |
+| **Theme** | Dark (`#0D0D12`) | White (`#FFFFFF`) | White (`#FFFFFF`) |
+| **Backend** | Firebase (Auth, Firestore, Storage) | None (pure UI) | Supabase local (Docker) |
+| **Next.js** | 16.1.4 | 15.1.0+ | 15.x |
+| **React** | 18 | 19 | 19 |
+| **Body Font** | DM Sans | Inter | Inter |
+| **State** | Zustand | useState only | React hooks + useRef |
+| **Path Alias** | `@/*` → `./src/*` | `@/*` → `./src/*` | `@/*` → `./src/*` |
+| **Status** | Production | Demo only | Real backend POC |
 
 ## Development Commands
 
@@ -81,13 +82,25 @@ npm run lint             # ESLint
 npm run deploy           # Vercel deploy (--prod)
 ```
 
-### POC App
+### POC App (UI only)
 
 ```bash
 cd POC_INTERNA/app && npm install
 npm run dev              # localhost:3001
 npm run build            # Production build
 npm run lint             # ESLint
+```
+
+### POC Real (Supabase backend)
+
+```bash
+cd POC_REAL && npm install
+npx supabase start       # Docker must be running
+npx supabase db reset    # Apply migrations
+npx tsx scripts/seed.ts  # Seed 5 users + capsules + images
+npx tsx scripts/seed-beta.ts  # Grant beta access
+npm run dev              # localhost:3002
+# Supabase Studio: http://localhost:54323
 ```
 
 ### POC Autocheck & Healing

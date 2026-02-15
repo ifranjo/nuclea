@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POC_REAL — Session State &amp; Handoff</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --green: #2D6A4F;
+      --amber: #B8860B;
+      --red: #C0392B;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg-page); color: var(--text-primary); line-height: 1.6; }
+    .doc-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    .doc-sidebar { background: var(--bg-nav); border-right: 1px solid var(--border-light); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.5rem; }
+    .doc-content { padding: 3rem 4rem; max-width: 900px; }
+    @media (max-width: 900px) { .doc-layout { grid-template-columns: 1fr; } .doc-sidebar { display: none; } .doc-content { padding: 2rem 1.5rem; } }
+    @media print { .doc-sidebar { display: none; } .doc-layout { grid-template-columns: 1fr; } .doc-content { padding: 1rem; } }
+
+    .sidebar-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 1rem; }
+    .sidebar-logo { font-size: 1.1rem; font-weight: 300; letter-spacing: 0.3em; color: var(--text-primary); margin-bottom: 0.25rem; }
+    .sidebar-sub { font-size: 0.7rem; color: var(--text-tertiary); margin-bottom: 2rem; }
+    .nav-section { margin-bottom: 1.25rem; }
+    .nav-section-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 0.4rem; }
+    .nav-link { display: block; padding: 0.3rem 0; font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; border-left: 2px solid transparent; padding-left: 0.75rem; transition: all 0.15s; }
+    .nav-link:hover { color: var(--text-primary); }
+    .nav-link.active { color: var(--text-primary); border-left-color: var(--border-heavy); font-weight: 500; }
+
+    h1 { font-size: 2rem; font-weight: 300; letter-spacing: 0.15em; border-bottom: 2px solid var(--border-heavy); padding-bottom: 0.75rem; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 0.9rem; color: var(--text-tertiary); margin-bottom: 2.5rem; }
+    h2 { font-size: 1.3rem; font-weight: 500; margin-top: 3rem; margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 1.05rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    p { margin-bottom: 0.75rem; font-size: 0.92rem; color: var(--text-secondary); }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.85rem; }
+    th { background: var(--bg-note); padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border-light); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); }
+    td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+
+    .status { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 3px; }
+    .status-pass { background: #E8F5E9; color: var(--green); }
+    .status-pending { background: #FFF8E1; color: var(--amber); }
+    .status-fail { background: #FFEBEE; color: var(--red); }
+    .status-off { background: var(--bg-note); color: var(--text-tertiary); }
+
+    .prompt-block { background: var(--bg-code); border: 1px solid var(--border-light); border-radius: 4px; margin: 1rem 0; overflow: hidden; }
+    .prompt-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.8rem; background: var(--bg-note); border-bottom: 1px solid var(--border-light); }
+    .prompt-label { font-size: 0.75rem; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; }
+    .copy-btn { background: var(--copy-btn); color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600; cursor: pointer; letter-spacing: 0.04em; }
+    .copy-btn:hover { opacity: 0.85; }
+    .copy-btn.copied { background: #2D6A4F; }
+    .prompt-content { padding: 0.8rem; font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; color: var(--text-primary); }
+
+    .note-box { background: var(--bg-note); border-left: 3px solid var(--amber); padding: 0.8rem 1rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+    .note-box p { margin: 0; font-size: 0.85rem; }
+    .note-box strong { color: var(--text-primary); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin: 1.5rem 0; }
+    .kpi-card { background: var(--bg-note); border: 1px solid var(--border-light); border-radius: 6px; padding: 1rem; text-align: center; }
+    .kpi-value { font-size: 1.6rem; font-weight: 300; color: var(--text-primary); }
+    .kpi-label { font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.25rem; }
+
+    code { background: var(--bg-code); padding: 0.15rem 0.35rem; border-radius: 3px; font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 0.82rem; }
+
+    .file-tree { font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 0.78rem; line-height: 1.8; background: var(--bg-code); border: 1px solid var(--border-light); border-radius: 4px; padding: 1rem 1.2rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <div class="sidebar-logo">NUCLEA</div>
+      <div class="sidebar-sub">POC_REAL Session State</div>
+      <div class="sidebar-title">15 febrero 2026</div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <a href="#summary" class="nav-link active">Executive Summary</a>
+        <a href="#kpis" class="nav-link">KPIs</a>
+        <a href="#architecture" class="nav-link">Architecture</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Technical</div>
+        <a href="#routes" class="nav-link">Routes (22)</a>
+        <a href="#database" class="nav-link">Database Tables</a>
+        <a href="#hooks" class="nav-link">React Hooks</a>
+        <a href="#beta" class="nav-link">Beta System</a>
+        <a href="#middleware" class="nav-link">Middleware</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Status</div>
+        <a href="#bugs-fixed" class="nav-link">Bugs Fixed (7/7)</a>
+        <a href="#qa" class="nav-link">QA Results</a>
+        <a href="#pending" class="nav-link">Pending Items</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Operations</div>
+        <a href="#startup" class="nav-link">How to Start</a>
+        <a href="#seed" class="nav-link">Seed Data</a>
+        <a href="#andrea" class="nav-link">Andrea's Feedback</a>
+        <a href="#next" class="nav-link">Next Session</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1>POC_REAL</h1>
+      <p class="subtitle">Session state dump &mdash; 15 febrero 2026 &mdash; Commit <code>2522b30</code></p>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <h2 id="summary">Executive Summary</h2>
+      <p>POC_REAL is a fully functional Supabase-backed demo of the NUCLEA platform. Same UI as POC_INTERNA (onboarding, capsule selection) but wired to real auth, real file uploads, real persistence via local Docker Supabase. Includes a production-grade beta invitation system with token hashing, OTP magic links, rate limiting, and audit logging.</p>
+      <p>All 7 CEO-reported bugs have been fixed and verified via Playwright. Beta system tested 4/4 PASS. Build compiles clean with 22 routes.</p>
+
+      <!-- KPIs -->
+      <h2 id="kpis">KPIs</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-value">84</div><div class="kpi-label">Files committed</div></div>
+        <div class="kpi-card"><div class="kpi-value">7,240</div><div class="kpi-label">Lines of code</div></div>
+        <div class="kpi-card"><div class="kpi-value">22</div><div class="kpi-label">Routes</div></div>
+        <div class="kpi-card"><div class="kpi-value">8</div><div class="kpi-label">DB Tables</div></div>
+        <div class="kpi-card"><div class="kpi-value">5</div><div class="kpi-label">Test users</div></div>
+        <div class="kpi-card"><div class="kpi-value">11/11</div><div class="kpi-label">QA Pass</div></div>
+      </div>
+
+      <!-- ARCHITECTURE -->
+      <h2 id="architecture">Architecture</h2>
+      <table>
+        <tr><th>Layer</th><th>Technology</th><th>Details</th></tr>
+        <tr><td>Framework</td><td>Next.js 15 + React 19</td><td>App Router, TypeScript, Tailwind CSS</td></tr>
+        <tr><td>Backend</td><td>Supabase local (Docker)</td><td>PostgreSQL, Auth, Storage, Studio</td></tr>
+        <tr><td>Auth</td><td>Supabase Auth</td><td>Email/password + OTP magic links (beta)</td></tr>
+        <tr><td>Storage</td><td>Supabase Storage</td><td>Public bucket <code>capsule-contents</code></td></tr>
+        <tr><td>Port</td><td>3002</td><td>Dev server (3000=prod, 3001=POC_INTERNA)</td></tr>
+        <tr><td>Animation</td><td>Framer Motion</td><td>Onboarding P1-P4 transitions</td></tr>
+        <tr><td>Icons</td><td>Lucide React</td><td>UI icons throughout</td></tr>
+        <tr><td>State</td><td>React hooks + useRef</td><td>Stable Supabase client via useRef pattern</td></tr>
+      </table>
+
+      <div class="file-tree">
+POC_REAL/
+├── src/
+│   ├── app/
+│   │   ├── api/auth/callback/       &larr; OAuth callback
+│   │   ├── api/beta/accept/         &larr; Token validation + OTP
+│   │   ├── api/beta/complete/       &larr; Post-OTP access grant
+│   │   ├── api/beta/invite/         &larr; Admin: create/list invites
+│   │   ├── api/beta/revoke/         &larr; Admin: revoke access
+│   │   ├── beta/accept/             &larr; Invitation landing page
+│   │   ├── beta/complete/           &larr; Post-auth activation
+│   │   ├── beta/waitlist/           &larr; Holding page
+│   │   ├── capsule/[id]/            &larr; Capsule detail
+│   │   ├── dashboard/               &larr; Capsule grid
+│   │   ├── login/                   &larr; Email/password + quick-fill
+│   │   ├── onboarding/              &larr; P1-P4 flow
+│   │   ├── settings/                &larr; Profile + Coming Soon
+│   │   └── share/[token]/           &larr; Public read-only view
+│   ├── components/
+│   │   ├── capsule/                 &larr; Calendar, Upload, AddPerson, Media
+│   │   ├── icons/                   &larr; CapsuleIcons
+│   │   ├── onboarding/              &larr; P1-P4 components
+│   │   └── ui/                      &larr; BottomNav, Button, Header, etc.
+│   ├── hooks/
+│   │   ├── useAuth.ts               &larr; Auth state + signIn/signUp/signOut
+│   │   ├── useCapsules.ts           &larr; CRUD capsules + storage calc
+│   │   ├── useCapsuleContents.ts    &larr; Upload/delete/fetch contents
+│   │   └── useDesignatedPersons.ts  &larr; CRUD designated persons
+│   ├── lib/
+│   │   ├── beta.ts                  &larr; Token hash, rate limit, audit, invite mgmt
+│   │   ├── supabase/client.ts       &larr; Browser client
+│   │   ├── supabase/server.ts       &larr; Server client (cookies)
+│   │   └── supabase/admin.ts        &larr; Service role client
+│   └── middleware.ts                &larr; Auth + beta gate
+├── supabase/
+│   ├── migrations/
+│   │   ├── 00001_initial_schema.sql &larr; users, capsules, contents, collaborators, designated_persons
+│   │   ├── 00002_disable_rls.sql    &larr; RLS off for POC
+│   │   └── 00003_beta_system.sql    &larr; beta_invitations, beta_access, audit_log, rate_limits
+│   └── config.toml
+└── scripts/
+    ├── seed.ts                      &larr; 5 users, 5 capsules, images, notes, collab
+    └── seed-beta.ts                 &larr; Grant beta access + demo invitation
+      </div>
+
+      <!-- ROUTES -->
+      <h2 id="routes">Routes (22)</h2>
+      <table>
+        <tr><th>Route</th><th>Type</th><th>Auth</th><th>Purpose</th></tr>
+        <tr><td><code>/</code></td><td>Static</td><td>Public</td><td>Redirect to /login</td></tr>
+        <tr><td><code>/login</code></td><td>Static</td><td>Public</td><td>Email/password + quick-fill buttons</td></tr>
+        <tr><td><code>/registro</code></td><td>Static</td><td>Public</td><td>Registration form</td></tr>
+        <tr><td><code>/dashboard</code></td><td>Static</td><td>Protected</td><td>Capsule grid, storage display</td></tr>
+        <tr><td><code>/capsule/[id]</code></td><td>Dynamic</td><td>Protected</td><td>Calendar, upload, share, persons</td></tr>
+        <tr><td><code>/settings</code></td><td>Static</td><td>Protected</td><td>Profile, Coming Soon badges</td></tr>
+        <tr><td><code>/share/[token]</code></td><td>Dynamic</td><td>Public</td><td>Read-only capsule view</td></tr>
+        <tr><td><code>/onboarding</code></td><td>Static</td><td>Public</td><td>P1-P4 flow (?step=N)</td></tr>
+        <tr><td><code>/onboarding/capsule/[type]</code></td><td>Dynamic</td><td>Public</td><td>Capsule type detail</td></tr>
+        <tr><td><code>/onboarding/legal/*</code></td><td>Static</td><td>Public</td><td>Privacy + Terms</td></tr>
+        <tr><td><code>/beta/accept</code></td><td>Static</td><td>Public</td><td>Invitation landing page</td></tr>
+        <tr><td><code>/beta/waitlist</code></td><td>Static</td><td>Public</td><td>Access pending page</td></tr>
+        <tr><td><code>/beta/complete</code></td><td>Static</td><td>Auth</td><td>Post-OTP activation</td></tr>
+        <tr><td><code>/api/auth/callback</code></td><td>API</td><td>&mdash;</td><td>OAuth/OTP callback</td></tr>
+        <tr><td><code>/api/beta/invite</code></td><td>API</td><td>Admin</td><td>Create/list invitations</td></tr>
+        <tr><td><code>/api/beta/accept</code></td><td>API</td><td>Public</td><td>Validate token + send OTP</td></tr>
+        <tr><td><code>/api/beta/complete</code></td><td>API</td><td>Auth</td><td>Grant beta access</td></tr>
+        <tr><td><code>/api/beta/revoke</code></td><td>API</td><td>Admin</td><td>Revoke user access</td></tr>
+        <tr><td><code>/demo</code></td><td>Static</td><td>Public</td><td>Demo page</td></tr>
+        <tr><td><code>/demo-calendar</code></td><td>Static</td><td>Public</td><td>Calendar demo</td></tr>
+      </table>
+
+      <!-- DATABASE -->
+      <h2 id="database">Database Tables</h2>
+      <table>
+        <tr><th>Table</th><th>Status</th><th>Key Columns</th></tr>
+        <tr><td><code>users</code></td><td><span class="status status-pass">Active</span></td><td>id, auth_id, email, full_name</td></tr>
+        <tr><td><code>capsules</code></td><td><span class="status status-pass">Active</span></td><td>id, owner_id, type, status, share_token, storage_used_bytes</td></tr>
+        <tr><td><code>contents</code></td><td><span class="status status-pass">Active</span></td><td>id, capsule_id, type, file_path, file_size_bytes, text_content</td></tr>
+        <tr><td><code>collaborators</code></td><td><span class="status status-pass">Active</span></td><td>capsule_id, user_id, role</td></tr>
+        <tr><td><code>designated_persons</code></td><td><span class="status status-pass">Active</span></td><td>capsule_id, full_name, email, relationship</td></tr>
+        <tr><td><code>beta_invitations</code></td><td><span class="status status-pass">Active</span></td><td>email, token_hash, status, cohort, expires_at</td></tr>
+        <tr><td><code>beta_access</code></td><td><span class="status status-pass">Active</span></td><td>user_id, enabled, cohort, granted_at</td></tr>
+        <tr><td><code>beta_audit_log</code></td><td><span class="status status-pass">Active</span></td><td>event, email, user_id, ip_address, metadata</td></tr>
+      </table>
+      <div class="note-box"><p><strong>RLS is disabled</strong> for all tables (00002 migration). Must re-enable before any public deployment.</p></div>
+
+      <!-- HOOKS -->
+      <h2 id="hooks">React Hooks</h2>
+      <table>
+        <tr><th>Hook</th><th>Pattern</th><th>Key Details</th></tr>
+        <tr><td><code>useAuth</code></td><td>useRef(createClient())</td><td>getSession() initial + onAuthStateChange listener. 5s failsafe timeout. fetchProfile extracted as useCallback. signOut clears state first then redirects.</td></tr>
+        <tr><td><code>useCapsules</code></td><td>useRef(createClient())</td><td>Fetches owned + collaborated. Aggregates storage from contents.file_size_bytes. ensureShareToken() generates on-demand. try/catch/finally pattern.</td></tr>
+        <tr><td><code>useCapsuleContents</code></td><td>useRef(createClient())</td><td>Upload to Storage + DB insert. getFileUrl returns public URL. Early return when no capsuleId.</td></tr>
+        <tr><td><code>useDesignatedPersons</code></td><td>useRef(createClient())</td><td>CRUD for designated persons per capsule.</td></tr>
+      </table>
+      <div class="note-box"><p><strong>Critical pattern:</strong> All hooks use <code>useRef(createClient())</code> to prevent creating new Supabase instances on re-render. Without this, auth state becomes inconsistent and pages get stuck loading.</p></div>
+
+      <!-- BETA SYSTEM -->
+      <h2 id="beta">Beta Invitation System</h2>
+      <h3>Security Model</h3>
+      <table>
+        <tr><th>Feature</th><th>Implementation</th></tr>
+        <tr><td>Token generation</td><td><code>crypto.randomBytes(32)</code> &rarr; 64-char hex</td></tr>
+        <tr><td>Token storage</td><td>SHA-256 hash only &mdash; never stored in cleartext</td></tr>
+        <tr><td>Token lifecycle</td><td>Single-use + 72h expiration (configurable)</td></tr>
+        <tr><td>Rate limiting</td><td>5 attempts / 15min window per IP (Supabase table)</td></tr>
+        <tr><td>Email verification</td><td>OTP magic link must match invitation email</td></tr>
+        <tr><td>Audit log</td><td>Every event: invited, accepted, revoked, login_failed, etc.</td></tr>
+        <tr><td>Beta gate</td><td><code>BETA_GATE_ENABLED=true</code> env var (OFF by default)</td></tr>
+        <tr><td>Revocation</td><td><code>POST /api/beta/revoke</code> &rarr; immediate access cut</td></tr>
+      </table>
+
+      <h3>Invitation Flow</h3>
+      <p>1. Admin calls <code>POST /api/beta/invite</code> with email &rarr; gets invite URL<br>
+         2. User opens <code>/beta/accept?t=&lt;token&gt;</code> &rarr; validates token, shows accept button<br>
+         3. User clicks "Aceptar invitaci&oacute;n" &rarr; OTP magic link sent to email<br>
+         4. User clicks magic link &rarr; auth callback &rarr; <code>/beta/complete</code><br>
+         5. Complete page verifies email match, creates user profile if needed, grants beta_access<br>
+         6. Redirect to <code>/dashboard</code></p>
+
+      <h3>Admin API Examples</h3>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Create invitation</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">curl -X POST http://localhost:3002/api/beta/invite \
+  -H "Content-Type: application/json" \
+  -H "x-admin-key: $SUPABASE_SERVICE_ROLE_KEY" \
+  -d '{"email": "andrea@nuclea.com", "cohort": "c1"}'</div>
+      </div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">List invitations</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">curl http://localhost:3002/api/beta/invite \
+  -H "x-admin-key: $SUPABASE_SERVICE_ROLE_KEY"</div>
+      </div>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Revoke access</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">curl -X POST http://localhost:3002/api/beta/revoke \
+  -H "Content-Type: application/json" \
+  -H "x-admin-key: $SUPABASE_SERVICE_ROLE_KEY" \
+  -d '{"userId": "uuid-here", "reason": "test ended"}'</div>
+      </div>
+
+      <!-- MIDDLEWARE -->
+      <h2 id="middleware">Middleware</h2>
+      <p>Three-layer gate in <code>src/middleware.ts</code>:</p>
+      <table>
+        <tr><th>Layer</th><th>Check</th><th>Action</th></tr>
+        <tr><td>1. Auth</td><td><code>getUser()</code> wrapped in try/catch</td><td>No user + protected route &rarr; /login</td></tr>
+        <tr><td>2. Login redirect</td><td>Authenticated user on /login</td><td>&rarr; /dashboard</td></tr>
+        <tr><td>3. Beta gate</td><td><code>BETA_GATE_ENABLED=true</code> + beta_access check</td><td>No access &rarr; /beta/waitlist</td></tr>
+      </table>
+      <div class="note-box"><p><strong>Public paths:</strong> <code>/</code>, <code>/login</code>, <code>/registro</code>, <code>/share</code>, <code>/onboarding</code>, <code>/demo</code>, <code>/legal</code>, <code>/beta/accept</code>, <code>/beta/waitlist</code></p></div>
+
+      <!-- BUGS FIXED -->
+      <h2 id="bugs-fixed">Bugs Fixed (7/7)</h2>
+      <p>All bugs reported by Andrea (CEO) on 15 Feb 2026, all verified PASS via Playwright:</p>
+      <table>
+        <tr><th>#</th><th>Bug</th><th>Root Cause</th><th>Fix</th><th>Status</th></tr>
+        <tr><td>5/6/7</td><td>Server crash on logout</td><td>Middleware <code>getUser()</code> threw on corrupted cookies</td><td>try/catch in middleware + signOut clears state first</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>3/4</td><td>Settings/Dashboard infinite loading</td><td>Hooks created new Supabase client every render</td><td><code>useRef(createClient())</code> + 5s failsafe + try/catch/finally</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>1</td><td>Share button silent</td><td>No feedback when share_token missing</td><td><code>ensureShareToken()</code> generates on-demand + visible URL input</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>2</td><td>P4 capsule selection broken</td><td><code>!profile</code> silently returned (public route)</td><td>Redirect to <code>/login?redirect=...</code> when not authenticated</td><td><span class="status status-pass">PASS</span></td></tr>
+      </table>
+
+      <!-- QA -->
+      <h2 id="qa">QA Results</h2>
+      <h3>CEO Bug Verification (7 tests)</h3>
+      <table>
+        <tr><th>Test</th><th>Result</th></tr>
+        <tr><td>Login + Dashboard loads</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Settings page loads</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Share button + URL visible</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Logout without crash</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Login again after logout</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Navigate away and back</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>P4 capsule creation</td><td><span class="status status-pass">PASS</span></td></tr>
+      </table>
+
+      <h3>Beta System (4 tests)</h3>
+      <table>
+        <tr><th>Test</th><th>Result</th></tr>
+        <tr><td>Valid invitation token</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Invalid token graceful error</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Waitlist page renders</td><td><span class="status status-pass">PASS</span></td></tr>
+        <tr><td>Login with beta gate OFF</td><td><span class="status status-pass">PASS</span></td></tr>
+      </table>
+
+      <!-- PENDING -->
+      <h2 id="pending">Pending Items</h2>
+      <table>
+        <tr><th>Item</th><th>Priority</th><th>Notes</th></tr>
+        <tr><td>Deploy to Vercel</td><td><span class="status status-pending">HIGH</span></td><td>Needs Supabase cloud project (not local Docker). Env vars for prod keys.</td></tr>
+        <tr><td>Enable RLS</td><td><span class="status status-pending">HIGH</span></td><td>Required before any public access. Write policies for each table.</td></tr>
+        <tr><td>Email sending (SMTP)</td><td><span class="status status-pending">HIGH</span></td><td>OTP magic links need real SMTP. Supabase local uses Inbucket (dev only).</td></tr>
+        <tr><td>Storage shows 0 KB</td><td><span class="status status-pending">MEDIUM</span></td><td>seed.ts doesn't set file_size_bytes on image uploads. Fix in seed or re-seed.</td></tr>
+        <tr><td>File upload testing</td><td><span class="status status-pending">MEDIUM</span></td><td>Upload buttons present but not QA-tested via Playwright.</td></tr>
+        <tr><td>Capsule export (ZIP)</td><td><span class="status status-pending">LOW</span></td><td>"Cerrar y descargar" button exists but ZIP generation not implemented.</td></tr>
+        <tr><td>Admin panel for beta</td><td><span class="status status-pending">LOW</span></td><td>Currently API-only. Could add simple admin UI for Andrea.</td></tr>
+        <tr><td>Supabase &rarr; Cloud migration</td><td><span class="status status-pending">LOW</span></td><td>Swap local Docker for hosted Supabase. Same schema, different env vars.</td></tr>
+      </table>
+
+      <!-- STARTUP -->
+      <h2 id="startup">How to Start</h2>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Full startup sequence</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content"># 1. Start Docker (must be running)
+# 2. Start Supabase local
+cd C:/Users/Kaos/scripts/nuclea/POC_REAL
+npx supabase start
+
+# 3. Apply migrations (if fresh)
+npx supabase db reset
+
+# 4. Seed data
+npx tsx scripts/seed.ts
+npx tsx scripts/seed-beta.ts
+
+# 5. Start dev server
+npm run dev
+# → http://localhost:3002
+
+# Supabase Studio: http://localhost:54323</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Quick restart (data already seeded)</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content"># Kill any existing server
+netstat -ano | findstr :3002
+taskkill //PID {pid} //F
+
+# Clean start
+cd C:/Users/Kaos/scripts/nuclea/POC_REAL
+rm -rf .next
+npm run dev</div>
+      </div>
+
+      <!-- SEED -->
+      <h2 id="seed">Seed Data</h2>
+      <table>
+        <tr><th>User</th><th>Email</th><th>Password</th><th>Capsules</th><th>Beta</th></tr>
+        <tr><td>Homer</td><td>homer@nuclea.test</td><td>nuclea123</td><td>2 (Legacy + Together)</td><td><span class="status status-pass">Active</span></td></tr>
+        <tr><td>Marge</td><td>marge@nuclea.test</td><td>nuclea123</td><td>1 (Social) + collaborator on Homer's</td><td><span class="status status-pass">Active</span></td></tr>
+        <tr><td>Bart</td><td>bart@nuclea.test</td><td>nuclea123</td><td>1 (Pet)</td><td><span class="status status-pass">Active</span></td></tr>
+        <tr><td>Lisa</td><td>lisa@nuclea.test</td><td>nuclea123</td><td>1 (Origin)</td><td><span class="status status-pass">Active</span></td></tr>
+        <tr><td>Maggie</td><td>maggie@nuclea.test</td><td>nuclea123</td><td>0 (designated person only)</td><td><span class="status status-pass">Active</span></td></tr>
+      </table>
+      <p>Demo invitation: <code>demo@nuclea.test</code> (pending, token generated by seed-beta.ts)</p>
+
+      <!-- ANDREA -->
+      <h2 id="andrea">Andrea's Feedback</h2>
+      <h3>What she said (15 Feb 2026)</h3>
+      <div class="note-box">
+        <p><strong>"Lo m&aacute;s importante es estabilidad, iteraci&oacute;n r&aacute;pida y validar bien la experiencia. Una vez que el MVP est&eacute; s&oacute;lido, ampliamos sin problema."</strong></p>
+      </div>
+      <div class="note-box">
+        <p><strong>"&iquest;C&oacute;mo se har&iacute;a para que prueben los usuarios? Rollo enlace v&iacute;a email y de ah&iacute; ya acceden a la beta privada?"</strong></p>
+        <p>&rarr; Answered with full beta invitation system implementation.</p>
+      </div>
+
+      <h3>Her QA findings (before fixes)</h3>
+      <p>She tested the app and found 7 bugs. All have been fixed and verified. Key takeaway: logout was crashing the entire server &mdash; now fixed with try/catch in middleware + state clearing in signOut.</p>
+
+      <h3>What works well (her words)</h3>
+      <ul style="margin: 0.5rem 0 1rem 1.5rem; font-size: 0.92rem; color: var(--text-secondary);">
+        <li>Login flow with quick-fill buttons</li>
+        <li>Dashboard displays capsules correctly per user</li>
+        <li>Capsule detail with calendar, content list, designated persons</li>
+        <li>Onboarding animation &mdash; "Visual polish is excellent"</li>
+        <li>Collaborator badge on shared capsules</li>
+      </ul>
+
+      <!-- NEXT SESSION -->
+      <h2 id="next">Next Session Priorities</h2>
+      <table>
+        <tr><th>#</th><th>Task</th><th>Why</th></tr>
+        <tr><td>1</td><td>Fix seed.ts to set file_size_bytes on image uploads</td><td>Dashboard storage display shows real bytes</td></tr>
+        <tr><td>2</td><td>Test file upload flow via Playwright</td><td>Upload buttons exist but never QA'd</td></tr>
+        <tr><td>3</td><td>Implement ZIP export on "Cerrar y descargar"</td><td>Core capsule lifecycle: create &rarr; fill &rarr; close &rarr; download</td></tr>
+        <tr><td>4</td><td>Supabase Cloud setup</td><td>Required for Vercel deploy and real beta testing</td></tr>
+        <tr><td>5</td><td>Answer Andrea's beta access question in detail</td><td>She needs to understand how to invite real users</td></tr>
+        <tr><td>6</td><td>Admin UI for beta invitations</td><td>Andrea shouldn't need curl commands</td></tr>
+      </table>
+
+      <div class="note-box">
+        <p><strong>Server state at session end:</strong> Dev server running on PID 31360 (port 3002). Supabase Docker running. Data seeded. Commit <code>2522b30</code> on master.</p>
+      </div>
+
+      <p style="margin-top: 3rem; font-size: 0.75rem; color: var(--text-tertiary); border-top: 1px solid var(--border-light); padding-top: 1rem;">
+        Generated 15 Feb 2026 &mdash; NUCLEA POC_REAL Session State &mdash; Claude Opus 4.6
+      </p>
+    </main>
+  </div>
+
+  <script>
+    function copyPrompt(button) {
+      const content = button.closest('.prompt-block').querySelector('.prompt-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        const original = button.textContent;
+        button.textContent = 'COPIED!';
+        button.classList.add('copied');
+        setTimeout(() => { button.textContent = original; button.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    const sections = document.querySelectorAll('[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (scrollY >= section.offsetTop - 100) current = section.getAttribute('id');
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>
