@@ -19,7 +19,7 @@ export default function ContactoPage() {
           Equipo NUCLEA &middot; Atencion en horario laboral (CET)
         </p>
 
-        <div className="space-y-5 text-white/70 text-[15px] leading-relaxed">
+        <div className="space-y-5 text-white/70 text-base leading-relaxed">
           <p>
             <strong className="text-white/90">Soporte general:</strong>{' '}
             <span className="text-nuclea-gold">soporte@nuclea.app</span>
@@ -37,3 +37,4 @@ export default function ContactoPage() {
     </main>
   )
 }
+

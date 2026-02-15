@@ -41,7 +41,7 @@ function Header() {
                   Dashboard
                 </Link>
                 <div className="relative group">
-                  <button className="flex items-center gap-2 text-white/70 hover:text-white">
+                  <button className="min-h-[44px] min-w-[44px] px-1 flex items-center gap-2 text-white/70 hover:text-white">
                     <User size={20} />
                     <span className="text-sm">{user.displayName}</span>
                   </button>
@@ -77,7 +77,7 @@ function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-white/70 hover:text-white"
+            className="md:hidden w-11 h-11 flex items-center justify-center text-white/70 hover:text-white"
             onClick={toggleMenu}
             aria-label={menuOpen ? 'Cerrar menu' : 'Abrir menu'}
             aria-expanded={menuOpen}

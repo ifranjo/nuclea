@@ -1,4 +1,26 @@
-export type CapsuleType = 'everlife' | 'life-chapter' | 'social' | 'pet' | 'origin'
+/** Current consent version — bump when terms or privacy policy change. */
+export const CURRENT_CONSENT_VERSION = '2.0'
+
+export type CapsuleType = 'legacy' | 'together' | 'social' | 'pet' | 'life-chapter' | 'origin'
+export type StoredCapsuleType = CapsuleType | 'everlife'
+
+/** All 6 canonical capsule types. */
+export const CAPSULE_TYPE_VALUES: readonly CapsuleType[] = [
+  'legacy', 'together', 'social', 'pet', 'life-chapter', 'origin'
+] as const
+
+/** Type guard — returns true only if value is one of the 6 canonical CapsuleType values. */
+export function isCapsuleType(value: string): value is CapsuleType {
+  return (CAPSULE_TYPE_VALUES as readonly string[]).includes(value)
+}
+
+/**
+ * Returns true only if the type is already one of the 6 canonical types
+ * (i.e. it is NOT the legacy alias 'everlife' and not unknown).
+ */
+export function isMigratedCapsuleType(type: string): boolean {
+  return isCapsuleType(type)
+}
 
 export interface User {
   id: string
@@ -12,6 +34,7 @@ export interface User {
   termsAcceptedAt?: Date
   privacyAcceptedAt?: Date
   consentVersion?: string
+  consentSource?: string
 }
 
 export interface Capsule {
@@ -52,6 +75,12 @@ export interface AIAvatar {
   isActive: boolean
   personalityPrompt?: string
   createdAt: Date
+  /** Art. 9.2.a RGPD — granular biometric consent flags */
+  voiceConsent?: boolean
+  faceConsent?: boolean
+  personalityConsent?: boolean
+  /** Timestamp when the user withdrew biometric consent; null while consent is active */
+  consentWithdrawnAt?: Date | null
 }
 
 export interface WaitlistEntry {
@@ -83,11 +112,36 @@ export interface Interaction {
   createdAt: Date
 }
 
+const CAPSULE_TYPE_ALIASES: Record<StoredCapsuleType, CapsuleType> = {
+  legacy: 'legacy',
+  everlife: 'legacy',
+  together: 'together',
+  social: 'social',
+  pet: 'pet',
+  'life-chapter': 'life-chapter',
+  origin: 'origin'
+}
+
+export function normalizeCapsuleType(type: string | null | undefined): CapsuleType {
+  if (!type) return 'legacy'
+
+  const mapped = CAPSULE_TYPE_ALIASES[type as StoredCapsuleType]
+  if (mapped) return mapped
+
+  console.warn(`[normalizeCapsuleType] Unknown capsule type "${type}", defaulting to "legacy"`)
+  return 'legacy'
+}
+
 export const CAPSULE_TYPES: Record<CapsuleType, { name: string; icon: string; description: string }> = {
-  'everlife': {
-    name: 'EverLife',
+  'legacy': {
+    name: 'Legacy',
     icon: '✨',
     description: 'Legado post-mortem con avatar IA opcional'
+  },
+  'together': {
+    name: 'Together',
+    icon: '🤝',
+    description: 'Capsula compartida para parejas o proyectos en comun'
   },
   'life-chapter': {
     name: 'Life Chapter',

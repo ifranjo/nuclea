@@ -1,12 +1,13 @@
 'use client'
 
+import NextImage from 'next/image'
 import { motion } from 'framer-motion'
-import { Calendar, Users, Image, MoreVertical, Trash2, Edit, Share2 } from 'lucide-react'
+import { Calendar, Users, Image as ImageIcon, MoreVertical, Trash2, Edit, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { CAPSULE_TYPES, normalizeCapsuleType } from '@/types'
 import type { Capsule } from '@/types'
-import { CAPSULE_TYPES } from '@/types'
 
 interface CapsuleCardProps {
   capsule: Capsule
@@ -17,17 +18,19 @@ interface CapsuleCardProps {
 
 export default function CapsuleCard({ capsule, onEdit, onDelete, onShare }: CapsuleCardProps) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const typeInfo = CAPSULE_TYPES[capsule.type]
+  const normalizedType = normalizeCapsuleType(capsule.type)
+  const typeInfo = CAPSULE_TYPES[normalizedType]
 
   const getCapsuleClass = () => {
     const classes: Record<string, string> = {
-      'everlife': 'capsule-everlife',
+      'legacy': 'capsule-legacy',
       'life-chapter': 'capsule-life-chapter',
+      'together': 'capsule-together',
       'social': 'capsule-social',
       'pet': 'capsule-pet',
       'origin': 'capsule-origin'
     }
-    return classes[capsule.type] || ''
+    return classes[normalizedType] || ''
   }
 
   return (
@@ -39,10 +42,12 @@ export default function CapsuleCard({ capsule, onEdit, onDelete, onShare }: Caps
       {/* Cover Image */}
       {capsule.coverImage ? (
         <div className="relative h-40 -mx-6 -mt-6 mb-4 rounded-t-2xl overflow-hidden">
-          <img
+          <NextImage
             src={capsule.coverImage}
-            alt={capsule.title}
-            className="w-full h-full object-cover"
+            alt={capsule.title || 'Portada de capsula'}
+            fill
+            sizes="(max-width: 768px) 100vw, 420px"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-nuclea-bg to-transparent" />
         </div>
@@ -127,7 +132,7 @@ export default function CapsuleCard({ capsule, onEdit, onDelete, onShare }: Caps
             </span>
           </div>
           <div className="flex items-center gap-1 text-white/40 text-xs">
-            <Image size={14} />
+            <ImageIcon size={14} />
             <span>{capsule.contents.length}</span>
           </div>
           {capsule.sharedWith.length > 0 && (

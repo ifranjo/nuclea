@@ -59,10 +59,12 @@ export default function RegisterPage() {
     }
 
     try {
-      await signInWithGoogle(true)
-      toast.success('Cuenta creada correctamente')
-      router.push('/dashboard')
-    } catch (error) {
+      const result = await signInWithGoogle(true)
+      if (result === 'created' || result === 'signed_in') {
+        toast.success('Cuenta creada correctamente')
+        router.push('/dashboard')
+      }
+    } catch {
       toast.error('Error al registrarse con Google')
     }
   }

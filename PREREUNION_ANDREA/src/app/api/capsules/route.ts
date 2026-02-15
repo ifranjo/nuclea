@@ -1,66 +1,120 @@
+import { FieldValue } from 'firebase-admin/firestore'
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
-import { getAuth } from 'firebase-admin/auth'
+import { AuthError, getAdminDb, verifyBearerToken } from '@/lib/firebase-admin'
+import {
+  ApiValidationError,
+  capsulesCreateBodySchema,
+  capsulesListQuerySchema,
+  validateSearchParams,
+  validateWithSchema,
+} from '@/lib/api-validation'
+import { decodeCapsulesCursor, encodeCapsulesCursor, sanitizeCapsulePageSize } from '@/lib/capsule-pagination'
+import { normalizeCapsuleType } from '@/types'
 
-class AuthError extends Error {
+class PlanLimitError extends Error {
   status: number
 
-  constructor(message: string, status = 401) {
+  constructor(message: string) {
     super(message)
-    this.status = status
+    this.status = 403
   }
 }
 
-// Initialize Firebase Admin
-if (!getApps().length) {
-  try {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    })
-  } catch (error) {
-    console.log('Firebase admin init error:', error)
+function toIsoDate(value: unknown): string {
+  if (value instanceof Date) {
+    return value.toISOString()
   }
+
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'toDate' in value &&
+    typeof (value as { toDate: () => unknown }).toDate === 'function'
+  ) {
+    const converted = (value as { toDate: () => unknown }).toDate()
+    if (converted instanceof Date) {
+      return converted.toISOString()
+    }
+  }
+
+  if (typeof value === 'string') {
+    return value
+  }
+
+  return new Date(0).toISOString()
 }
 
-async function verifyToken(request: NextRequest) {
-  const authHeader = request.headers.get('Authorization')
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthError('No authorization token', 401)
-  }
+function serializeCapsule(doc: { id: string; data: () => Record<string, unknown> }) {
+  const data = doc.data()
 
-  const token = authHeader.split('Bearer ')[1]
-  const auth = getAuth()
-  try {
-    const decodedToken = await auth.verifyIdToken(token)
-    return decodedToken.uid
-  } catch (_error) {
-    throw new AuthError('Invalid authorization token', 401)
+  return {
+    id: doc.id,
+    ...data,
+    type: normalizeCapsuleType(typeof data.type === 'string' ? data.type : undefined),
+    createdAt: toIsoDate(data.createdAt),
+    updatedAt: toIsoDate(data.updatedAt),
+    contents: Array.isArray(data.contents) ? data.contents : [],
+    sharedWith: Array.isArray(data.sharedWith) ? data.sharedWith : [],
+    tags: Array.isArray(data.tags) ? data.tags : [],
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await verifyToken(request)
-    const db = getFirestore()
+    const userId = await verifyBearerToken(request)
+    const queryInput = validateSearchParams(capsulesListQuerySchema, request.nextUrl.searchParams)
 
-    const snapshot = await db
+    const limit = sanitizeCapsulePageSize(queryInput.limit ?? 12)
+    const decodedCursor = queryInput.cursor ? decodeCapsulesCursor(queryInput.cursor) : null
+
+    const db = getAdminDb('capsules GET')
+
+    let capsulesQuery = db
       .collection('capsules')
       .where('userId', '==', userId)
       .orderBy('updatedAt', 'desc')
-      .get()
 
-    const capsules = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
+    if (decodedCursor) {
+      const cursorSnapshot = await db.collection('capsules').doc(decodedCursor).get()
+      if (!cursorSnapshot.exists) {
+        throw new ApiValidationError('Invalid cursor', ['cursor: documento no encontrado'])
+      }
 
-    return NextResponse.json({ capsules })
+      const cursorUserId = cursorSnapshot.data()?.userId
+      if (cursorUserId !== userId) {
+        throw new ApiValidationError('Invalid cursor', ['cursor: no pertenece al usuario'])
+      }
+
+      capsulesQuery = capsulesQuery.startAfter(cursorSnapshot)
+    }
+
+    const snapshot = await capsulesQuery.limit(limit + 1).get()
+
+    const docs = snapshot.docs
+    const hasMore = docs.length > limit
+    const pageDocs = hasMore ? docs.slice(0, limit) : docs
+
+    const capsules = pageDocs.map(serializeCapsule)
+    const nextCursor = hasMore && pageDocs.length > 0
+      ? encodeCapsulesCursor(pageDocs[pageDocs.length - 1].id)
+      : null
+
+    return NextResponse.json({
+      capsules,
+      pagination: {
+        limit,
+        hasMore,
+        nextCursor,
+      },
+    })
   } catch (error) {
+    if (error instanceof ApiValidationError) {
+      return NextResponse.json(
+        { error: error.message, details: error.issues },
+        { status: error.status }
+      )
+    }
+
     if (error instanceof AuthError) {
       return NextResponse.json(
         { error: error.message },
@@ -78,19 +132,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await verifyToken(request)
-    const { type, title, description } = await request.json()
+    const userId = await verifyBearerToken(request)
+    const body = await request.json()
+    const parsed = validateWithSchema(capsulesCreateBodySchema, body, 'request body')
 
-    if (!type || !title) {
-      return NextResponse.json(
-        { error: 'Tipo y titulo son requeridos' },
-        { status: 400 }
-      )
-    }
+    const db = getAdminDb('capsules POST')
 
-    const db = getFirestore()
-
-    // Check user's plan limits
     const userDoc = await db.collection('users').doc(userId).get()
     const userData = userDoc.data()
 
@@ -98,49 +145,65 @@ export async function POST(request: NextRequest) {
       free: 1,
       esencial: 2,
       familiar: 10,
-      premium: 1 // EverLife only
+      premium: 1,
     }
 
-    const userPlan = userData?.plan || 'free'
-    const currentCount = userData?.capsuleCount || 0
+    const userPlan = typeof userData?.plan === 'string' ? userData.plan : 'free'
+    const currentCount = Number(userData?.capsuleCount ?? 0)
+    const maxAllowed = planLimits[userPlan] ?? planLimits.free
 
-    if (currentCount >= planLimits[userPlan]) {
-      return NextResponse.json(
-        { error: 'Has alcanzado el limite de capsulas de tu plan' },
-        { status: 403 }
-      )
+    if (currentCount >= maxAllowed) {
+      throw new PlanLimitError('Has alcanzado el limite de capsulas de tu plan')
     }
 
-    // Create capsule
+    const now = new Date()
     const capsuleData = {
       userId,
-      type,
-      title,
-      description: description || '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      type: normalizeCapsuleType(parsed.type),
+      title: parsed.title,
+      description: parsed.description,
+      createdAt: now,
+      updatedAt: now,
       isPublic: false,
       sharedWith: [],
       contents: [],
-      tags: []
+      tags: [],
     }
 
     const docRef = await db.collection('capsules').add(capsuleData)
 
-    // Update user's capsule count
     await db.collection('users').doc(userId).update({
-      capsuleCount: currentCount + 1
+      capsuleCount: FieldValue.increment(1),
     })
 
     return NextResponse.json(
       {
         message: 'Capsula creada correctamente',
         id: docRef.id,
-        capsule: { id: docRef.id, ...capsuleData }
+        capsule: {
+          id: docRef.id,
+          ...capsuleData,
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString(),
+        },
       },
       { status: 201 }
     )
   } catch (error) {
+    if (error instanceof ApiValidationError) {
+      return NextResponse.json(
+        { error: error.message, details: error.issues },
+        { status: error.status }
+      )
+    }
+
+    if (error instanceof PlanLimitError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status }
+      )
+    }
+
     if (error instanceof AuthError) {
       return NextResponse.json(
         { error: error.message },

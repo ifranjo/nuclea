@@ -3,19 +3,30 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Mail, Lock, Eye, EyeOff, X } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { signInWithGoogle, signInWithEmail, loading } = useAuth()
+  const {
+    signInWithGoogle,
+    signInWithEmail,
+    loading,
+    pendingConsent,
+    completeGoogleRegistration,
+    cancelPendingConsent
+  } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+
+  // Consent modal state
+  const [consentAccepted, setConsentAccepted] = useState(false)
+  const [completingConsent, setCompletingConsent] = useState(false)
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,7 +36,7 @@ export default function LoginPage() {
       await signInWithEmail(email, password)
       toast.success('Sesion iniciada correctamente')
       router.push('/dashboard')
-    } catch (error) {
+    } catch {
       toast.error('Email o contrasena incorrectos')
     } finally {
       setSubmitting(false)
@@ -34,12 +45,39 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithGoogle()
-      toast.success('Sesion iniciada correctamente')
-      router.push('/dashboard')
-    } catch (error) {
+      const result = await signInWithGoogle()
+      if (result === 'signed_in') {
+        toast.success('Sesion iniciada correctamente')
+        router.push('/dashboard')
+      }
+      // 'pending_consent' — modal appears automatically via pendingConsent state
+      // 'created' — should not happen here (no acceptedTerms passed)
+    } catch {
       toast.error('Error al iniciar sesion con Google')
     }
+  }
+
+  const handleCompleteConsent = async () => {
+    if (!consentAccepted) {
+      toast.error('Debes aceptar los terminos y condiciones')
+      return
+    }
+
+    setCompletingConsent(true)
+    try {
+      await completeGoogleRegistration(true)
+      toast.success('Cuenta creada correctamente')
+      router.push('/dashboard')
+    } catch {
+      toast.error('Error al completar el registro')
+    } finally {
+      setCompletingConsent(false)
+    }
+  }
+
+  const handleCancelConsent = async () => {
+    setConsentAccepted(false)
+    await cancelPendingConsent()
   }
 
   return (
@@ -158,6 +196,81 @@ export default function LoginPage() {
           </p>
         </div>
       </motion.div>
+
+      {/* Google OAuth Consent Modal */}
+      <AnimatePresence>
+        {pendingConsent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="w-full max-w-md glass rounded-2xl p-8 border border-white/10 relative"
+            >
+              {/* Close button */}
+              <button
+                onClick={handleCancelConsent}
+                className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+                aria-label="Cerrar"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Header */}
+              <div className="text-center mb-6">
+                <h2 className="font-display text-2xl gradient-text font-semibold tracking-wider">
+                  Bienvenido a NUCLEA
+                </h2>
+                <p className="text-white/60 mt-2 text-sm">
+                  Es tu primera vez. Para crear tu cuenta, acepta nuestros terminos.
+                </p>
+              </div>
+
+              {/* Consent checkbox */}
+              <label className="flex items-start gap-3 cursor-pointer mb-6">
+                <input
+                  type="checkbox"
+                  checked={consentAccepted}
+                  onChange={(e) => setConsentAccepted(e.target.checked)}
+                  className="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 text-nuclea-gold focus:ring-nuclea-gold"
+                />
+                <span className="text-sm text-white/60">
+                  Acepto los{' '}
+                  <Link href="/terminos" className="text-nuclea-gold hover:underline" target="_blank">
+                    terminos de servicio
+                  </Link>{' '}
+                  y la{' '}
+                  <Link href="/privacidad" className="text-nuclea-gold hover:underline" target="_blank">
+                    politica de privacidad
+                  </Link>
+                </span>
+              </label>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelConsent}
+                  className="flex-1 py-3 px-4 rounded-xl border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-colors text-sm"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleCompleteConsent}
+                  disabled={!consentAccepted || completingConsent}
+                  className="flex-1 btn-primary disabled:opacity-50 text-sm"
+                >
+                  {completingConsent ? 'Creando cuenta...' : 'Crear cuenta'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }
