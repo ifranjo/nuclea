@@ -12,19 +12,49 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Workspace Layout
 
+The repo is being reorganized into a cleaner structure. See `docs/plans/2026-02-15-repo-reorganization-plan.md` for the full migration plan.
+
+### Target Structure (in progress)
+
 ```
 nuclea/
-├── PREREUNION_ANDREA/           # Production app — port 3000, dark theme, Firebase backend
-├── POC_INTERNA/                 # Internal POC
-│   ├── 01_SPECS/                # PoC spec inputs: design system, user flows, capsule types
-│   └── app/                     # Onboarding POC — port 3001, white theme, no backend
-├── docs/                        # Runtime + target architecture docs (see docs/SOURCE_OF_TRUTH.md)
-├── POC_INVERSION_NUCLEA/        # Investor documentation
-├── DISEÑO_ANDREA_PANTALLAS/     # UI mockups (12 PDFs from Andrea — authoritative reference)
-└── *.html                       # Generated reports
+├── apps/                            # Runnable Next.js applications
+│   ├── external-web/                # Production app — port 3000, dark theme, Firebase
+│   └── internal-onboarding/         # Onboarding POC — port 3001, white theme, no backend
+├── product/                         # Product docs, specs, user flows
+│   ├── docs/                        # Architecture, API, type contracts
+│   ├── specs/                       # Design system, capsule types, data model
+│   └── flows/                       # User journeys
+├── business/                        # Investor materials, outreach, meeting prep
+│   ├── investor/
+│   ├── outreach/
+│   └── meeting-prep/
+├── promptops/                       # AI prompt registry and agent configs
+│   └── opus-registry/
+├── assets/                          # Static assets (design PDFs, raw photos)
+│   ├── design-pdfs/
+│   └── photos-raw/
+├── automation/                      # Scripts and agent playbooks
+│   ├── scripts/
+│   └── agent-playbooks/
+├── archive/                         # Historical/deprecated material
+│   └── legacy-workspaces/
+└── *.html                           # Generated reports (root level)
 ```
 
-Each app has its own `CLAUDE.md` with tech details. Sub-app CLAUDE.md files are the reference for app-specific architecture, types, design tokens, and environment variables. This root file covers cross-cutting concerns only.
+### Current Paths (until migration completes)
+
+| Current Path | Target Path | Status |
+|---|---|---|
+| `PREREUNION_ANDREA/` | `apps/external-web/` | Pending Wave 3-4 |
+| `POC_INTERNA/app/` | `apps/internal-onboarding/` | Pending Wave 4 |
+| `docs/` | `product/docs/` | Pending Wave 3 |
+| `POC_INTERNA/01_SPECS/` | `product/specs/internal-poc/` | Pending Wave 4 |
+| `POC_INVERSION_NUCLEA/` | `business/investor/poc/` | Pending Wave 2 |
+| `DISEÑO_ANDREA_PANTALLAS/` | `assets/design-pdfs/` | Pending Wave 2 |
+| `CODEX_PROMPTS_FOR_OPUS$_&/` | `promptops/opus-registry/` | Pending Wave 2 |
+
+Each app has its own `CLAUDE.md` with tech details. Sub-app CLAUDE.md files are the reference for app-specific architecture, types, design tokens, and environment variables.
 
 ## Two Applications
 
@@ -60,32 +90,23 @@ npm run build            # Production build
 npm run lint             # ESLint
 ```
 
-### POC Autocheck & Healing (automated test-fix loops)
+### POC Autocheck & Healing
 
 ```bash
 cd POC_INTERNA/app
 npm run autocheck        # Lint + build + runtime flow check + PDF alignment
-npm run autocheck:pdf    # Validate copy against source PDFs only
-npm run heal:session     # Stops on first successful autocheck; cleans cache between attempts
-npm run heal:stability   # 3 full autocheck iterations; fails if any fails
-npm run heal:insights    # Rebuild aggregated trends from healing-history/
+npm run heal:session     # Stops on first successful autocheck
+npm run heal:stability   # 3 full autocheck iterations
 ```
-
-`autocheck` uses `next start` (production runtime) by default. Override: `AUTOCHECK_RUNTIME=dev npm run autocheck`.
 
 ### POC Visual Regression Tests (Playwright)
 
 Requires dev server running on port 3001.
 
 ```bash
-# Python visual regression (28 assertions, P1-P4 + design system)
 cd POC_INTERNA/app && python tests/test_onboarding_visual.py
-
-# Playwright screenshot capture
 cd POC_INTERNA/app && node screenshots/capture_onboarding.js
 ```
-
-Screenshots saved to `POC_INTERNA/app/screenshots/` and `screenshots/regression/`.
 
 ## Core Concept
 
@@ -93,39 +114,26 @@ The capsule is a **physical emotional object** that opens and releases memories 
 
 ## Framer Motion + Headless Browser Gotchas
 
-When working with Playwright or headless browsers against the POC:
-
-- `initial={{ opacity: 0 }}` stays at 0 in headless — rAF-based animations don't fire reliably
-- **Solution:** Use `reducedMotion: 'reduce'` in browser context — Framer Motion jumps to final `animate` state instantly, and AnimatePresence `exit` completes instantly
-- Do NOT use `forceVisible()` hacks that set all opacity:0 to 1 — breaks AnimatePresence multi-step flows
-- React 19 hydration: `Math.random()` in render causes server/client mismatch — use deterministic values like `((i * 37) % 100)`
-- `.next` cache corrupts frequently during rapid Playwright sessions on Windows — delete `.next` before restart, add warmup hit before captures, add delays (2-3s) between navigations
+- `initial={{ opacity: 0 }}` stays at 0 in headless — use `reducedMotion: 'reduce'` in browser context
+- Do NOT use `forceVisible()` hacks — breaks AnimatePresence multi-step flows
+- React 19 hydration: avoid `Math.random()` in render — use deterministic values
+- `.next` cache corrupts during rapid Playwright sessions on Windows — delete before restart
 
 ## Reality Alignment
 
-### Capsule Ontology Status
+### Capsule Ontology
 
-Canonical runtime/UI type set is now aligned across active apps:
+Canonical type set: `legacy`, `together`, `social`, `pet`, `life-chapter`, `origin`
 
-`legacy`, `together`, `social`, `pet`, `life-chapter`, `origin`
-
-Storage compatibility rule remains in production app:
-
-- `everlife` is accepted as a legacy persisted alias
-- normalize at app boundary: `everlife -> legacy`
-
-See `docs/SOURCE_OF_TRUTH.md` and `docs/TYPESCRIPT_TYPES.md` for the normative contract.
+Storage compat: `everlife` accepted as legacy alias, normalize at boundary → `legacy`.
 
 ### Backend Stack Transition
 
-- **Current (production code):** Firebase SDK (Auth, Firestore, Storage)
-- **Target architecture:** Supabase (Auth, PostgreSQL, Storage, Edge Functions)
-- Runtime vs target split is tracked in:
-  - `docs/ARCHITECTURE.md` (current runtime)
-  - `docs/ARCHITECTURE_TARGET_SUPABASE.md` (future target)
-- Decision documented in `STACK_DECISION_FIREBASE_VS_SUPABASE.html`
+- **Current:** Firebase SDK (Auth, Firestore, Storage)
+- **Target:** Supabase (Auth, PostgreSQL, Storage, Edge Functions)
+- See `docs/ARCHITECTURE.md` (runtime) and `docs/ARCHITECTURE_TARGET_SUPABASE.md` (target)
 
-## Capsule Types (Canonical — 6 types)
+## Capsule Types (6 canonical)
 
 | Type | Purpose | AI Avatar |
 |------|---------|-----------|
@@ -136,8 +144,6 @@ See `docs/SOURCE_OF_TRUTH.md` and `docs/TYPESCRIPT_TYPES.md` for the normative c
 | `life-chapter` | Document life stages | Optional |
 | `origin` | Parents → children | Optional |
 
-Detailed specs in `POC_INTERNA/01_SPECS/CAPSULE_TYPES.md`. Per-type docs in `docs/capsules/`.
-
 ## Pricing Plans
 
 | Plan | Price | Capsules | Storage | AI Avatar |
@@ -147,20 +153,15 @@ Detailed specs in `POC_INTERNA/01_SPECS/CAPSULE_TYPES.md`. Per-type docs in `doc
 | Familiar | €24.99/mo | 10 | 50GB | Yes |
 | EverLife | €99 one-time | 1 | 100GB | Yes |
 
-Defined in code at `PREREUNION_ANDREA/src/types/index.ts` as `PLANS`.
-
 ## POC Work Rules
 
-When working on `POC_INTERNA/app/`:
 - **Read specs first** — always read `01_SPECS/DESIGN_SYSTEM.md` before implementing UI
 - **Aesthetics over functionality** — demonstrates the emotional experience
 - **Mobile-first** — design for mobile, adapt to desktop
 - **Spanish nativo** — all copy in Spain Spanish
-- **Follow Andrea's PDFs literally** — do not improvise UI (see `DISEÑO_ANDREA_PANTALLAS/`)
+- **Follow Andrea's PDFs literally** — do not improvise UI
 
 ## Multi-Agent Delegation
-
-This project uses multiple AI coding agents. See `POC_INTERNA/DELEGATION_WORKFLOW.md`.
 
 | Agent | Alias | Role |
 |-------|-------|------|
@@ -175,14 +176,13 @@ This project uses multiple AI coding agents. See `POC_INTERNA/DELEGATION_WORKFLO
 - Sidebar navigation with section anchors
 - Academic beige/gray palette (`#FDFDFB`, `#F7F7F4`, `#4A4A4A`)
 - PDF-optimized with `@media print` rules
-- Sources section with URLs
 
 ## Known Issues
 
 **Windows reserved filename:** `nul` file may appear in root. Remove with `bash -c "rm -f nul"`.
 
-**Deployment remains manual** via `npm run deploy` (Vercel) in `PREREUNION_ANDREA`, but repository quality gates are configured in `.github/workflows/quality-gates.yml`.
+**Deployment remains manual** via `npm run deploy` (Vercel) in `PREREUNION_ANDREA`.
 
 ---
 
-*Last updated: Feb 2026*
+*Last updated: 2026-02-15*
