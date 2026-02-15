@@ -16,21 +16,21 @@ interface P2Props {
 /* ------------------------------------------------------------------ */
 const polaroids = [
   { rotation: -12, x: '-38vw', y: '-32vh', delay: 0.7, src: '/images/polaroids/dinner.jpg', alt: 'Cena al aire libre' },
-  { rotation: 8, x: '34vw', y: '-28vh', delay: 0.85, src: '/images/polaroids/terrace.jpg', alt: 'Terraza en Lanzarote' },
-  { rotation: -5, x: '-30vw', y: '28vh', delay: 1.0, src: '/images/polaroids/beach.jpg', alt: 'Playa y montañas' },
-  { rotation: 15, x: '32vw', y: '24vh', delay: 1.15, src: '/images/polaroids/group.jpg', alt: 'Amigos en la entrada' },
-  { rotation: -8, x: '-42vw', y: '-2vh', delay: 1.3, src: '/images/polaroids/friends.jpg', alt: 'Amigos en la calle' },
-  { rotation: 3, x: '38vw', y: '4vh', delay: 1.45, src: '/images/polaroids/cathedral.jpg', alt: 'Catedral' },
-  { rotation: 10, x: '-18vw', y: '-38vh', delay: 1.6, src: '/images/polaroids/adventure.jpg', alt: 'Aventura en la roca' },
-  { rotation: -14, x: '20vw', y: '34vh', delay: 1.75, src: '/images/polaroids/terrace2.jpg', alt: 'Terraza con vistas' },
+  { rotation: 8, x: '34vw', y: '-28vh', delay: 0.95, src: '/images/polaroids/terrace.jpg', alt: 'Terraza en Lanzarote' },
+  { rotation: -5, x: '-30vw', y: '28vh', delay: 1.15, src: '/images/polaroids/beach.jpg', alt: 'Playa y montañas' },
+  { rotation: 15, x: '32vw', y: '24vh', delay: 1.35, src: '/images/polaroids/group.jpg', alt: 'Amigos en la entrada' },
+  { rotation: -8, x: '-42vw', y: '-2vh', delay: 1.55, src: '/images/polaroids/friends.jpg', alt: 'Amigos en la calle' },
+  { rotation: 3, x: '38vw', y: '4vh', delay: 1.8, src: '/images/polaroids/cathedral.jpg', alt: 'Catedral' },
+  { rotation: 10, x: '-18vw', y: '-38vh', delay: 2.05, src: '/images/polaroids/adventure.jpg', alt: 'Aventura en la roca' },
+  { rotation: -14, x: '20vw', y: '34vh', delay: 2.3, src: '/images/polaroids/terrace2.jpg', alt: 'Terraza con vistas' },
 ]
 
 const floatingCapsules = [
-  { w: 86, h: 42, x: '-44vw', y: '-18vh', rotation: -20, delay: 0.95 },
-  { w: 74, h: 36, x: '42vw', y: '-12vh', rotation: 18, delay: 1.05 },
-  { w: 92, h: 46, x: '-34vw', y: '20vh', rotation: 16, delay: 1.18 },
-  { w: 80, h: 38, x: '40vw', y: '18vh', rotation: -14, delay: 1.28 },
-  { w: 68, h: 34, x: '-12vw', y: '34vh', rotation: -8, delay: 1.45 },
+  { w: 86, h: 42, x: '-44vw', y: '-18vh', rotation: -20, delay: 1.1 },
+  { w: 74, h: 36, x: '42vw', y: '-12vh', rotation: 18, delay: 1.4 },
+  { w: 92, h: 46, x: '-34vw', y: '20vh', rotation: 16, delay: 1.7 },
+  { w: 80, h: 38, x: '40vw', y: '18vh', rotation: -14, delay: 2.0 },
+  { w: 68, h: 34, x: '-12vw', y: '34vh', rotation: -8, delay: 2.3 },
 ]
 
 /* ------------------------------------------------------------------ */
@@ -51,6 +51,15 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
   const hasAdvancedRef = useRef(false)
   const frameRef = useRef<number | null>(null)
   const lastTickRef = useRef<number | null>(null)
+
+  /** Track which animated elements have completed their entrance animation */
+  const [animationsComplete, setAnimationsComplete] = useState(false)
+
+  /** After all entrance animations finish (~3.5s), remove will-change hints to free GPU memory */
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimationsComplete(true), 3500)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     if (paused || hasAdvancedRef.current) return
@@ -92,8 +101,8 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
   const remainingSeconds = Math.max(0, Math.ceil((TOTAL_DURATION_MS - elapsedMs) / 1000))
   const particleSpecs = useMemo(
     () =>
-      Array.from({ length: 12 }).map((_, i) => {
-        const angle = (i / 12) * Math.PI * 2
+      Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2
         const distance = 60 + ((i * 37) % 100)
         return {
           i,
@@ -230,7 +239,7 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
               ease: 'easeOut',
             },
           }}
-          className="absolute z-20"
+          className={`absolute z-20 ${animationsComplete ? '' : 'will-change-transform'}`}
           style={{ top: '50%', left: '50%', marginLeft: -(POLAROID_SIZE_MOBILE / 2), marginTop: -(POLAROID_SIZE_MOBILE / 2) }}
         >
           {/* Subtle continuous float after arriving */}
@@ -275,7 +284,7 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
             ease: [0.22, 1, 0.36, 1],
             opacity: { delay: pill.delay, duration: 0.75 },
           }}
-          className="absolute z-[22] pointer-events-none"
+          className={`absolute z-[22] pointer-events-none ${animationsComplete ? '' : 'will-change-transform'}`}
           style={{ top: '50%', left: '50%', marginLeft: -(pill.w / 2), marginTop: -(pill.h / 2) }}
         >
           <div
@@ -310,11 +319,11 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
               scale: [0, 1, 0.5],
             }}
             transition={{
-              delay: 0.4 + particle.i * 0.08,
+              delay: 0.4 + particle.i * 0.1,
               duration: 2,
               ease: 'easeOut',
             }}
-            className="absolute pointer-events-none z-30"
+            className={`absolute pointer-events-none z-30 ${animationsComplete ? '' : 'will-change-transform'}`}
             style={{
               width: particle.size,
               height: particle.size,
