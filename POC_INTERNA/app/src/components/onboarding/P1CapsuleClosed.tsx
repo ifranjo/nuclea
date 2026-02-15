@@ -58,6 +58,12 @@ export function P1CapsuleClosed({ onNext }: P1Props) {
             sizes="(max-width: 640px) 240px, 320px"
             priority
           />
+          {/* "NUCLEA" engraved text on right half of capsule */}
+          <div className="absolute top-1/2 left-[55%] -translate-x-1/2 -translate-y-1/2">
+            <span className="font-semibold tracking-[0.15em] text-sm text-[#4A4A4A]">
+              NUCLEA
+            </span>
+          </div>
         </div>
       </motion.div>
 

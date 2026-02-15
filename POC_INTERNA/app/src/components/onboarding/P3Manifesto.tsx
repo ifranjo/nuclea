@@ -39,7 +39,7 @@ const scatteredPolaroids = [
 
 export function P3Manifesto({ onNext }: P3Props) {
   return (
-    <div className="h-[100dvh] flex flex-col safe-top bg-[radial-gradient(circle_at_50%_28%,rgba(212,175,55,0.14),rgba(212,175,55,0.02)_38%,transparent_68%),linear-gradient(180deg,#FCFCFD_0%,#F1F2F6_100%)] overflow-hidden">
+    <div className="h-[100dvh] flex flex-col safe-top bg-[radial-gradient(circle_at_50%_28%,rgba(212,175,55,0.14),rgba(212,175,55,0.02)_38%,transparent_68%),linear-gradient(180deg,#FCFCFD_0%,#F1F2F6_100%)] overflow-y-auto">
       {/* Background decorative elements */}
       <div className="pointer-events-none absolute inset-0 opacity-70">
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full border border-[rgba(212,175,55,0.12)]" />
@@ -51,146 +51,112 @@ export function P3Manifesto({ onNext }: P3Props) {
         <div className="absolute top-[38%] left-[8%] w-1.5 h-1.5 rounded-full bg-[rgba(212,175,55,0.14)]" />
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 relative">
-        <div className="max-w-[360px] w-full flex flex-col items-center text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 relative">
+        <div className="max-w-[360px] w-full flex flex-col items-center text-center space-y-6">
 
           {/* ====================================================== */}
-          {/*  Hero illustration area — capsule + pills + polaroids  */}
-          {/* ====================================================== */}
-          <div className="relative w-[260px] h-[220px] mb-8">
-            {/* Warm glow behind capsule */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 rounded-full"
-              style={{
-                background:
-                  'radial-gradient(circle at center, rgba(212,175,55,0.22) 0%, rgba(212,175,55,0.05) 48%, transparent 72%)',
-                filter: 'blur(2px)',
-              }}
-            />
-
-            {/* Floating pills with gentle continuous drift */}
-            {floatingPills.map((pill, i) => (
-              <motion.div
-                key={`pill-${pill.x}-${pill.y}`}
-                initial={{ opacity: 0, scale: 0.85, y: 12 }}
-                animate={{ opacity: 0.9, scale: 1, y: 0 }}
-                transition={{ delay: pill.delay, duration: 0.7, ease: 'easeOut' }}
-                className="absolute pointer-events-none"
-                style={{ left: pill.x, top: pill.y }}
-              >
-                <motion.div
-                  animate={{
-                    y: [0, -3, 0, 2, 0],
-                    rotate: [pill.rotate, pill.rotate + 1.5, pill.rotate, pill.rotate - 1, pill.rotate],
-                  }}
-                  transition={{
-                    delay: pill.delay + 0.8,
-                    duration: 5 + i * 0.4,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
-                  <div
-                    className="relative overflow-hidden rounded-full border border-[rgba(255,255,255,0.88)] shadow-[0_10px_28px_rgba(22,22,32,0.14)]"
-                    style={{
-                      width: pill.w,
-                      height: pill.h,
-                      transform: `rotate(${pill.rotate}deg)`,
-                      background: 'linear-gradient(132deg, #f6f6f8 0%, #dcdee7 46%, #c5c9d4 100%)',
-                    }}
-                  >
-                    <div className="absolute inset-[1px] rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.62),rgba(255,255,255,0.08))]" />
-                    {/* Capsule seam line */}
-                    <div
-                      className="absolute inset-y-[22%] left-[56%] w-[28%] rounded-full bg-[rgba(125,132,146,0.28)]"
-                      style={{ filter: 'blur(0.4px)' }}
-                    />
-                  </div>
-                </motion.div>
-              </motion.div>
-            ))}
-
-            {/* Scattered mini-polaroids with real photos */}
-            {scatteredPolaroids.map((pol) => (
-              <motion.div
-                key={`pol-${pol.src}`}
-                initial={{ opacity: 0, scale: 0.7, y: 10 }}
-                animate={{ opacity: 0.85, scale: 1, y: 0 }}
-                transition={{ delay: pol.delay, duration: 0.65, ease: 'easeOut' }}
-                className="absolute pointer-events-none"
-                style={{ left: pol.x, top: pol.y }}
-              >
-                <div
-                  className="bg-white rounded-[1px] shadow-[0_3px_10px_rgba(0,0,0,0.1)]"
-                  style={{
-                    width: pol.size,
-                    padding: '3px 3px 10px 3px',
-                    transform: `rotate(${pol.rotate}deg)`,
-                  }}
-                >
-                  <div className="relative overflow-hidden rounded-[0.5px]" style={{ width: pol.size - 6, height: pol.size - 6 }}>
-                    <Image src={pol.src} alt="" fill className="object-cover" sizes={`${pol.size}px`} />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* Central capsule image with breathing animation */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.65 }}
-              className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 w-[180px] h-[90px]"
-            >
-              <motion.div
-                animate={{
-                  y: [0, -4, 0],
-                  scale: [1, 1.02, 1],
-                }}
-                transition={{
-                  duration: 3.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-                className="relative w-full h-full"
-              >
-                <Image
-                  src="/images/capsule-closed-nobg.png"
-                  alt="Cápsula NUCLEA"
-                  fill
-                  className="object-cover drop-shadow-[0_16px_26px_rgba(20,20,26,0.22)]"
-                  sizes="180px"
-                />
-              </motion.div>
-            </motion.div>
-
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs tracking-[0.16em] uppercase text-[#8A8C93]">
-              Archivo de memorias
-            </div>
-          </div>
-
-          {/* ====================================================== */}
-          {/*  Manifesto card                                         */}
+          {/*  Small capsule image at top                            */}
           {/* ====================================================== */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-[26px] border border-[rgba(23,23,28,0.08)] bg-white/78 backdrop-blur-sm px-6 py-6 shadow-[0_14px_40px_rgba(18,18,24,0.08)]"
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="relative w-[80px] h-[40px]"
           >
-            <p className="font-display text-xl italic text-nuclea-text-secondary leading-snug">
+            <Image
+              src="/images/capsule-closed-nobg.png"
+              alt="Cápsula NUCLEA"
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
+          </motion.div>
+
+          {/* ====================================================== */}
+          {/*  Main heading and subheading                           */}
+          {/* ====================================================== */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.6 }}
+            className="space-y-2"
+          >
+            <h1 className="text-2xl font-semibold text-[#1A1A1A]">
               Somos las historias que recordamos.
-            </p>
-            <p className="font-display text-xl italic text-nuclea-text-secondary leading-snug mb-5">
+            </h1>
+            <h2 className="text-xl font-medium text-[#3D3D3D]">
               Haz que las tuyas permanezcan.
+            </h2>
+          </motion.div>
+
+          {/* ====================================================== */}
+          {/*  Small separator line                                  */}
+          {/* ====================================================== */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+            className="w-[40px] h-[1px] bg-[#D4D4D4]"
+          />
+
+          {/* ====================================================== */}
+          {/*  Main paragraphs                                       */}
+          {/* ====================================================== */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.6 }}
+            className="space-y-4"
+          >
+            <p className="text-base text-[#6B6B6B] leading-relaxed">
+              NUCLEA es un espacio íntimo donde guardar lo que de verdad importa.
             </p>
-            <p className="text-base text-nuclea-text-secondary leading-relaxed">
-              NUCLEA transforma tus recuerdos en legado. Un espacio íntimo donde guardar lo que importa: fotos, vídeos, mensajes y momentos que merecen perdurar.
+            <p className="text-base text-[#6B6B6B] leading-relaxed">
+              Creamos cápsulas emocionales para conservar recuerdos, palabras, imágenes y voces que definen quién eres y a quién amas.
             </p>
           </motion.div>
+
+          {/* ====================================================== */}
+          {/*  Three poetic lines                                    */}
+          {/* ====================================================== */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45, duration: 0.6 }}
+            className="space-y-3"
+          >
+            <p className="text-base font-medium text-[#4A4A4A]">
+              Momentos que no quieres olvidar.
+            </p>
+            <p className="text-base font-medium text-[#4A4A4A]">
+              Mensajes para el futuro.
+            </p>
+            <p className="text-base font-medium text-[#4A4A4A]">
+              Historias que merecen quedarse.
+            </p>
+          </motion.div>
+
+          {/* ====================================================== */}
+          {/*  Second separator line                                 */}
+          {/* ====================================================== */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.55, duration: 0.5 }}
+            className="w-[40px] h-[1px] bg-[#D4D4D4]"
+          />
+
+          {/* ====================================================== */}
+          {/*  Closing statement                                     */}
+          {/* ====================================================== */}
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65, duration: 0.6 }}
+            className="text-lg font-semibold text-[#1A1A1A]"
+          >
+            NUCLEA transforma recuerdos en legado.
+          </motion.p>
         </div>
       </div>
 
