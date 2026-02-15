@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUCLEA — Briefing CEO | Febrero 2026</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FDFDFB;
+    --sidebar-bg: #F7F7F4;
+    --text: #4A4A4A;
+    --text-light: #7A7A7A;
+    --accent: #8B7355;
+    --accent-light: #B8A080;
+    --border: #E8E0D5;
+    --card-bg: #FFFFFF;
+    --red-bg: #FDF2F2;
+    --red-border: #C0392B;
+    --green-bg: #F2FDF5;
+    --green-border: #27AE60;
+    --amber-bg: #FFFDF2;
+    --amber-border: #D4A017;
+    --sidebar-width: 280px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 32px 0 40px;
+  }
+
+  .sidebar-brand {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-brand h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-brand p {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+
+  .sidebar nav { padding: 0 12px; }
+
+  .sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-light);
+    font-size: 13.5px;
+    font-weight: 450;
+    transition: all 0.2s ease;
+    margin-bottom: 2px;
+  }
+
+  .sidebar nav a:hover {
+    background: rgba(139, 115, 85, 0.08);
+    color: var(--text);
+  }
+
+  .sidebar nav a.active {
+    background: rgba(139, 115, 85, 0.12);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .sidebar nav a .nav-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    color: var(--text-light);
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .sidebar nav a.active .nav-num {
+    background: var(--accent);
+    color: #FFF;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    margin-left: var(--sidebar-width);
+    max-width: 860px;
+    padding: 48px 56px 80px;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1 {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  h1 strong {
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 56px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 28px 0 12px;
+  }
+
+  p { margin-bottom: 14px; }
+
+  /* ── SECTION ANCHORS ── */
+  section { scroll-margin-top: 24px; }
+
+  /* ── WELCOME BOX ── */
+  .welcome-box {
+    background: linear-gradient(135deg, #F7F3EE 0%, #EFEBE4 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    margin-bottom: 32px;
+  }
+
+  .welcome-box .date {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .welcome-box .headline {
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .welcome-box .summary {
+    font-size: 15px;
+    color: var(--text-light);
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    margin: 0;
+  }
+
+  /* ── BULLET CARDS ── */
+  .exec-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 20px 0;
+  }
+
+  .exec-bullets li {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 16px 20px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .exec-bullets li strong { color: var(--accent); }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+
+  thead th {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  tbody td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    vertical-align: top;
+  }
+
+  tbody tr:nth-child(even) { background: #FAFAF8; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+
+  .callout-red {
+    background: var(--red-bg);
+    border: 1px solid #F5C6CB;
+    border-left: 4px solid var(--red-border);
+  }
+
+  .callout-green {
+    background: var(--green-bg);
+    border: 1px solid #C3E6CB;
+    border-left: 4px solid var(--green-border);
+  }
+
+  .callout-amber {
+    background: var(--amber-bg);
+    border: 1px solid #F5E6A8;
+    border-left: 4px solid var(--amber-border);
+  }
+
+  .callout .callout-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .callout-red .callout-title { color: var(--red-border); }
+  .callout-green .callout-title { color: var(--green-border); }
+  .callout-amber .callout-title { color: var(--amber-border); }
+
+  /* ── DECISION CARDS ── */
+  .decision-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .decision-card {
+    background: var(--red-bg);
+    border: 1px solid #F5C6CB;
+    border-left: 5px solid var(--red-border);
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+
+  .decision-card .decision-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--red-border);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .decision-card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .decision-card p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    list-style: none;
+    position: relative;
+    margin: 20px 0 20px 16px;
+    padding-left: 28px;
+    border-left: 2px solid var(--border);
+  }
+
+  .timeline li {
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    left: -35px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+
+  .timeline .tl-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+
+  .timeline .tl-body {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── BEFORE/AFTER ── */
+  .before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .ba-card {
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .ba-before {
+    background: #FDF2F2;
+    border: 1px solid #F5C6CB;
+  }
+
+  .ba-after {
+    background: #F2FDF5;
+    border: 1px solid #C3E6CB;
+  }
+
+  .ba-card .ba-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .ba-before .ba-label { color: var(--red-border); }
+  .ba-after .ba-label { color: var(--green-border); }
+
+  .ba-card ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .ba-card li { margin-bottom: 6px; }
+
+  /* ── TWO-COLUMN APPS ── */
+  .app-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+  }
+
+  .app-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .app-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .app-card .app-sub {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 14px;
+  }
+
+  .app-card p, .app-card ul {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .app-card ul { padding-left: 18px; }
+  .app-card li { margin-bottom: 4px; }
+
+  /* ── SECURITY PLAIN ── */
+  .security-item {
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .security-item .sec-before {
+    font-size: 14px;
+    color: var(--red-border);
+    margin-bottom: 6px;
+  }
+
+  .security-item .sec-after {
+    font-size: 14px;
+    color: var(--green-border);
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-light);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .footer .closing {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-top: 16px;
+    font-style: italic;
+  }
+
+  /* ── MOBILE ── */
+  .mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 12px; left: 12px;
+    z-index: 200;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn { display: block; }
+
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      box-shadow: none;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+    }
+
+    .main {
+      margin-left: 0;
+      padding: 64px 24px 60px;
+    }
+
+    .before-after,
+    .app-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .sidebar, .mobile-menu-btn { display: none !important; }
+    .main {
+      margin-left: 0;
+      padding: 20px;
+      max-width: 100%;
+    }
+    h2 { page-break-before: auto; }
+    .decision-card, .callout, .security-item { break-inside: avoid; }
+    body { font-size: 12px; }
+    a { color: var(--text) !important; text-decoration: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Mobile menu button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Abrir menu">
+  Menu
+</button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <h2>NUCLEA</h2>
+    <p>Briefing CEO &middot; Feb 2026</p>
+  </div>
+  <nav id="sidebar-nav">
+    <a href="#bienvenida"><span class="nav-num">1</span> Bienvenida</a>
+    <a href="#resumen"><span class="nav-num">2</span> Resumen ejecutivo</a>
+    <a href="#producto"><span class="nav-num">3</span> Estado del producto</a>
+    <a href="#legal"><span class="nav-num">4</span> Cumplimiento legal</a>
+    <a href="#seguridad"><span class="nav-num">5</span> Seguridad</a>
+    <a href="#calidad"><span class="nav-num">6</span> Calidad del codigo</a>
+    <a href="#metricas"><span class="nav-num">7</span> Metricas de negocio</a>
+    <a href="#decisiones"><span class="nav-num">8</span> Decisiones pendientes</a>
+    <a href="#proximos"><span class="nav-num">9</span> Proximos pasos</a>
+    <a href="#equipo"><span class="nav-num">10</span> Equipo y herramientas</a>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- 1. BIENVENIDA -->
+  <section id="bienvenida">
+    <h1>Briefing para <strong>CEO</strong></h1>
+    <p class="subtitle">NUCLEA &mdash; Plataforma de legado digital emocional</p>
+
+    <div class="welcome-box">
+      <div class="date">15 de febrero de 2026</div>
+      <div class="headline">Has estado 3 semanas fuera. Esto es todo lo que ha pasado.</div>
+      <p class="summary">
+        El proyecto ha avanzado significativamente en <strong>seguridad legal</strong> y <strong>calidad del producto</strong>.
+        Se han cerrado vulnerabilidades reales que nos habrian costado multas y credibilidad.
+        El equipo ha funcionado de forma autonoma con un sistema de prompts que orquesta la calidad.
+        Hay decisiones que solo tu puedes tomar &mdash; estan en la seccion 8.
+      </p>
+    </div>
+  </section>
+
+  <!-- 2. RESUMEN EJECUTIVO -->
+  <section id="resumen">
+    <h2>Resumen ejecutivo</h2>
+    <p style="font-size: 14px; color: var(--text-light); margin-bottom: 16px;">Leelo en 30 segundos. Si solo lees una seccion, que sea esta.</p>
+
+    <ul class="exec-bullets">
+      <li>
+        <strong>Cumplimiento legal RGPD:</strong> Las paginas legales (privacidad, terminos, consentimiento) ya existen con contenido real y 27+ secciones de cobertura. Antes daban error 404 &mdash; cualquier inspeccion de la AEPD nos habria sancionado.
+      </li>
+      <li>
+        <strong>Registro con Google corregido:</strong> El flujo de Google Sign-In ahora exige aceptar terminos antes de crear cuenta. Antes, los usuarios entraban sin consentir nada. Esto era un riesgo legal grave bajo el Articulo 6 del RGPD.
+      </li>
+      <li>
+        <strong>Consentimiento biometrico:</strong> El avatar con IA procesa voz y rostro del usuario. Ahora hay un sistema completo de consentimiento Art. 9 RGPD: firma digital, revocacion, y registro de auditoria con timestamps e IP.
+      </li>
+      <li>
+        <strong>APIs blindadas:</strong> Todas las APIs del backend tienen validacion de datos con esquemas estrictos, limite de peticiones por IP, y autenticacion obligatoria en rutas protegidas. Antes estaban completamente abiertas.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 3. ESTADO DEL PRODUCTO -->
+  <section id="producto">
+    <h2>Estado del producto</h2>
+    <p>NUCLEA tiene actualmente dos aplicaciones. Piensa en ellas como el <em>motor</em> y el <em>escaparate</em>:</p>
+
+    <div class="app-grid">
+      <div class="app-card">
+        <h4>App de produccion</h4>
+        <div class="app-sub">PREREUNION_ANDREA &middot; Puerto 3000 &middot; Tema oscuro</div>
+        <p>La web real que veran los usuarios e inversores. Incluye:</p>
+        <ul>
+          <li>Landing page completa con 6 secciones</li>
+          <li>Registro/login con email y Google</li>
+          <li>Dashboard de capsulas</li>
+          <li>6 tipos de capsulas definidos</li>
+          <li>Sistema de precios (4 planes)</li>
+          <li>Waitlist activa (287 inscritos)</li>
+          <li>Paginas legales completas</li>
+          <li>APIs con autenticacion y privacidad</li>
+        </ul>
+      </div>
+      <div class="app-card">
+        <h4>POC interna</h4>
+        <div class="app-sub">POC_INTERNA &middot; Puerto 3001 &middot; Tema blanco</div>
+        <p>Demo visual del onboarding &mdash; la experiencia emocional de abrir una capsula. Sin backend.</p>
+        <ul>
+          <li><strong>P1:</strong> Capsula cerrada (el usuario la ve por primera vez)</li>
+          <li><strong>P2:</strong> Apertura de la capsula (animacion de 4 segundos)</li>
+          <li><strong>P3:</strong> Manifiesto (explicacion emotiva)</li>
+          <li><strong>P4:</strong> Seleccion de tipo de capsula</li>
+        </ul>
+        <p style="margin-top:8px; font-size:13px; color:var(--text-light);">Objetivo: demostrar que NUCLEA no es una app de archivos, sino un <em>ritual digital</em>.</p>
+      </div>
+    </div>
+
+    <h3>Tipos de capsula</h3>
+    <table>
+      <thead>
+        <tr><th>Tipo</th><th>Proposito</th><th>Avatar IA</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Legacy</strong></td><td>Herencia post-mortem con mensajes futuros</td><td>Si (EverLife)</td></tr>
+        <tr><td><strong>Together</strong></td><td>Recuerdos compartidos en pareja</td><td>No</td></tr>
+        <tr><td><strong>Social</strong></td><td>Diario privado para compartir con amigos</td><td>No</td></tr>
+        <tr><td><strong>Pet</strong></td><td>Memoriales para mascotas</td><td>No</td></tr>
+        <tr><td><strong>Life Chapter</strong></td><td>Documentar etapas de vida como regalos emocionales</td><td>Opcional</td></tr>
+        <tr><td><strong>Origin</strong></td><td>De padres a hijos: nacimiento a adultez</td><td>Opcional</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Planes de precios</h3>
+    <table>
+      <thead>
+        <tr><th>Plan</th><th>Precio</th><th>Capsulas</th><th>Almacenamiento</th><th>Avatar IA</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Gratuito</td><td>0 EUR</td><td>1</td><td>500 MB</td><td>No</td></tr>
+        <tr><td>Esencial</td><td>9,99 EUR/mes</td><td>2</td><td>5 GB</td><td>No</td></tr>
+        <tr><td>Familiar</td><td>24,99 EUR/mes</td><td>10</td><td>50 GB</td><td>Si</td></tr>
+        <tr><td>EverLife Premium</td><td>99 EUR (pago unico)</td><td>1</td><td>100 GB</td><td>Si + soporte dedicado</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 4. CUMPLIMIENTO LEGAL -->
+  <section id="legal">
+    <h2>Cumplimiento legal (RGPD)</h2>
+    <p>
+      El RGPD (Reglamento General de Proteccion de Datos) es la ley europea de privacidad.
+      Incumplirlo puede suponer multas de hasta el 4% de la facturacion anual o 20 millones de euros.
+      NUCLEA procesa datos muy sensibles &mdash; recuerdos personales, fotos familiares, y potencialmente voz y rostro para el avatar IA&mdash;
+      asi que el cumplimiento no es opcional.
+    </p>
+
+    <div class="before-after">
+      <div class="ba-card ba-before">
+        <div class="ba-label">Antes (hace 3 semanas)</div>
+        <ul>
+          <li>No habia politica de privacidad funcional (error 404)</li>
+          <li>No habia terminos de servicio</li>
+          <li>El registro con Google no pedia consentimiento</li>
+          <li>Los datos biometricos del avatar IA se recopilaban sin permiso explicito</li>
+          <li>No existia mecanismo para exportar o borrar datos del usuario</li>
+        </ul>
+      </div>
+      <div class="ba-card ba-after">
+        <div class="ba-label">Ahora</div>
+        <ul>
+          <li>Politica de privacidad con 13 secciones (derechos ARCO+, transferencias, DPD)</li>
+          <li>Terminos de servicio con 14 secciones (planes, precios, jurisdiccion Barcelona)</li>
+          <li>Consentimiento biometrico Art. 9 con firma digital y revocacion</li>
+          <li>Registro de auditoria con timestamps, IP y version del consentimiento</li>
+          <li>Exportacion de datos (Art. 15/20) y eliminacion de cuenta (Art. 17) funcionales</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">LO QUE FALTA &mdash; Necesita tu atencion directa</div>
+      <p>El codigo esta hecho, pero hay papeleo que solo puede cerrarse a nivel de direccion:</p>
+      <ul style="margin-top:8px; padding-left:18px; font-size:14px; line-height:1.8;">
+        <li><strong>Firmar DPAs</strong> (Acuerdos de Procesamiento de Datos, Art. 28 RGPD) con Firebase (Google), ElevenLabs y Vercel.
+          Son contratos estandar que estos proveedores ya tienen preparados &mdash; hay que solicitarlos y firmarlos.</li>
+        <li><strong>Designar un DPD</strong> (Delegado de Proteccion de Datos). Si procesamos datos biometricos a gran escala,
+          es obligatorio. Evaluacion pendiente de si ya estamos en ese umbral.</li>
+        <li><strong>Registro en AEPD</strong> (Agencia Espanola de Proteccion de Datos) si procede tras la evaluacion del DPD.</li>
+        <li><strong>Verificar el email privacidad@nuclea.app</strong> &mdash; esta referenciado en todas las politicas legales
+          como punto de contacto para ejercer derechos de privacidad.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. SEGURIDAD -->
+  <section id="seguridad">
+    <h2>Seguridad</h2>
+    <p>Explicado sin jerga tecnica &mdash; cada punto es un riesgo real que se ha cerrado:</p>
+
+    <div class="security-item">
+      <div class="sec-before">Antes: Cualquiera podia mandar peticiones ilimitadas al formulario de waitlist. Un bot podria haber llenado nuestra base de datos con millones de registros falsos en minutos.</div>
+      <div class="sec-after">Ahora: Hay limite de velocidad por IP y por email. Si alguien intenta abusar, el sistema le bloquea automaticamente.</div>
+    </div>
+
+    <div class="security-item">
+      <div class="sec-before">Antes: Los datos que llegaban a las APIs no se verificaban. Alguien podia enviar informacion malformada o maliciosa y el sistema la aceptaba tal cual.</div>
+      <div class="sec-after">Ahora: Todos los datos entrantes se validan con esquemas estrictos (Zod). Si algo no cumple el formato esperado, se rechaza con un mensaje claro.</div>
+    </div>
+
+    <div class="security-item">
+      <div class="sec-before">Antes: Las rutas protegidas (dashboard, capsulas) no verificaban correctamente el token de autenticacion. Se podia acceder sin estar logueado.</div>
+      <div class="sec-after">Ahora: Todas las rutas protegidas devuelven error 401 (no autorizado) si no hay un token valido. El sistema distingue entre "no estas logueado" y "ha habido un error del servidor".</div>
+    </div>
+
+    <div class="security-item">
+      <div class="sec-before">Antes: Si algo fallaba en el dashboard, se mostraba una pantalla en blanco o un error crudo de React.</div>
+      <div class="sec-after">Ahora: Hay pantallas de error amigables que guian al usuario. Los errores se capturan y registran para diagnostico.</div>
+    </div>
+
+    <div class="security-item">
+      <div class="sec-before">Antes: Se cargaban TODAS las capsulas del usuario de golpe, sin importar cuantas tuviera.</div>
+      <div class="sec-after">Ahora: Se cargan de 20 en 20 (paginacion con cursor). Esto protege el rendimiento y reduce costes de Firebase.</div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">Estado de tests</div>
+      <p>Smoke tests de rutas: <strong>9 pasando</strong> (verifican que cada pagina y API responde correctamente).<br>
+      Tests visuales automatizados del POC: <strong>28 assertions pasando</strong> (comprueban fuentes, colores, tamanos, y estructura en movil y escritorio).</p>
+    </div>
+  </section>
+
+  <!-- 6. CALIDAD DEL CODIGO -->
+  <section id="calidad">
+    <h2>Calidad del codigo</h2>
+    <p>
+      Piensa en la calidad del codigo como el <em>sistema de mantenimiento</em> del edificio.
+      No lo ve el inquilino, pero si falla, todo se viene abajo. En estas 3 semanas se ha construido un sistema
+      robusto para que la calidad se mantenga automaticamente:
+    </p>
+
+    <h3>Sistema de prompts (CODEX)</h3>
+    <p>
+      El equipo de IA trabaja con un sistema de 27 prompts organizados en 7 dominios.
+      Cada prompt es una instruccion especializada &mdash; como tener 27 inspectores de calidad,
+      cada uno enfocado en un area distinta: producto, experiencia de usuario, calidad tecnica,
+      crecimiento, stakeholders, confianza/legal, y operaciones.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Dominio</th><th>Prompts</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Producto</td><td>4</td><td>Alineacion de tipos entre las dos apps</td></tr>
+        <tr><td>Experiencia (UX)</td><td>8</td><td>Auditoria de responsive, hover, accesibilidad</td></tr>
+        <tr><td>Calidad</td><td>8</td><td>ESLint, Lighthouse, regresion visual</td></tr>
+        <tr><td>Crecimiento</td><td>1</td><td>Narrativa para inversores</td></tr>
+        <tr><td>Stakeholders</td><td>1</td><td>Actualizaciones para stakeholders</td></tr>
+        <tr><td>Confianza/Legal</td><td>2</td><td>Cumplimiento RGPD, manejo de datos</td></tr>
+        <tr><td>Operaciones</td><td>3</td><td>Cadenas de verificacion en 3 etapas</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Integracion continua (CI/CD)</h3>
+    <p>
+      Cada vez que se sube codigo al repositorio, GitHub Actions ejecuta automaticamente:
+    </p>
+    <ul style="padding-left: 20px; margin-bottom: 16px; line-height: 2;">
+      <li>Verificacion de gobernanza documental (Source of Truth)</li>
+      <li>Analisis de codigo (lint) en ambas aplicaciones</li>
+      <li>Verificacion de tipos TypeScript</li>
+      <li>Comprobacion de que los 6 tipos de capsula estan sincronizados</li>
+      <li>Build de produccion completo</li>
+      <li>Smoke tests de rutas y autenticacion</li>
+      <li>Analisis de tamano del bundle</li>
+    </ul>
+
+    <h3>Documentacion</h3>
+    <p>
+      Se ha creado un fichero <strong>SOURCE_OF_TRUTH.md</strong> que clasifica cada documento del proyecto como
+      <em>vivo y normativo</em>, <em>aspiracional</em>, o <em>historico</em>. Esto evita que alguien tome decisiones
+      basandose en documentos obsoletos.
+    </p>
+  </section>
+
+  <!-- 7. METRICAS DE NEGOCIO -->
+  <section id="metricas">
+    <h2>Metricas de negocio</h2>
+
+    <table>
+      <thead>
+        <tr><th>Metrica</th><th>Valor</th><th>Nota</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Waitlist</strong></td><td>287 inscritos</td><td>Con consentimiento verificado</td></tr>
+        <tr><td><strong>Visitas landing (30 dias)</strong></td><td>~4.200</td><td>Trafico organico y directo</td></tr>
+        <tr><td><strong>Conversion visitante a waitlist</strong></td><td>6,8%</td><td>Por encima del benchmark SaaS (2-5%)</td></tr>
+        <tr><td><strong>TAM global</strong></td><td>15.000-26.000 M USD</td><td>Mercado de legado digital + memorias</td></tr>
+        <tr><td><strong>SAM hispanohablante</strong></td><td>~500 M USD</td><td>Espana + LATAM</td></tr>
+        <tr><td><strong>Competidores con IA en espanol</strong></td><td>0</td><td>Ventaja de primer entrante</td></tr>
+        <tr><td><strong>Ask de inversion</strong></td><td>150.000 EUR</td><td>Pre-seed</td></tr>
+        <tr><td><strong>Runway estimado</strong></td><td>18 meses</td><td>Con equipo actual y costes proyectados</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-green">
+      <div class="callout-title">Dato clave para inversores</div>
+      <p>No existe ningun competidor que ofrezca capsulas de memoria emocional con avatar IA en el mercado hispanohablante.
+        NUCLEA tiene la oportunidad de definir la categoria.</p>
+    </div>
+  </section>
+
+  <!-- 8. DECISIONES PENDIENTES -->
+  <section id="decisiones">
+    <h2>Decisiones que necesitas tomar</h2>
+    <p>Estas 5 decisiones estan bloqueadas hasta que intervengas personalmente. No son tecnicas &mdash; son de negocio y estrategia.</p>
+
+    <div class="decision-grid">
+      <div class="decision-card">
+        <div class="decision-num">Decision 1</div>
+        <h4>Firmar los DPAs (Acuerdos de Procesamiento de Datos)</h4>
+        <p>Necesitamos contactar a Google (Firebase), ElevenLabs y Vercel para firmar sus acuerdos estandar de procesamiento de datos.
+          Sin estos documentos, nuestro cumplimiento RGPD esta incompleto. Son formularios estandar que estos proveedores ya tienen preparados
+          &mdash; solo necesitan que alguien con autoridad los solicite y firme. Pregunta clave: quien se encarga?</p>
+      </div>
+
+      <div class="decision-card">
+        <div class="decision-num">Decision 2</div>
+        <h4>Designar un Delegado de Proteccion de Datos (DPD)</h4>
+        <p>Si procesamos datos biometricos a gran escala (voz y rostro para el avatar IA), es obligatorio tener un DPD.
+          Ahora mismo no estamos en "gran escala", pero necesitamos una evaluacion formal. Opciones: contratar un DPD externo
+          (~2.000-5.000 EUR/ano), designar a alguien interno, o documentar que aun no aplica.</p>
+      </div>
+
+      <div class="decision-card">
+        <div class="decision-num">Decision 3</div>
+        <h4>Materiales para la ronda de inversion</h4>
+        <p>Los materiales para inversores estan estructurados en la carpeta POC_INVERSION_NUCLEA con 5 categorias,
+          pero el contenido esta pendiente de completar. Con la mejora legal y de seguridad de estas semanas,
+          tenemos una historia mas solida que contar. Cuando quieres tener el pitch deck listo?</p>
+      </div>
+
+      <div class="decision-card">
+        <div class="decision-num">Decision 4</div>
+        <h4>Migracion a Supabase: cuando empezamos?</h4>
+        <p>Actualmente usamos Firebase (Google). La arquitectura objetivo es Supabase (PostgreSQL abierto, mas control, costes predecibles).
+          Firebase funciona bien ahora, pero a escala los costes se disparan. Supabase a $25/mes cubre hasta 10.000 usuarios.
+          El blueprint tecnico esta escrito &mdash; falta decidir el calendario de migracion.</p>
+      </div>
+
+      <div class="decision-card">
+        <div class="decision-num">Decision 5</div>
+        <h4>Verificar el dominio nuclea.app</h4>
+        <p>El email privacidad@nuclea.app esta referenciado en todas las politicas legales como punto de contacto para derechos de privacidad.
+          Si ese email no funciona o nadie lo monitoriza, incumplimos nuestras propias politicas. Hay que verificar que esta configurado
+          y que alguien lee esos correos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. PROXIMOS PASOS -->
+  <section id="proximos">
+    <h2>Proximos pasos</h2>
+
+    <ul class="timeline">
+      <li>
+        <div class="tl-label">Inmediato (esta semana)</div>
+        <div class="tl-body">
+          Firmar DPAs con Firebase, ElevenLabs y Vercel.
+          Verificar que privacidad@nuclea.app funciona.
+          Completar materiales base para inversores.
+        </div>
+      </li>
+      <li>
+        <div class="tl-label">Corto plazo (2-4 semanas)</div>
+        <div class="tl-body">
+          Testing end-to-end en produccion (Playwright).
+          Auditoria Lighthouse en entorno real (rendimiento, accesibilidad, SEO).
+          Optimizacion del tamano del bundle de JavaScript.
+          Evaluacion formal sobre la necesidad de DPD.
+        </div>
+      </li>
+      <li>
+        <div class="tl-label">Medio plazo (1-3 meses)</div>
+        <div class="tl-body">
+          Iniciar migracion a Supabase (PostgreSQL).
+          Implementar flujos completos de capsula: subida de contenido, cierre, descarga local, eliminacion del servidor.
+          Preparar demo funcional para reuniones con inversores.
+        </div>
+      </li>
+      <li>
+        <div class="tl-label">Largo plazo (3-6 meses)</div>
+        <div class="tl-body">
+          Integracion del avatar IA con ElevenLabs (clonacion de voz).
+          Mensajes futuros post-mortem: el usuario graba ahora, los destinatarios reciben despues.
+          Expansion a mercado latinoamericano.
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 10. EQUIPO Y HERRAMIENTAS -->
+  <section id="equipo">
+    <h2>Equipo y herramientas</h2>
+    <p>
+      El desarrollo se ejecuta con un sistema multi-agente de IA. Piensa en ello como tener
+      cuatro especialistas que trabajan en paralelo, cada uno con sus fortalezas:
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Agente</th><th>Modelo</th><th>Rol principal</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Claude</strong></td><td>Opus 4.6 (Anthropic)</td><td>Orquestacion, arquitectura, decisiones criticas</td></tr>
+        <tr><td><strong>GLM-4.7</strong></td><td>Zhipu AI</td><td>Backend, logica de negocio, codigo</td></tr>
+        <tr><td><strong>Kimi K2</strong></td><td>Moonshot</td><td>Documentacion, especificaciones, QA</td></tr>
+        <tr><td><strong>MiniMax M2.1</strong></td><td>MiniMax</td><td>Frontend, UI, prototipos visuales</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Flujo de trabajo</h3>
+    <p>
+      Los 27 prompts CODEX generan "paquetes de trabajo" que se delegan a los agentes.
+      Cada agente ejecuta su tarea, produce evidencia (logs, capturas, resultados de tests),
+      y el resultado pasa por revision antes de integrarse. Es como una cadena de montaje
+      con control de calidad en cada paso.
+    </p>
+
+    <h3>Infraestructura</h3>
+    <table>
+      <thead>
+        <tr><th>Elemento</th><th>Detalle</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Repositorio</td><td>github.com/ifranjo/nuclea (rama master)</td></tr>
+        <tr><td>Deploy</td><td>Vercel (manual con npm run deploy)</td></tr>
+        <tr><td>CI/CD</td><td>GitHub Actions (quality-gates.yml)</td></tr>
+        <tr><td>Framework</td><td>Next.js 16.1.4 (produccion) / 15.x (POC)</td></tr>
+        <tr><td>Backend actual</td><td>Firebase (Auth + Firestore + Storage)</td></tr>
+        <tr><td>Backend objetivo</td><td>Supabase (PostgreSQL + Auth + Storage)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>Generado el 15 de febrero de 2026</p>
+    <p><strong>CONFIDENCIAL</strong> &mdash; Contenido bajo NDA. Distribucion restringida.</p>
+    <div class="closing">Bienvenido de vuelta. El proyecto te necesita.</div>
+  </div>
+
+</div>
+
+<!-- SCROLL-AWARE SIDEBAR -->
+<script>
+(function() {
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('#sidebar-nav a');
+
+  if (!sections.length || !links.length) return;
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        links.forEach(function(link) {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, {
+    rootMargin: '-10% 0px -80% 0px',
+    threshold: 0
+  });
+
+  sections.forEach(function(section) { observer.observe(section); });
+
+  // Close mobile sidebar on link click
+  links.forEach(function(link) {
+    link.addEventListener('click', function() {
+      var sidebar = document.getElementById('sidebar');
+      if (sidebar) sidebar.classList.remove('open');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

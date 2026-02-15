@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NUCLEA — Briefing CTO | Febrero 2026</title>
+  <style>
+    :root {
+      --bg: #FDFDFB;
+      --sidebar-bg: #F7F7F4;
+      --text: #4A4A4A;
+      --text-dark: #2D2D2D;
+      --accent: #8B7355;
+      --accent-light: #A8906F;
+      --border: #E0DCD5;
+      --code-bg: #F0EDE7;
+      --paper: #FFFFFF;
+      --muted: #7A7A7A;
+      --green: #4A7C59;
+      --red: #9C4040;
+      --orange: #9C7A40;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --radius: 8px;
+      --sidebar-w: 280px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* Layout */
+    .layout { display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); min-height: 100vh; }
+
+    /* Sidebar */
+    aside {
+      position: sticky; top: 0; align-self: start; height: 100vh;
+      overflow-y: auto; background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      padding: 28px 20px 32px;
+    }
+    aside::-webkit-scrollbar { width: 4px; }
+    aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .side-badge {
+      display: inline-block; font-size: 11px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent);
+      border: 1px solid var(--accent); border-radius: 999px;
+      padding: 3px 10px; margin-bottom: 14px;
+      font-family: Consolas, 'Courier New', monospace;
+    }
+    .side-title { font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; line-height: 1.3; }
+    .side-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+    .nav-list a {
+      display: block; text-decoration: none; color: var(--text);
+      font-size: 13.5px; padding: 7px 10px; border-radius: 6px;
+      border-left: 3px solid transparent; transition: all 0.15s ease;
+    }
+    .nav-list a:hover { background: rgba(139,115,85,0.08); color: var(--text-dark); }
+    .nav-list a.active {
+      background: rgba(139,115,85,0.1); color: var(--accent);
+      border-left-color: var(--accent); font-weight: 500;
+    }
+    .nav-list .nav-num {
+      display: inline-block; width: 22px; font-size: 12px;
+      color: var(--muted); font-family: Consolas, 'Courier New', monospace;
+    }
+    .side-footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .side-footer code { font-size: 11px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+
+    /* Main content */
+    main { padding: 36px 40px 60px; max-width: 960px; width: 100%; }
+    section { margin-bottom: 36px; }
+
+    h1 { font-size: 28px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; line-height: 1.25; }
+    h2 { font-size: 21px; font-weight: 600; color: var(--accent); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    h3 { font-size: 16px; font-weight: 600; color: var(--text-dark); margin: 18px 0 8px; }
+    h4 { font-size: 14px; font-weight: 600; color: var(--accent); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+    p { margin-bottom: 10px; }
+    .header-meta { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .header-meta span { margin-right: 16px; }
+
+    /* Cards & panels */
+    .panel {
+      background: var(--paper); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 22px 24px; margin-bottom: 20px;
+    }
+    .callout {
+      border-left: 4px solid var(--accent); background: #FAF8F4;
+      padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 12px 0; font-size: 14px;
+    }
+    .callout-warn {
+      border-left-color: var(--orange); background: #FBF8F2;
+    }
+    .callout-ok {
+      border-left-color: var(--green); background: #F6FAF6;
+    }
+
+    /* KPI grid */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 14px 0; }
+    .kpi {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; background: var(--paper);
+    }
+    .kpi .label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-bottom: 4px;
+      font-family: Consolas, 'Courier New', monospace;
+    }
+    .kpi .value { font-size: 22px; font-weight: 700; color: var(--text-dark); }
+    .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* Tables */
+    .table-wrap {
+      width: 100%; overflow-x: auto; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--paper); margin: 12px 0;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #EDE9E3; vertical-align: top; }
+    th {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); background: #FAF8F4; font-weight: 600;
+      font-family: Consolas, 'Courier New', monospace;
+      position: sticky; top: 0;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #FDFCFA; }
+
+    /* Code blocks */
+    code {
+      font-family: Consolas, 'Courier New', monospace; font-size: 13px;
+      background: var(--code-bg); padding: 1px 5px; border-radius: 3px;
+    }
+    pre {
+      position: relative; background: #2D2D2D; color: #E8E0D5;
+      padding: 18px 20px; border-radius: var(--radius);
+      overflow-x: auto; font-size: 13px; line-height: 1.5;
+      margin: 12px 0; font-family: Consolas, 'Courier New', monospace;
+    }
+    pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2); color: #ccc; font-size: 11px;
+      padding: 4px 10px; border-radius: 4px; cursor: pointer;
+      font-family: Consolas, monospace; transition: all 0.15s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+    /* Lists */
+    ul, ol { margin: 6px 0 12px; padding-left: 20px; }
+    li { margin-bottom: 4px; }
+
+    /* Severity badges */
+    .sev { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.02em; }
+    .sev-alta { background: #F5E0E0; color: var(--red); }
+    .sev-media { background: #F5EDE0; color: var(--orange); }
+    .sev-baja { background: #E6EDE6; color: var(--green); }
+    .sev-info { background: #EDE9E3; color: var(--muted); }
+
+    /* Status indicators */
+    .pass { color: var(--green); font-weight: 600; }
+    .fail { color: var(--red); font-weight: 600; }
+
+    /* Footer */
+    .doc-footer {
+      margin-top: 40px; padding-top: 20px; border-top: 2px solid var(--border);
+      font-size: 13px; color: var(--muted); text-align: center; line-height: 1.7;
+    }
+    .doc-footer .sign-off { font-style: italic; color: var(--accent); margin-top: 8px; }
+
+    /* Mobile hamburger */
+    .hamburger { display: none; position: fixed; top: 12px; left: 12px; z-index: 1000;
+      background: var(--sidebar-bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 10px; cursor: pointer; font-size: 18px; line-height: 1; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 998; }
+
+    /* Print */
+    @media print {
+      aside { display: none !important; }
+      .layout { grid-template-columns: 1fr !important; }
+      main { padding: 20px !important; max-width: 100% !important; }
+      .panel { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+      pre { white-space: pre-wrap; word-break: break-all; }
+      .copy-btn { display: none; }
+      .hamburger { display: none !important; }
+      body { font-size: 12px; }
+      h1 { font-size: 22px; } h2 { font-size: 17px; } h3 { font-size: 14px; }
+    }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      aside {
+        position: fixed; left: -300px; top: 0; width: 280px;
+        z-index: 999; transition: left 0.25s ease;
+        border-right: 1px solid var(--border);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+      }
+      aside.open { left: 0; }
+      .overlay.open { display: block; }
+      .hamburger { display: block; }
+      main { padding: 20px 16px 40px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Abrir menu">&#9776;</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="layout">
+  <aside id="sidebar">
+    <span class="side-badge">CTO Briefing</span>
+    <div class="side-title">NUCLEA</div>
+    <div class="side-subtitle">Febrero 2026 &mdash; Catch-up tecnico<br>3 semanas de cambios</div>
+    <ul class="nav-list" id="nav">
+      <li><a href="#tldr"><span class="nav-num">01</span> TL;DR tecnico</a></li>
+      <li><a href="#commits"><span class="nav-num">02</span> Commits</a></li>
+      <li><a href="#auth"><span class="nav-num">03</span> Cambios en Auth</a></li>
+      <li><a href="#types"><span class="nav-num">04</span> Cambios en tipos</a></li>
+      <li><a href="#apis"><span class="nav-num">05</span> Nuevas APIs</a></li>
+      <li><a href="#files"><span class="nav-num">06</span> Nuevos archivos</a></li>
+      <li><a href="#zustand"><span class="nav-num">07</span> Zustand refactor</a></li>
+      <li><a href="#legal"><span class="nav-num">08</span> Paginas legales</a></li>
+      <li><a href="#poc"><span class="nav-num">09</span> POC optimizaciones</a></li>
+      <li><a href="#debt"><span class="nav-num">10</span> Deuda tecnica</a></li>
+      <li><a href="#cicd"><span class="nav-num">11</span> CI/CD &amp; quality gates</a></li>
+      <li><a href="#verify"><span class="nav-num">12</span> Verificacion actual</a></li>
+      <li><a href="#next"><span class="nav-num">13</span> Proximos pasos</a></li>
+    </ul>
+    <div class="side-footer">
+      Generado: 15 feb 2026<br>
+      Rama: <code>master</code><br>
+      Ultimo commit: <code>1223e59</code>
+    </div>
+  </aside>
+
+  <main>
+    <!-- Header -->
+    <h1>Briefing Tecnico CTO &mdash; Febrero 2026</h1>
+    <div class="header-meta">
+      <span>Repositorio: <code>github.com/ifranjo/nuclea</code></span>
+      <span>Rama: <code>master</code></span>
+      <span>Periodo: semanas 5-7 de 2026</span>
+    </div>
+
+    <!-- 01 TL;DR -->
+    <section id="tldr">
+      <h2>01. TL;DR tecnico</h2>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="label">Commits</div><div class="value">5</div><div class="sub">esta sesion</div></div>
+        <div class="kpi"><div class="label">Lineas cambiadas</div><div class="value">~13,000</div><div class="sub">+12,950 / -4,178</div></div>
+        <div class="kpi"><div class="label">Archivos tocados</div><div class="value">111</div><div class="sub">en 5 commits</div></div>
+        <div class="kpi"><div class="label">Tests</div><div class="value">23/23</div><div class="sub">14 unit + 9 smoke</div></div>
+      </div>
+      <div class="callout callout-ok">
+        <strong>Estado general:</strong> Todo pasa &mdash; lint, tsc, build, 14 unit tests, 9 smoke tests. Cero breaking changes en las interfaces publicas. Tres areas de trabajo paralelas: Auth/RGPD, Backend hardening, Frontend/UI.
+      </div>
+    </section>
+
+    <!-- 02 Commits -->
+    <section id="commits">
+      <h2>02. Commits (cronologico)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Hash</th><th>Mensaje</th><th>Archivos</th><th>Lineas</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>4b9a44a</code></td>
+              <td>feat(trust): GDPR consent system + auth overhaul + migration hardening</td>
+              <td>15</td>
+              <td>+1762 / -505</td>
+            </tr>
+            <tr>
+              <td><code>016ee95</code></td>
+              <td>feat(security): API hardening + Zod validation + rate limiting + pagination</td>
+              <td>23</td>
+              <td>+7435 / -1870</td>
+            </tr>
+            <tr>
+              <td><code>ba10c9c</code></td>
+              <td>chore: Area 3 partial + docs + line ending normalization</td>
+              <td>68</td>
+              <td>+2990 / -1675</td>
+            </tr>
+            <tr>
+              <td><code>61e87ee</code></td>
+              <td>feat(trust): biometric consent server-side persistence + revocation API</td>
+              <td>4</td>
+              <td>+736 / -110</td>
+            </tr>
+            <tr>
+              <td><code>1223e59</code></td>
+              <td>perf(poc-onboarding): P2 animation optimization</td>
+              <td>1</td>
+              <td>+27 / -18</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>El commit mas pesado es <code>016ee95</code> (API hardening): 23 archivos, casi 7.500 lineas nuevas. Incluye schemas Zod, rate limiter, paginacion cursor-based y tests unitarios para todo ello.</p>
+    </section>
+
+    <!-- 03 Auth -->
+    <section id="auth">
+      <h2>03. Cambios en Auth</h2>
+      <p><strong>Archivo:</strong> <code>PREREUNION_ANDREA/src/hooks/useAuth.ts</code></p>
+
+      <h3>Nuevo flujo de Google Sign-In</h3>
+      <p><code>signInWithGoogle()</code> ahora retorna un tipo union discriminado:</p>
+      <pre><code>type SignInResult = 'signed_in' | 'created' | 'pending_consent';</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+      <p>Cuando el usuario es nuevo (no tiene perfil en Firestore), el flujo se detiene en <code>'pending_consent'</code> y espera a que acepte los terminos antes de crear la cuenta. Esto evita crear usuarios en Firestore sin consentimiento RGPD explicito.</p>
+
+      <h3>Nuevos estados y metodos</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Elemento</th><th>Tipo</th><th>Descripcion</th></tr></thead>
+          <tbody>
+            <tr><td><code>pendingConsent</code></td><td>Estado</td><td>Indica que hay un usuario Firebase autenticado pendiente de aceptar terminos</td></tr>
+            <tr><td><code>pendingFirebaseUser</code></td><td>Estado</td><td>Referencia al <code>FirebaseUser</code> temporalmente retenido</td></tr>
+            <tr><td><code>completeGoogleRegistration(acceptedTerms)</code></td><td>Metodo</td><td>Crea el perfil en Firestore una vez aceptados los terminos</td></tr>
+            <tr><td><code>cancelPendingConsent()</code></td><td>Metodo</td><td>Descarta el usuario pendiente y hace sign-out de Firebase</td></tr>
+            <tr><td><code>createUserProfile()</code></td><td>Helper interno</td><td>Elimina duplicacion entre signup con email y Google OAuth</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Consent tracking</h3>
+      <ul>
+        <li><code>CURRENT_CONSENT_VERSION</code> centralizado en <code>types/index.ts</code> (actualmente <code>'2.0'</code>)</li>
+        <li>Campos siempre persistidos: <code>termsAcceptedAt</code>, <code>privacyAcceptedAt</code>, <code>consentVersion</code>, <code>consentSource</code></li>
+        <li><code>onAuthStateChanged</code> ahora convierte Firestore <code>Timestamps</code> a JS <code>Dates</code> con <code>.toDate()</code></li>
+      </ul>
+    </section>
+
+    <!-- 04 Types -->
+    <section id="types">
+      <h2>04. Cambios en tipos</h2>
+      <p><strong>Archivo:</strong> <code>PREREUNION_ANDREA/src/types/index.ts</code></p>
+
+      <h3>Nuevas constantes y guards</h3>
+      <pre><code>// Version de consentimiento
+export const CURRENT_CONSENT_VERSION = '2.0';
+
+// Array canonico para iteracion segura
+export const CAPSULE_TYPE_VALUES: readonly CapsuleType[] = [...];
+
+// Type guard
+export function isCapsuleType(value: string): value is CapsuleType { ... }
+
+// Deteccion de migracion
+export function isMigratedCapsuleType(type: string): boolean { ... }</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+      <h3>Cambios en normalizeCapsuleType()</h3>
+      <div class="callout callout-warn">
+        <strong>Atencion:</strong> El default de <code>normalizeCapsuleType()</code> se cambio de <code>'life-chapter'</code> a <code>'legacy'</code>. Se anadio un <code>console.warn</code> para tipos no reconocidos. Si hay datos legacy con tipos raros, ahora emitiran un warning en consola.
+      </div>
+
+      <h3>AIAvatar: nuevos campos de consentimiento</h3>
+      <pre><code>interface AIAvatar {
+  // ... campos existentes ...
+  voiceConsent?: boolean;
+  faceConsent?: boolean;
+  personalityConsent?: boolean;
+  consentWithdrawnAt?: Date | null;
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- 05 APIs -->
+    <section id="apis">
+      <h2>05. Nuevas APIs</h2>
+
+      <h3>/api/consent/biometric (NUEVO)</h3>
+      <p><strong>Archivo:</strong> <code>PREREUNION_ANDREA/src/app/api/consent/biometric/route.ts</code></p>
+      <p>Implementa el consentimiento biometrico segun Art. 9 RGPD. Tres operaciones:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metodo</th><th>Operacion</th><th>Persistencia</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>POST</code></td>
+              <td>Firma consentimiento biometrico</td>
+              <td><code>users/{uid}/consents/{id}</code></td>
+            </tr>
+            <tr>
+              <td><code>GET</code></td>
+              <td>Consulta estado actual</td>
+              <td>Retorna <code>{ hasActiveConsent, consent? }</code></td>
+            </tr>
+            <tr>
+              <td><code>DELETE</code></td>
+              <td>Revoca consentimiento</td>
+              <td>Actualiza <code>revokedAt</code> + <code>aiAvatar.consentWithdrawnAt</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <pre><code>// POST body
+{
+  voiceConsent: boolean,
+  faceConsent: boolean,
+  personalityConsent: boolean
+}
+
+// Campos persistidos en Firestore
+{
+  userId, type: 'biometric',
+  consents: { voice, face, personality },
+  consentVersion: '2.0',
+  signedAt: Timestamp,
+  revokedAt: null,
+  ipAddress: string,
+  userAgent: string
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+      <h3>Cambios en APIs existentes</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ruta</th><th>Cambio</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>/api/capsules</code></td>
+              <td>Zod validation en POST body, normalizacion de tipo en GET y POST, paginacion cursor-based (<code>cursor</code>, <code>limit</code>, <code>nextCursor</code>)</td>
+            </tr>
+            <tr>
+              <td><code>/api/waitlist</code></td>
+              <td>Zod validation, rate limiting per-IP (Firestore fixed-window), <code>CURRENT_CONSENT_VERSION</code></td>
+            </tr>
+            <tr>
+              <td><code>/api/waitlist/unsubscribe</code></td>
+              <td>Zod validation en query params</td>
+            </tr>
+            <tr>
+              <td><code>/api/privacy/account</code></td>
+              <td>Zod validation en DELETE</td>
+            </tr>
+            <tr>
+              <td><code>/api/privacy/export</code></td>
+              <td>Bearer token validation reforzada</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 06 Nuevos archivos -->
+    <section id="files">
+      <h2>06. Nuevos archivos</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Archivo</th><th>Proposito</th></tr></thead>
+          <tbody>
+            <tr><td><code>src/lib/api-validation.ts</code></td><td>Schemas Zod compartidos + helpers de respuesta</td></tr>
+            <tr><td><code>src/lib/api-validation.test.ts</code></td><td>14 unit tests para validacion</td></tr>
+            <tr><td><code>src/lib/rate-limit.ts</code></td><td>Rate limiter con fixed-window sobre Firestore</td></tr>
+            <tr><td><code>src/lib/rate-limit.test.ts</code></td><td>Tests del rate limiter</td></tr>
+            <tr><td><code>src/lib/capsule-pagination.ts</code></td><td>Helpers de paginacion cursor-based</td></tr>
+            <tr><td><code>src/lib/capsule-pagination.test.ts</code></td><td>Tests de paginacion</td></tr>
+            <tr><td><code>src/lib/firebase-storage.ts</code></td><td>Utilidades de Firebase Storage</td></tr>
+            <tr><td><code>src/app/api/consent/biometric/route.ts</code></td><td>API de consentimiento biometrico Art. 9</td></tr>
+            <tr><td><code>src/app/dashboard/error.tsx</code></td><td>Error boundary del dashboard</td></tr>
+            <tr><td><code>src/app/capsulas/[id]/error.tsx</code></td><td>Error boundary de edicion de capsulas</td></tr>
+            <tr><td><code>src/components/error/ClientErrorBoundary.tsx</code></td><td>Wrapper reutilizable de error boundary</td></tr>
+            <tr><td><code>docs/plans/2026-02-15-area2-backend-hardening.md</code></td><td>Plan de implementacion del Area 2</td></tr>
+            <tr><td><code>.gitattributes</code></td><td>Normalizacion LF &mdash; evita ruido CRLF en diffs</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Todos los archivos nuevos estan bajo <code>PREREUNION_ANDREA/</code>. Las rutas de la tabla son relativas a esa carpeta.</p>
+    </section>
+
+    <!-- 07 Zustand -->
+    <section id="zustand">
+      <h2>07. Zustand refactor</h2>
+      <p><strong>Archivo:</strong> <code>PREREUNION_ANDREA/src/lib/store.ts</code></p>
+
+      <h3>Nuevo store: useUIPreferences</h3>
+      <pre><code>// store.ts
+export const useUIPreferences = create(
+  persist(
+    (set) => ({
+      viewMode: 'grid' as 'grid' | 'list',
+      setViewMode: (mode) => set({ viewMode: mode }),
+    }),
+    { name: 'nuclea-ui-preferences' }
+  )
+);</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+      <p>Persistido en <code>localStorage</code> con la key <code>'nuclea-ui-preferences'</code>.</p>
+
+      <h3>Cambios en useAppStore</h3>
+      <ul>
+        <li>Nuevos campos: <code>createModalOpen</code>, <code>searchQuery</code>, <code>setSearchQuery</code></li>
+        <li>Dashboard: 3x <code>useState</code> reemplazados por selectores del store</li>
+        <li><code>useMemo</code> para <code>filteredCapsules</code> y <code>canCreateCapsule</code></li>
+      </ul>
+
+      <div class="callout">
+        <strong>Nota arquitectonica:</strong> <code>useAuth</code> y <code>useCapsules</code> siguen como hooks independientes, no migraron a Zustand. La razon es que gestionan suscripciones en tiempo real de Firebase (<code>onAuthStateChanged</code>, <code>onSnapshot</code>) y Zustand no aporta valor adicional ahi.
+      </div>
+    </section>
+
+    <!-- 08 Legal -->
+    <section id="legal">
+      <h2>08. Paginas legales (rewrite completo)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pagina</th><th>Secciones</th><th>Tipo componente</th><th>Highlights</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>/privacidad</code></td>
+              <td>13 secciones RGPD</td>
+              <td>Server Component</td>
+              <td>ARCO+, transferencias internacionales, Art. 9, datos del DPD, enlace AEPD</td>
+            </tr>
+            <tr>
+              <td><code>/terminos</code></td>
+              <td>14 secciones</td>
+              <td>Server Component</td>
+              <td>Detalle de planes, propiedad intelectual, jurisdiccion Barcelona</td>
+            </tr>
+            <tr>
+              <td><code>/consentimiento</code></td>
+              <td>Formulario Art. 9.2.a</td>
+              <td>Client Component</td>
+              <td>3 checkboxes (voz, cara, personalidad), firma contra API, revocacion inline</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Todas en tema oscuro, consistentes con el design system de <code>PREREUNION_ANDREA</code>. Las paginas de privacidad y terminos son Server Components puros (sin JS del lado del cliente). La de consentimiento es <code>'use client'</code> por la interactividad del formulario.</p>
+    </section>
+
+    <!-- 09 POC -->
+    <section id="poc">
+      <h2>09. POC optimizaciones</h2>
+      <p><strong>Archivo:</strong> <code>POC_INTERNA/app/src/components/onboarding/P2CapsuleOpening.tsx</code></p>
+      <p>Un solo commit, un solo archivo. Cambios quirurgicos:</p>
+      <ul>
+        <li>Particulas reducidas de 12 a 8 (menos presion en el compositor)</li>
+        <li>Stagger de polaroids ampliado: <code>0.7-1.75s</code> &rarr; <code>0.7-2.3s</code> (mas organico)</li>
+        <li><code>will-change: transform</code> aplicado solo durante la entrada, auto-eliminado a los 3.5s (libera VRAM)</li>
+      </ul>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="label">First-load JS</div><div class="value">44.9kB</div><div class="sub">sin cambios relevantes</div></div>
+        <div class="kpi"><div class="label">Particulas</div><div class="value">12 &rarr; 8</div><div class="sub">-33%</div></div>
+      </div>
+    </section>
+
+    <!-- 10 Deuda tecnica -->
+    <section id="debt">
+      <h2>10. Deuda tecnica conocida</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Problema</th><th>Severidad</th><th>Contexto</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>next start</code> ENOENT prerender-manifest</td>
+              <td><span class="sev sev-media">Media</span></td>
+              <td>Next 16 no genera el archivo; Lighthouse solo funciona en dev server. Afecta a auditorias de rendimiento en entorno de produccion local.</td>
+            </tr>
+            <tr>
+              <td>Firebase SDK = 489KB vendor bundle</td>
+              <td><span class="sev sev-media">Media</span></td>
+              <td>Tree-shaking limitado con el SDK v9+. Considerar imports selectivos o modular SDK. Visible en <code>ANALYZE=true npm run build</code>.</td>
+            </tr>
+            <tr>
+              <td>Zustand store parcialmente adoptado</td>
+              <td><span class="sev sev-baja">Baja</span></td>
+              <td><code>useAuth</code> / <code>useCapsules</code> siguen como hooks independientes. Justificado por suscripciones Firebase, pero la inconsistencia existe.</td>
+            </tr>
+            <tr>
+              <td>Zod importado pero no usado en types</td>
+              <td><span class="sev sev-baja">Baja</span></td>
+              <td>Schemas estan en <code>api-validation.ts</code>, no colocalizados con los tipos. No es un bug, pero hay duplicacion conceptual.</td>
+            </tr>
+            <tr>
+              <td>Sin testing e2e</td>
+              <td><span class="sev sev-alta">Alta</span></td>
+              <td>No hay Vitest ni Playwright configurado en la app de produccion. Los 14 unit tests cubren solo validacion/paginacion, no flujos de usuario.</td>
+            </tr>
+            <tr>
+              <td><code>everlife</code> CSS class en globals.css</td>
+              <td><span class="sev sev-info">Info</span></td>
+              <td>Alias mantenido para backward compat. <code>normalizeCapsuleType()</code> convierte <code>everlife &rarr; legacy</code> en runtime.</td>
+            </tr>
+            <tr>
+              <td>Rate limiter usa Firestore</td>
+              <td><span class="sev sev-media">Media</span></td>
+              <td>Funcional para el trafico actual (~0), pero cada request hace 1-2 lecturas + 1 escritura. Con trafico real, migrar a Redis/Upstash.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 11 CI/CD -->
+    <section id="cicd">
+      <h2>11. CI/CD y quality gates</h2>
+      <p><strong>Archivo:</strong> <code>.github/workflows/quality-gates.yml</code></p>
+      <p>Pipeline de 3 jobs independientes:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Job</th><th>Checks</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>docs-governance</code></td>
+              <td>Validacion de estructura de documentacion</td>
+              <td><span class="pass">PASS</span></td>
+            </tr>
+            <tr>
+              <td><code>prereunion-quality</code></td>
+              <td>lint, typecheck, ontology check, build (Turbopack), smoke routes, webpack analyzer</td>
+              <td><span class="pass">PASS</span></td>
+            </tr>
+            <tr>
+              <td><code>poc-quality</code></td>
+              <td>lint, typecheck, build</td>
+              <td><span class="pass">PASS</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-ok">Todo verde. Sin warnings pendientes en CI.</div>
+    </section>
+
+    <!-- 12 Verificacion -->
+    <section id="verify">
+      <h2>12. Verificacion actual</h2>
+      <pre><code># PREREUNION_ANDREA
+npm run lint            # PASS
+npx tsc --noEmit        # 0 errors
+npm run build           # PASS
+npm run test:unit       # 14/14
+npm run smoke:routes    # 9/9
+npm run check:ontology  # PASS
+
+# POC_INTERNA/app
+npm run lint            # PASS
+npx tsc --noEmit        # 0 errors
+npm run build           # PASS (44.9kB first-load)</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="label">PREREUNION</div><div class="value pass">6/6</div><div class="sub">todos los checks</div></div>
+        <div class="kpi"><div class="label">POC</div><div class="value pass">3/3</div><div class="sub">todos los checks</div></div>
+        <div class="kpi"><div class="label">Breaking changes</div><div class="value" style="color:var(--green)">0</div><div class="sub">interfaces publicas intactas</div></div>
+      </div>
+    </section>
+
+    <!-- 13 Proximos pasos -->
+    <section id="next">
+      <h2>13. Proximos pasos tecnicos</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Accion</th><th>Prioridad</th><th>Detalle</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Infraestructura de testing</strong></td>
+              <td><span class="sev sev-alta">Alta</span></td>
+              <td>Montar Vitest + <code>@testing-library/react</code> en PREREUNION_ANDREA. Los 14 tests actuales son de logica pura; faltan tests de componentes y flujos.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Lighthouse en produccion</strong></td>
+              <td><span class="sev sev-media">Media</span></td>
+              <td>Resolver ENOENT de <code>next start</code>. Ejecutar Lighthouse contra entorno real (Vercel preview o produccion).</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Bundle optimization</strong></td>
+              <td><span class="sev sev-media">Media</span></td>
+              <td>Analizar con <code>ANALYZE=true npm run build</code>. Tree-shake Firebase SDK (489KB). Evaluar dynamic imports para rutas pesadas.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Migracion Supabase</strong></td>
+              <td><span class="sev sev-media">Media</span></td>
+              <td><code>docs/ARCHITECTURE_TARGET_SUPABASE.md</code> tiene el diseno completo. Falta ejecutar. Bloqueado por decision de negocio sobre timing.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Rate limiter escalable</strong></td>
+              <td><span class="sev sev-baja">Baja</span></td>
+              <td>Migrar de Firestore a Redis/Upstash cuando haya trafico real. El actual es funcional pero no escala.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>DPAs (Data Processing Agreements)</strong></td>
+              <td><span class="sev sev-alta">Alta</span></td>
+              <td>Necesita accion del CEO para firmar con Firebase (Google), ElevenLabs y Vercel. Requisito RGPD para procesamiento de datos de terceros.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+      <div>Generado: 15 de febrero de 2026</div>
+      <div>Repositorio: <code>github.com/ifranjo/nuclea</code> &nbsp;|&nbsp; Rama: <code>master</code> &nbsp;|&nbsp; Ultimo commit: <code>1223e59</code></div>
+      <div class="sign-off">&ldquo;El codigo esta limpio. La deuda tecnica esta documentada. Bienvenido de vuelta.&rdquo;</div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Scroll-aware sidebar navigation (IntersectionObserver)
+(function() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('#nav a');
+  const linkMap = {};
+  navLinks.forEach(a => {
+    const id = a.getAttribute('href').replace('#', '');
+    linkMap[id] = a;
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = linkMap[entry.target.id];
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Activate first link by default
+  if (navLinks.length) navLinks[0].classList.add('active');
+})();
+
+// Copy to clipboard on code blocks
+function copyCode(btn) {
+  const pre = btn.closest('pre');
+  const code = pre.querySelector('code');
+  const text = code.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copiado';
+    setTimeout(() => { btn.textContent = 'Copiar'; }, 1500);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'Copiado';
+    setTimeout(() => { btn.textContent = 'Copiar'; }, 1500);
+  });
+}
+
+// Mobile hamburger
+(function() {
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  hamburger.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  });
+  // Close sidebar on nav click (mobile)
+  document.querySelectorAll('#nav a').forEach(a => {
+    a.addEventListener('click', () => {
+      if (window.innerWidth <= 860) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
