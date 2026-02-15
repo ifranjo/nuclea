@@ -1,52 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { FieldValue, getFirestore } from 'firebase-admin/firestore'
+import { FieldValue } from 'firebase-admin/firestore'
 import { randomUUID } from 'crypto'
+import { getAdminDb } from '@/lib/firebase-admin'
+import {
+  ApiValidationError,
+  strictEmptyQuerySchema,
+  validateSearchParams,
+  validateWithSchema,
+  waitlistPostBodySchema,
+} from '@/lib/api-validation'
+import { enforceFixedWindowRateLimit, resolveClientIp } from '@/lib/rate-limit'
 
-// Initialize Firebase Admin
-if (!getApps().length) {
-  try {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    })
-  } catch (error) {
-    console.log('Firebase admin init error (may be expected in dev):', error)
-  }
+const WAITLIST_LIMITS = {
+  ip: { limit: 8, windowMs: 15 * 60 * 1000 },
+  email: { limit: 3, windowMs: 60 * 60 * 1000 },
 }
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json()
-    const email = typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
-    const source = typeof payload?.source === 'string' ? payload.source : 'api'
-    const acceptedPrivacy = payload?.acceptedPrivacy === true
-    const consentVersion = typeof payload?.consentVersion === 'string' ? payload.consentVersion : '1.0'
-    const forwardedFor = request.headers.get('x-forwarded-for')
-    const requestIp = forwardedFor?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
+    const parsed = validateWithSchema(waitlistPostBodySchema, payload, 'request body')
+
+    const email = parsed.email
+    const source = parsed.source
+    const consentVersion = parsed.consentVersion
+
+    const requestIp = resolveClientIp(request)
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
-    if (!email || !email.includes('@')) {
+    const ipGate = await enforceFixedWindowRateLimit({
+      namespace: 'waitlist-ip',
+      key: `ip:${requestIp}`,
+      limit: WAITLIST_LIMITS.ip.limit,
+      windowMs: WAITLIST_LIMITS.ip.windowMs,
+      context: 'waitlist POST ip',
+    })
+
+    if (!ipGate.allowed) {
       return NextResponse.json(
-        { error: 'Email invalido' },
-        { status: 400 }
-      )
-    }
-    if (!acceptedPrivacy) {
-      return NextResponse.json(
-        { error: 'Debes aceptar privacidad y terminos para unirte a la lista' },
-        { status: 400 }
+        {
+          error: 'Demasiadas solicitudes desde esta IP, prueba mas tarde',
+          retryAfterSeconds: ipGate.retryAfterSeconds,
+        },
+        { status: 429 }
       )
     }
 
-    const db = getFirestore()
+    const emailGate = await enforceFixedWindowRateLimit({
+      namespace: 'waitlist-email',
+      key: `email:${email}`,
+      limit: WAITLIST_LIMITS.email.limit,
+      windowMs: WAITLIST_LIMITS.email.windowMs,
+      context: 'waitlist POST email',
+    })
+
+    if (!emailGate.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Demasiados intentos para este correo, prueba mas tarde',
+          retryAfterSeconds: emailGate.retryAfterSeconds,
+        },
+        { status: 429 }
+      )
+    }
+
+    const db = getAdminDb('waitlist POST')
     const unsubscribeToken = randomUUID()
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin
 
-    // Check if email already exists
     const existingQuery = await db
       .collection('waitlist')
       .where('email', '==', email)
@@ -60,7 +81,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Add to waitlist
     const docRef = await db.collection('waitlist').add({
       email,
       source,
@@ -87,6 +107,13 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
+    if (error instanceof ApiValidationError) {
+      return NextResponse.json(
+        { error: 'Payload invalido', details: error.issues },
+        { status: error.status }
+      )
+    }
+
     console.error('Waitlist error:', error)
     return NextResponse.json(
       { error: 'Error al procesar la solicitud' },
@@ -95,16 +122,24 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
-  // Return waitlist count (public)
+export async function GET(request: NextRequest) {
   try {
-    const db = getFirestore()
+    validateSearchParams(strictEmptyQuerySchema, request.nextUrl.searchParams)
+
+    const db = getAdminDb('waitlist GET')
     const snapshot = await db.collection('waitlist').count().get()
 
     return NextResponse.json({
-      count: snapshot.data().count
+      count: snapshot.data().count,
     })
   } catch (error) {
+    if (error instanceof ApiValidationError) {
+      return NextResponse.json(
+        { error: 'Query invalida', details: error.issues },
+        { status: error.status }
+      )
+    }
+
     return NextResponse.json({ count: 0 })
   }
 }

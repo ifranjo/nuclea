@@ -49,6 +49,9 @@ curl -X DELETE "http://localhost:3000/api/privacy/account" \
   - `source`
   - `consentVersion` (default: `1.0`)
 - Response includes `unsubscribeUrl` with tokenized opt-out link
+- Security controls:
+  - `429` per-IP fixed window limit
+  - `429` per-email fixed window limit
 
 Example:
 
@@ -80,9 +83,10 @@ curl -X POST "http://localhost:3000/api/waitlist/unsubscribe" \
 
 ## Notes
 
-- In local/dev environments without valid Firebase Admin credentials, route initialization logs PEM warnings but build can still complete.
+- Firebase Admin now fails fast on first secured runtime use if credentials are missing or malformed.
 - `useCapsules.deleteCapsule` now attempts best-effort Storage cleanup before Firestore deletion.
 - Account deletion currently targets core user/capsule records; review third-party processor deletion workflows separately.
+- Legal closure dependencies for Stage 2 trust gate are tracked in `docs/quality/LEGAL_STAGE2_BLOCKERS.md`.
 - Dashboard now exposes self-service actions:
   - `Exportar mis datos` calls `/api/privacy/export`
   - `Eliminar mi cuenta` calls `/api/privacy/account` (requires typed confirmation)
@@ -91,5 +95,17 @@ curl -X POST "http://localhost:3000/api/waitlist/unsubscribe" \
 
 - Protected endpoints (`/api/privacy/export`, `/api/privacy/account`, `/api/capsules`) return:
   - `401` for missing or invalid bearer token
+  - `400` for invalid query/body schema
   - `500` only for unexpected server/runtime errors
 - This allows downstream quality gates to distinguish authentication failures from backend failures.
+
+## Capsules Pagination
+
+- Endpoint: `GET /api/capsules`
+- Query:
+  - `limit` (1..50, default 12)
+  - `cursor` (opaque base64url token)
+- Response includes:
+  - `capsules[]`
+  - `pagination.hasMore`
+  - `pagination.nextCursor`

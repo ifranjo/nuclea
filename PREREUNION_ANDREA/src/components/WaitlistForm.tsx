@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { CURRENT_CONSENT_VERSION } from '@/types'
 
 export default function WaitlistForm() {
   const [email, setEmail] = useState('')
@@ -33,7 +34,7 @@ export default function WaitlistForm() {
           email,
           source: 'landing-page',
           acceptedPrivacy,
-          consentVersion: '1.0',
+          consentVersion: CURRENT_CONSENT_VERSION,
         }),
       })
       const payload = await response.json()

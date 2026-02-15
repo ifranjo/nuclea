@@ -5,10 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test:unit": "tsx --test src/lib/*.test.ts",
     "quality:prm-008": "node scripts/run-prm-quality-008-lighthouse.mjs",
     "quality:prm-008:full": "node scripts/run-prm-quality-008-full.mjs",
+    "check:ontology": "node scripts/check-capsule-ontology.mjs",
+    "smoke:routes": "node scripts/run-smoke-routes.mjs",
+    "smoke:routes:ci": "npm run build && npm run smoke:routes",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "deploy": "vercel --prod"
   },
   "dependencies": {
@@ -32,8 +36,11 @@
     "@types/react-dom": "^18.3.5",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.4",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.6",
     "typescript": "^5.7.2"
   }
 }

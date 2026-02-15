@@ -15,6 +15,7 @@ npm run build            # Production build
 $env:ANALYZE='true'; npx next build --webpack # Build + bundle analyzer (PowerShell, Next16)
 npm run start            # Start production server
 npm run lint             # ESLint
+npm run smoke:routes     # Runtime smoke checks (routes + auth boundaries)
 npm run deploy           # Deploy to Vercel (--prod)
 ```
 
@@ -86,14 +87,15 @@ State slices: `user`, `sidebarOpen`, `modalOpen`, `newCapsuleType`, `selectedCap
 ## Type System (`src/types/index.ts`)
 
 ```typescript
-type CapsuleType = 'everlife' | 'life-chapter' | 'social' | 'pet' | 'origin'
+type CapsuleType = 'legacy' | 'together' | 'social' | 'pet' | 'life-chapter' | 'origin'
+type StoredCapsuleType = CapsuleType | 'everlife' // backward compatibility alias
 ```
 
-**Note:** This defines 5 types. The canonical spec defines 6 (adds `legacy` and `together`). See root `CLAUDE.md` for the discrepancy details.
+`normalizeCapsuleType()` maps legacy persisted values (`everlife`) to canonical runtime values (`legacy`).
 
 Key interfaces: `User`, `Capsule`, `CapsuleContent`, `AIAvatar`
 
-Constants: `CAPSULE_TYPES` (display names + icons for 5 types), `PLANS` (4 pricing tiers)
+Constants: `CAPSULE_TYPES` (display names + icons for 6 types), `PLANS` (4 pricing tiers)
 
 ## Design System
 
@@ -161,7 +163,7 @@ Landing sections are in `src/components/landing/`.
 
 ## No Testing Infrastructure
 
-No Jest/Vitest config, no test files, no `__tests__/` directories.
+No Jest/Vitest config and no `__tests__/` directories. Runtime smoke coverage is available via `npm run smoke:routes`.
 
 ---
 

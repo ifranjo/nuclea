@@ -1,23 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { FieldValue, getFirestore } from 'firebase-admin/firestore'
-
-if (!getApps().length) {
-  try {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    })
-  } catch (error) {
-    console.log('Firebase admin init error (waitlist unsubscribe):', error)
-  }
-}
+import { FieldValue } from 'firebase-admin/firestore'
+import { getAdminDb } from '@/lib/firebase-admin'
+import {
+  ApiValidationError,
+  validateSearchParams,
+  validateWithSchema,
+  waitlistUnsubscribeBodySchema,
+  waitlistUnsubscribeQuerySchema,
+} from '@/lib/api-validation'
 
 async function markUnsubscribed(token: string) {
-  const db = getFirestore()
+  const db = getAdminDb('waitlist unsubscribe')
   const snapshot = await db
     .collection('waitlist')
     .where('unsubscribeToken', '==', token)
@@ -45,12 +38,9 @@ async function markUnsubscribed(token: string) {
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.nextUrl.searchParams.get('token')?.trim()
-    if (!token) {
-      return NextResponse.json({ error: 'Token requerido' }, { status: 400 })
-    }
+    const parsed = validateSearchParams(waitlistUnsubscribeQuerySchema, request.nextUrl.searchParams)
 
-    const result = await markUnsubscribed(token)
+    const result = await markUnsubscribed(parsed.token)
     if (result.status === 'not_found') {
       return NextResponse.json({ error: 'Token invalido' }, { status: 404 })
     }
@@ -63,6 +53,13 @@ export async function GET(request: NextRequest) {
       email: result.email,
     })
   } catch (error) {
+    if (error instanceof ApiValidationError) {
+      return NextResponse.json(
+        { error: 'Query invalida', details: error.issues },
+        { status: error.status }
+      )
+    }
+
     console.error('Waitlist unsubscribe GET error:', error)
     return NextResponse.json(
       { error: 'No se pudo completar la baja' },
@@ -74,13 +71,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json()
-    const token = typeof payload?.token === 'string' ? payload.token.trim() : ''
+    const parsed = validateWithSchema(waitlistUnsubscribeBodySchema, payload, 'request body')
 
-    if (!token) {
-      return NextResponse.json({ error: 'Token requerido' }, { status: 400 })
-    }
-
-    const result = await markUnsubscribed(token)
+    const result = await markUnsubscribed(parsed.token)
     if (result.status === 'not_found') {
       return NextResponse.json({ error: 'Token invalido' }, { status: 404 })
     }
@@ -93,6 +86,13 @@ export async function POST(request: NextRequest) {
       email: result.email,
     })
   } catch (error) {
+    if (error instanceof ApiValidationError) {
+      return NextResponse.json(
+        { error: 'Payload invalido', details: error.issues },
+        { status: error.status }
+      )
+    }
+
     console.error('Waitlist unsubscribe POST error:', error)
     return NextResponse.json(
       { error: 'No se pudo completar la baja' },
