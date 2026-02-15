@@ -1,0 +1,9 @@
+test-results/
+
+# Temporary captures generated during design checks
+screenshots/*_current.png
+screenshots/*_desktop.png
+screenshots/capture_all.mjs
+
+# Local image backups used during optimization experiments
+*.original

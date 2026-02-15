@@ -1,0 +1,22 @@
+'use client'
+
+import { Menu } from 'lucide-react'
+
+export function Header() {
+  return (
+    <header className="safe-top flex items-center justify-between px-6 pb-2 pt-3">
+      <button
+        className="w-11 h-11 flex items-center justify-center text-nuclea-text rounded-lg
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nuclea-gold"
+        aria-label="Menú"
+      >
+        <Menu size={22} strokeWidth={1.5} />
+      </button>
+      <span className="text-base font-semibold tracking-[2.5px] text-nuclea-text select-none uppercase">
+        NUCLEA
+      </span>
+      <div className="w-11" />
+    </header>
+  )
+}
+

@@ -1,0 +1,6 @@
+-- Disable RLS for POC simplicity — all access via service role or anon
+ALTER TABLE users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE capsules DISABLE ROW LEVEL SECURITY;
+ALTER TABLE collaborators DISABLE ROW LEVEL SECURITY;
+ALTER TABLE contents DISABLE ROW LEVEL SECURITY;
+ALTER TABLE designated_persons DISABLE ROW LEVEL SECURITY;
