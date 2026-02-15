@@ -120,6 +120,37 @@ export default function DemoPage() {
           </div>
         </div>
 
+        {/* Legal screens */}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#9999a8] mb-2">Legal</p>
+          <div className="flex flex-col gap-1">
+            {[
+              { path: '/onboarding/legal', label: 'Consentimiento' },
+              { path: '/onboarding/legal/privacy', label: 'Privacidad' },
+              { path: '/onboarding/legal/terms', label: 'Términos + Beta' },
+            ].map((l) => (
+              <button
+                key={l.path}
+                type="button"
+                onClick={() => {
+                  setActiveStep(0)
+                  setActiveCapsule(null)
+                  setIframeSrc(l.path)
+                }}
+                className={`
+                  px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-left
+                  ${iframeSrc === l.path
+                    ? 'bg-[#2c2c2e] text-white shadow-lg'
+                    : 'text-[#6b6b7b] hover:bg-white/60'
+                  }
+                `}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Legend */}
         <div className="mt-auto text-[10px] text-[#9999a8] space-y-1.5">
           <p>Haz click dentro del iPhone para navegar.</p>
