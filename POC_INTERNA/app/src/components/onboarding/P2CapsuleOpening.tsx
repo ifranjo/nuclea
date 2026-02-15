@@ -14,16 +14,39 @@ interface P2Props {
 /*  emerging from the center split. Positions are in viewport %.      */
 /*  Each now carries a real photo src.                                 */
 /* ------------------------------------------------------------------ */
-const polaroids = [
-  { rotation: -12, x: '-38vw', y: '-32vh', delay: 0.7, src: '/images/polaroids/dinner.jpg', alt: 'Cena al aire libre' },
-  { rotation: 8, x: '34vw', y: '-28vh', delay: 0.95, src: '/images/polaroids/terrace.jpg', alt: 'Terraza en Lanzarote' },
-  { rotation: -5, x: '-30vw', y: '28vh', delay: 1.15, src: '/images/polaroids/beach.jpg', alt: 'Playa y montañas' },
-  { rotation: 15, x: '32vw', y: '24vh', delay: 1.35, src: '/images/polaroids/group.jpg', alt: 'Amigos en la entrada' },
-  { rotation: -8, x: '-42vw', y: '-2vh', delay: 1.55, src: '/images/polaroids/friends.jpg', alt: 'Amigos en la calle' },
-  { rotation: 3, x: '38vw', y: '4vh', delay: 1.8, src: '/images/polaroids/cathedral.jpg', alt: 'Catedral' },
-  { rotation: 10, x: '-18vw', y: '-38vh', delay: 2.05, src: '/images/polaroids/adventure.jpg', alt: 'Aventura en la roca' },
-  { rotation: -14, x: '20vw', y: '34vh', delay: 2.3, src: '/images/polaroids/terrace2.jpg', alt: 'Terraza con vistas' },
+/* Photo pool — shuffled each time P2 mounts so the intro feels fresh */
+const ALL_PHOTOS = [
+  { src: '/images/polaroids/dinner.jpg', alt: 'Cena al aire libre' },
+  { src: '/images/polaroids/terrace.jpg', alt: 'Terraza en Lanzarote' },
+  { src: '/images/polaroids/beach.jpg', alt: 'Playa y montañas' },
+  { src: '/images/polaroids/group.jpg', alt: 'Amigos en la entrada' },
+  { src: '/images/polaroids/friends.jpg', alt: 'Amigos en la calle' },
+  { src: '/images/polaroids/cathedral.jpg', alt: 'Catedral' },
+  { src: '/images/polaroids/adventure.jpg', alt: 'Aventura en la roca' },
+  { src: '/images/polaroids/terrace2.jpg', alt: 'Terraza con vistas' },
 ]
+
+/* Layout slots — positions/rotations stay fixed, photos rotate */
+const POLAROID_SLOTS = [
+  { rotation: -12, x: '-38vw', y: '-32vh', delay: 0.7 },
+  { rotation: 8, x: '34vw', y: '-28vh', delay: 0.95 },
+  { rotation: -5, x: '-30vw', y: '28vh', delay: 1.15 },
+  { rotation: 15, x: '32vw', y: '24vh', delay: 1.35 },
+  { rotation: -8, x: '-42vw', y: '-2vh', delay: 1.55 },
+  { rotation: 3, x: '38vw', y: '4vh', delay: 1.8 },
+  { rotation: 10, x: '-18vw', y: '-38vh', delay: 2.05 },
+  { rotation: -14, x: '20vw', y: '34vh', delay: 2.3 },
+]
+
+/** Fisher-Yates shuffle — returns a new shuffled array */
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
 
 const floatingCapsules = [
   { w: 86, h: 42, x: '-44vw', y: '-18vh', rotation: -20, delay: 1.1 },
@@ -46,6 +69,14 @@ const TOTAL_DURATION_MS = 4000
 const TICK_MS = 100
 
 export function P2CapsuleOpening({ onNext }: P2Props) {
+  /* Shuffle photos once on mount — lazy init avoids hydration mismatch */
+  const [shuffledPhotos] = useState(() => shuffle(ALL_PHOTOS))
+  const polaroids = POLAROID_SLOTS.map((slot, i) => ({
+    ...slot,
+    src: shuffledPhotos[i % shuffledPhotos.length].src,
+    alt: shuffledPhotos[i % shuffledPhotos.length].alt,
+  }))
+
   const [elapsedMs, setElapsedMs] = useState(0)
   const [paused, setPaused] = useState(false)
   const hasAdvancedRef = useRef(false)
@@ -167,7 +198,7 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
           className="absolute inset-0"
         >
           <div className="relative w-full h-full" style={{ clipPath: `inset(0 ${100 - SEAM_PCT}% 0 0)` }}>
-            <Image src="/images/capsule-closed-nobg.png" alt="" fill className="object-cover" priority />
+            <Image src="/images/capsule-closed-nobg.png" alt="" fill className="object-cover" sizes="(max-width: 768px) 240px, 320px" priority />
           </div>
         </motion.div>
 
@@ -182,7 +213,7 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
           className="absolute inset-0"
         >
           <div className="relative w-full h-full" style={{ clipPath: `inset(0 0 0 ${SEAM_PCT}%)` }}>
-            <Image src="/images/capsule-closed-nobg.png" alt="" fill className="object-cover" />
+            <Image src="/images/capsule-closed-nobg.png" alt="" fill className="object-cover" sizes="(max-width: 768px) 240px, 320px" />
           </div>
         </motion.div>
 

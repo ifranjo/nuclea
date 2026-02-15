@@ -132,7 +132,7 @@ export function P4CapsuleSelection() {
             className="relative max-w-[480px] mx-auto rounded-[28px] border border-[rgba(255,255,255,0.74)] bg-white/72 backdrop-blur-sm px-5 py-5 shadow-[0_16px_34px_rgba(20,20,26,0.1)] mb-5 overflow-hidden"
           >
             <div className="absolute -right-8 -top-6 w-[110px] h-[55px] rotate-[18deg] opacity-30">
-              <Image src="/images/capsule-closed-nobg.png" alt="" fill className="object-cover" />
+              <Image src="/images/capsule-closed-nobg.png" alt="" fill className="object-cover" sizes="110px" />
             </div>
             <h1 className="text-3xl font-semibold text-nuclea-text text-center mt-1 mb-1">
               Elige tu cápsula

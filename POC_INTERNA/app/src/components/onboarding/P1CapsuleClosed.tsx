@@ -55,6 +55,7 @@ export function P1CapsuleClosed({ onNext }: P1Props) {
             alt="Cápsula NUCLEA cerrada"
             fill
             className="object-cover"
+            sizes="(max-width: 640px) 240px, 320px"
             priority
           />
         </div>

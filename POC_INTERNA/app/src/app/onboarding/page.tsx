@@ -16,25 +16,28 @@ const fadeVariants = {
 
 const fadeTransition = { duration: 0.3 }
 
-export default function OnboardingPage() {
-  const [step, setStep] = useState<OnboardingStep>(1)
-  const didInitFromUrl = useRef(false)
+function readStepFromUrl(): OnboardingStep {
+  if (typeof window === 'undefined') return 1
+  const requested = Number(new URLSearchParams(window.location.search).get('step'))
+  return (Number.isInteger(requested) && requested >= 1 && requested <= 4)
+    ? (requested as OnboardingStep)
+    : 1
+}
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const requested = Number(params.get('step'))
-    if (Number.isInteger(requested) && requested >= 1 && requested <= 4) {
-      setStep(requested as OnboardingStep)
-    }
-    didInitFromUrl.current = true
-  }, [])
+export default function OnboardingPage() {
+  const [step, setStep] = useState<OnboardingStep>(readStepFromUrl)
+  const didMount = useRef(false)
 
   const next = useCallback(() => {
     setStep((prev) => (prev < 4 ? ((prev + 1) as OnboardingStep) : prev))
   }, [])
 
   useEffect(() => {
-    if (!didInitFromUrl.current) return
+    // Skip first render — URL already has the correct step from lazy init
+    if (!didMount.current) {
+      didMount.current = true
+      return
+    }
 
     const currentUrl = new URL(window.location.href)
     currentUrl.searchParams.set('step', String(step))
@@ -47,7 +50,6 @@ export default function OnboardingPage() {
     }
 
     window.dispatchEvent(new CustomEvent('nuclea:onboarding-step', { detail }))
-    // Keep lightweight instrumentation available during prototype iterations.
     console.info('[onboarding-step]', detail)
   }, [step])
 

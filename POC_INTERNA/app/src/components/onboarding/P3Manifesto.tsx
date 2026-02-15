@@ -162,6 +162,7 @@ export function P3Manifesto({ onNext }: P3Props) {
                   alt="Cápsula NUCLEA"
                   fill
                   className="object-cover drop-shadow-[0_16px_26px_rgba(20,20,26,0.22)]"
+                  sizes="180px"
                 />
               </motion.div>
             </motion.div>
