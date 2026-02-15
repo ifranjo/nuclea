@@ -1,3 +1,7 @@
+> [!WARNING]
+> Historical artifact (Jan 2026).
+> This document is preserved for delivery traceability and is not the live runtime contract.
+> Use `docs/SOURCE_OF_TRUTH.md`, `PREREUNION_ANDREA/CLAUDE.md`, and `docs/TYPESCRIPT_TYPES.md` for current normative behavior.
 # Agent 9: Integration & Testing Checklist
 
 ## ✅ File Verification
@@ -351,3 +355,4 @@ Before marking complete, verify:
 **Ready for Testing** ✅
 
 All components have been created and are ready for integration testing. Follow this checklist to verify functionality before deploying to production.
+

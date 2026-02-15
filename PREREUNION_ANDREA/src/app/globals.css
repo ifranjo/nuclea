@@ -171,7 +171,7 @@ h1, h2, h3, .font-display {
    ═══════════════════════════════════════════════════════════════ */
 
 .btn-primary {
-  @apply px-7 py-3.5 font-medium rounded-full transition-all duration-300;
+  @apply min-w-[44px] min-h-[44px] px-7 py-3.5 font-medium rounded-full transition-all duration-300;
   background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
   color: var(--bg-primary);
   font-weight: 500;
@@ -184,7 +184,7 @@ h1, h2, h3, .font-display {
 }
 
 .btn-secondary {
-  @apply px-7 py-3.5 font-medium rounded-full transition-all duration-300;
+  @apply min-w-[44px] min-h-[44px] px-7 py-3.5 font-medium rounded-full transition-all duration-300;
   border: 1px solid rgba(212, 175, 55, 0.4);
   color: var(--gold-light);
   background: transparent;
@@ -300,12 +300,18 @@ h1, h2, h3, .font-display {
   @apply w-14 h-14 flex items-center justify-center rounded-xl;
 }
 
+.capsule-legacy,
+/* Keep `.capsule-everlife` as legacy class alias for historical markup compatibility. */
 .capsule-everlife {
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(244, 228, 186, 0.1) 100%);
 }
 
 .capsule-life-chapter {
   background: linear-gradient(135deg, rgba(99, 155, 214, 0.12) 0%, rgba(147, 197, 253, 0.08) 100%);
+}
+
+.capsule-together {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(253, 230, 138, 0.08) 100%);
 }
 
 .capsule-social {

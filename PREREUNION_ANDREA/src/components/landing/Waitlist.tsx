@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Mail, Sparkles } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import WaitlistForm from '@/components/WaitlistForm'
 
 export default function Waitlist() {

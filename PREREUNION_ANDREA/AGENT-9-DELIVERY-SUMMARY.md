@@ -1,3 +1,7 @@
+> [!WARNING]
+> Historical artifact (Jan 2026).
+> This document is preserved for delivery traceability and is not the live runtime contract.
+> Use `docs/SOURCE_OF_TRUTH.md`, `PREREUNION_ANDREA/CLAUDE.md`, and `docs/TYPESCRIPT_TYPES.md` for current normative behavior.
 # Agent 9: Delivery Config + Preview + Capsule Viewing - DELIVERY SUMMARY
 
 **Status:** ✅ COMPLETE
@@ -379,3 +383,4 @@ To test these components:
 **Agent 9 Delivery Complete** 🎉
 
 All wizard steps, capsule viewing, and shared components have been successfully created and integrated into the NUCLEA MVP application.
+

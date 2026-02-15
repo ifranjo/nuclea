@@ -6,12 +6,15 @@ Technical source of truth for architecture, data model, API shape, user flows, a
 
 | Area | Main file |
 |------|-----------|
+| Source-of-truth and trust states | `SOURCE_OF_TRUTH.md` |
 | System architecture | `ARCHITECTURE.md` |
+| Supabase target architecture | `ARCHITECTURE_TARGET_SUPABASE.md` |
 | Database and entities | `DATABASE_SCHEMA.md` |
 | UI system tokens/components | `DESIGN_SYSTEM.md` |
 | Type contracts | `TYPESCRIPT_TYPES.md` |
 | MVP boundaries | `MVP_SCOPE.md` |
-| API contract | `api/ENDPOINTS.md` |
+| Runtime API contract | `api/RUNTIME_ENDPOINTS.md` |
+| Target API contract | `api/ENDPOINTS.md` |
 | Capsule behavior | `capsules/INDEX.md` |
 | End-to-end flows | `flows/INDEX.md` |
 
@@ -20,12 +23,15 @@ Technical source of truth for architecture, data model, API shape, user flows, a
 ```text
 docs/
 ├── README.md
+├── SOURCE_OF_TRUTH.md
 ├── ARCHITECTURE.md
+├── ARCHITECTURE_TARGET_SUPABASE.md
 ├── DATABASE_SCHEMA.md
 ├── DESIGN_SYSTEM.md
 ├── TYPESCRIPT_TYPES.md
 ├── MVP_SCOPE.md
 ├── api/
+│   ├── RUNTIME_ENDPOINTS.md
 │   └── ENDPOINTS.md
 ├── capsules/
 │   ├── INDEX.md
@@ -50,22 +56,27 @@ docs/
 ## Reading paths by role
 
 ### Product + UX
-1. `MVP_SCOPE.md`
-2. `capsules/INDEX.md`
-3. `flows/INDEX.md`
-4. `DESIGN_SYSTEM.md`
+1. `SOURCE_OF_TRUTH.md`
+2. `MVP_SCOPE.md`
+3. `capsules/INDEX.md`
+4. `flows/INDEX.md`
+5. `DESIGN_SYSTEM.md`
 
 ### Frontend engineer
-1. `DESIGN_SYSTEM.md`
-2. `TYPESCRIPT_TYPES.md`
-3. `flows/ONBOARDING.md`
-4. `api/ENDPOINTS.md`
+1. `SOURCE_OF_TRUTH.md`
+2. `DESIGN_SYSTEM.md`
+3. `TYPESCRIPT_TYPES.md`
+4. `flows/ONBOARDING.md`
+5. `api/RUNTIME_ENDPOINTS.md`
+6. `api/ENDPOINTS.md`
 
 ### Backend engineer
-1. `DATABASE_SCHEMA.md`
-2. `ARCHITECTURE.md`
-3. `api/ENDPOINTS.md`
-4. `flows/CAPSULE_CLOSURE.md`
+1. `SOURCE_OF_TRUTH.md`
+2. `DATABASE_SCHEMA.md`
+3. `ARCHITECTURE.md`
+4. `api/RUNTIME_ENDPOINTS.md`
+5. `api/ENDPOINTS.md`
+6. `flows/CAPSULE_CLOSURE.md`
 
 ## Relationship with `POC_INTERNA/`
 

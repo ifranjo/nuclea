@@ -50,6 +50,7 @@ Scope: product design, UX quality, implementation planning, QA gates, growth mes
 24. `domains/03_quality/Performance_Budget_Gate.md`
 25. `domains/02_experience/Responsive_Viewport_Audit.md`
 26. `domains/06_trust/Privacy_Data_Handling_Compliance.md`
+27. `domains/07_ops/Three_Stage_Self_Check_Chain.md`
 
 ## Operating Model
 

@@ -1,3 +1,7 @@
+> [!WARNING]
+> Historical artifact (Jan 2026).
+> This document is preserved for delivery traceability and is not the live runtime contract.
+> Use `docs/SOURCE_OF_TRUTH.md`, `PREREUNION_ANDREA/CLAUDE.md`, and `docs/TYPESCRIPT_TYPES.md` for current normative behavior.
 # Agent 9: Quick Reference Guide
 
 ## 🎯 Component Usage Examples
@@ -575,3 +579,4 @@ When adding features to these components:
 **Quick Reference Complete** 📚
 
 Use this guide when working with Agent 9 components. All patterns follow existing architecture and design system.
+

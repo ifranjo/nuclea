@@ -16,9 +16,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 nuclea/
 ├── PREREUNION_ANDREA/           # Production app — port 3000, dark theme, Firebase backend
 ├── POC_INTERNA/                 # Internal POC
-│   ├── 01_SPECS/                # Source of truth: design system, user flows, capsule types
+│   ├── 01_SPECS/                # PoC spec inputs: design system, user flows, capsule types
 │   └── app/                     # Onboarding POC — port 3001, white theme, no backend
-├── docs/                        # Target architecture docs (Supabase — NOT current state)
+├── docs/                        # Runtime + target architecture docs (see docs/SOURCE_OF_TRUTH.md)
 ├── POC_INVERSION_NUCLEA/        # Investor documentation
 ├── DISEÑO_ANDREA_PANTALLAS/     # UI mockups (12 PDFs from Andrea — authoritative reference)
 └── *.html                       # Generated reports
@@ -101,23 +101,28 @@ When working with Playwright or headless browsers against the POC:
 - React 19 hydration: `Math.random()` in render causes server/client mismatch — use deterministic values like `((i * 37) % 100)`
 - `.next` cache corrupts frequently during rapid Playwright sessions on Windows — delete `.next` before restart, add warmup hit before captures, add delays (2-3s) between navigations
 
-## Known Discrepancies
+## Reality Alignment
 
-### Capsule Type Mismatch (must be resolved)
+### Capsule Ontology Status
 
-| Source | Types | Count |
-|--------|-------|-------|
-| Production code (`PREREUNION_ANDREA/src/types/index.ts`) | `everlife`, `life-chapter`, `social`, `pet`, `origin` | 5 |
-| POC code (`POC_INTERNA/app/src/types/index.ts`) | `legacy`, `together`, `social`, `pet`, `life-chapter`, `origin` | 6 |
-| Specs (`POC_INTERNA/01_SPECS/CAPSULE_TYPES.md`) | All 6 documented | 6 |
+Canonical runtime/UI type set is now aligned across active apps:
 
-Key differences: Production uses `everlife` instead of `legacy`, and is missing `together`.
+`legacy`, `together`, `social`, `pet`, `life-chapter`, `origin`
+
+Storage compatibility rule remains in production app:
+
+- `everlife` is accepted as a legacy persisted alias
+- normalize at app boundary: `everlife -> legacy`
+
+See `docs/SOURCE_OF_TRUTH.md` and `docs/TYPESCRIPT_TYPES.md` for the normative contract.
 
 ### Backend Stack Transition
 
 - **Current (production code):** Firebase SDK (Auth, Firestore, Storage)
-- **Target (docs/):** Supabase (Auth, PostgreSQL, Storage, Edge Functions)
-- `docs/` describes the Supabase target — **not** the current Firebase state
+- **Target architecture:** Supabase (Auth, PostgreSQL, Storage, Edge Functions)
+- Runtime vs target split is tracked in:
+  - `docs/ARCHITECTURE.md` (current runtime)
+  - `docs/ARCHITECTURE_TARGET_SUPABASE.md` (future target)
 - Decision documented in `STACK_DECISION_FIREBASE_VS_SUPABASE.html`
 
 ## Capsule Types (Canonical — 6 types)
@@ -128,7 +133,7 @@ Key differences: Production uses `everlife` instead of `legacy`, and is missing 
 | `together` | Couples shared memories | No |
 | `social` | Private diary for friends | No |
 | `pet` | Pet memorials | No |
-| `life_chapter` | Document life stages | Optional |
+| `life-chapter` | Document life stages | Optional |
 | `origin` | Parents → children | Optional |
 
 Detailed specs in `POC_INTERNA/01_SPECS/CAPSULE_TYPES.md`. Per-type docs in `docs/capsules/`.
@@ -176,7 +181,7 @@ This project uses multiple AI coding agents. See `POC_INTERNA/DELEGATION_WORKFLO
 
 **Windows reserved filename:** `nul` file may appear in root. Remove with `bash -c "rm -f nul"`.
 
-**No CI/CD** — deployment is manual via `npm run deploy` (Vercel) in PREREUNION_ANDREA.
+**Deployment remains manual** via `npm run deploy` (Vercel) in `PREREUNION_ANDREA`, but repository quality gates are configured in `.github/workflows/quality-gates.yml`.
 
 ---
 

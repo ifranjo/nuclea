@@ -42,14 +42,14 @@ export default async function CapsuleDetailPage({ params }: CapsuleDetailPagePro
             <div className="w-10 h-10 rounded-full bg-[linear-gradient(145deg,#F5F6FB,#E7EAF2)] flex items-center justify-center border border-white/80 shadow-[0_6px_16px_rgba(14,14,20,0.12)]">
               <CapsuleIcon type={capsule.type} size={18} />
             </div>
-            <span className="text-[11px] uppercase tracking-[0.14em] text-[#8E9098]">Capsule profile</span>
+            <span className="text-xs uppercase tracking-[0.14em] text-[#8E9098]">Capsule profile</span>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight mb-2">{capsule.title}</h1>
           <p className="text-lg text-nuclea-text-secondary mb-0">{capsule.tagline}</p>
         </div>
 
         <section className="group rounded-[28px] border border-[rgba(255,255,255,0.78)] bg-white/76 backdrop-blur-sm p-5 shadow-[0_18px_40px_rgba(18,18,26,0.1)] overflow-hidden mb-5">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-[#9598A2] mb-3">
+          <p className="text-xs uppercase tracking-[0.12em] text-[#9598A2] mb-3">
             Apertura interactiva
           </p>
           <div
@@ -78,11 +78,11 @@ export default async function CapsuleDetailPage({ params }: CapsuleDetailPagePro
                 <div className="w-11 h-11 rounded-full border border-white/80 bg-white/94 backdrop-blur-sm flex items-center justify-center shadow-[0_10px_18px_rgba(12,12,18,0.14)]">
                   <Icon size={16} className="text-[#4F515B]" />
                 </div>
-                <div className="mt-1 text-[10px] text-center text-[#777A84] tracking-[0.03em]">{label}</div>
+                <div className="mt-1 text-xs text-center text-[#777A84] tracking-[0.03em]">{label}</div>
               </div>
             ))}
 
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[11px] text-[#868995]">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs text-[#868995]">
               Hover para explorar contenidos
             </div>
           </div>
@@ -100,7 +100,7 @@ export default async function CapsuleDetailPage({ params }: CapsuleDetailPagePro
               <li key={feature} className="flex items-start gap-2.5 rounded-xl bg-[#F6F7FA] px-3 py-2.5">
                 <span
                   aria-hidden
-                  className="mt-[2px] w-5 h-5 rounded-full bg-white border border-[#E0E2E8] text-[#9497A1] inline-flex items-center justify-center text-[10px]"
+                  className="mt-[2px] w-5 h-5 rounded-full bg-white border border-[#E0E2E8] text-[#9497A1] inline-flex items-center justify-center text-xs"
                 >
                   {index + 1}
                 </span>
@@ -120,3 +120,4 @@ export default async function CapsuleDetailPage({ params }: CapsuleDetailPagePro
     </main>
   )
 }
+

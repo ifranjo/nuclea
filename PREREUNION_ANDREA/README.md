@@ -2,12 +2,12 @@
 
 > "Somos las historias que recordamos. Haz que las tuyas permanezcan."
 
-## Estado: Investigacion Completada - Listo para Outreach
+## Estado: Investigacion completada + validacion tecnica en curso
 
 **Propietaria**: Andrea Box Lopez
 **Colaborador potencial**: Imanol Franjo Alvarez
 **NDA firmado**: 04/12/2025
-**Ultima actualizacion**: 02/01/2025
+**Ultima actualizacion**: 13/02/2026
 
 ---
 
@@ -60,11 +60,12 @@ nuclea/
 
 ---
 
-## Ecosistema de 5 Capsulas
+## Ecosistema de 6 Capsulas
 
 | Capsula | Proposito |
 |---------|-----------|
-| **EverLife** | Legado post-mortem + avatar AI opcional |
+| **Legacy (EverLife)** | Legado post-mortem + avatar AI opcional |
+| **Together** | Capsula compartida para pareja o proyecto en comun |
 | **Life Chapter** | Documentar etapas de vida |
 | **Social** | Compartir dia a dia privado |
 | **Pet** | Homenaje a mascotas |
@@ -114,20 +115,19 @@ nuclea/
 
 ## Proximos Pasos
 
-### Esta Semana
-- [ ] Aplicar La Nave Madrid (deadline 5 enero)
+### Backlog historico (enero 2026)
+- [ ] Aplicar La Nave Madrid (deadline historico: 5 enero 2026)
 - [ ] Email a Albert Castells
 - [ ] Email Fundacion MAPFRE
-
-### Proximas 2 Semanas
 - [ ] Contactar Didac Lee
 - [ ] Aplicar MAPFRE insur_space
 - [ ] Aplicar Sanitas Disruptive
 
-### Pendiente con Andrea
-- [ ] Llamada para definir scope demo MVP
-- [ ] Confirmar roles y responsabilidades
-- [ ] Definir timeline desarrollo
+### Prioridades recomendadas (Q1 2026)
+- [ ] Revalidar pipeline de leads con fechas activas (programas y convocatorias vigentes)
+- [ ] Consolidar paquete de demo (producto + narrativa + riesgo legal/compliance)
+- [ ] Cerrar artefactos legales pendientes para trust/privacy (DPA + transferencias internacionales)
+- [ ] Definir ownership y timeline de ejecucion para MVP externo
 
 ---
 
@@ -153,4 +153,4 @@ Este proyecto esta bajo NDA. Toda la informacion es confidencial por 5 anos mini
 
 ---
 
-*Proyecto investigado y documentado: 02/01/2025*
+*Investigacion base documentada: 02/01/2025. Este README fue actualizado con contexto operativo el 13/02/2026.*

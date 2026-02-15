@@ -1,130 +1,70 @@
-# NUCLEA System Architecture
+# NUCLEA System Architecture (Current Runtime)
 
-## Overview
+> Effective state date: February 13, 2026.
+> This file describes what is currently live/buildable in this repository.
 
-NUCLEA is a memory capsule platform with 6 distinct capsule types, each with specific features and closure mechanics. The architecture prioritizes:
+## Runtime Summary
 
-1. **Cost Efficiency:** Closure model where downloaded capsules are deleted from servers
-2. **Privacy:** End-user data ownership, minimal server retention
-3. **Scalability:** Supabase handles auth, database, and storage
+NUCLEA currently runs as two active application tracks:
 
-## High-Level Architecture
+1. `PREREUNION_ANDREA` (external-facing app): Next.js + Firebase (Auth, Firestore, Storage, Firebase Admin API routes).
+2. `POC_INTERNA/app` (internal onboarding PoC): Next.js onboarding flow with local/static assets and quality automation.
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                              FRONTEND                                    │
-│                         Next.js (App Router)                            │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐               │
-│  │  Landing │  │ Dashboard│  │ Capsule  │  │  Viewer  │               │
-│  │   Page   │  │   Page   │  │  Editor  │  │  (Read)  │               │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘               │
-└─────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                              SUPABASE                                    │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────────┐ │
-│  │     Auth     │  │  PostgreSQL  │  │         Storage              │ │
-│  │  Email/OAuth │  │   Database   │  │  Buckets per capsule type   │ │
-│  └──────────────┘  └──────────────┘  └──────────────────────────────┘ │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────────┐ │
-│  │   Realtime   │  │  Edge Funcs  │  │      Row Level Security      │ │
-│  │ Subscriptions│  │   (Deno)     │  │        (RLS Policies)        │ │
-│  └──────────────┘  └──────────────┘  └──────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                          EXTERNAL SERVICES                               │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────────┐ │
-│  │   Stripe     │  │   Resend     │  │      Vercel (Deploy)         │ │
-│  │  Payments    │  │   Emails     │  │       Edge Network           │ │
-│  └──────────────┘  └──────────────┘  └──────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+Supabase remains part of the target architecture track and backend specification work, but it is not the primary runtime backend for `PREREUNION_ANDREA` today.
 
-## Data Flow
+- Target reference: `docs/ARCHITECTURE_TARGET_SUPABASE.md`
+- Supabase implementation draft: `POC_INTERNA/04_BACKEND/SUPABASE_SCHEMA.sql`
 
-### Content Upload Flow
-```
-User → Upload Media → Supabase Storage → Create Content Record → Link to Capsule
+## Effective Source of Truth
+
+### Production/deploy intent
+- `PREREUNION_ANDREA/package.json` -> `deploy: vercel --prod`
+- `.github/workflows/quality-gates.yml` validates build/typecheck for both apps
+
+### Backend implementation in use
+- Client SDK: `PREREUNION_ANDREA/src/lib/firebase.ts`
+- Server/API routes: `PREREUNION_ANDREA/src/app/api/**`
+
+## High-Level Architecture (Current)
+
+```text
+Frontend (Next.js App Router)
+  |- PREREUNION_ANDREA (landing, auth, dashboard, privacy endpoints)
+  |- POC_INTERNA/app (P1-P4 onboarding prototype)
+
+Backend Services
+  |- Firebase Auth
+  |- Cloud Firestore
+  |- Firebase Storage
+  |- Firebase Admin (server routes)
+
+Deployment and Quality Gates
+  |- Vercel deploy command in PREREUNION_ANDREA
+  |- GitHub Actions quality-gates workflow
 ```
 
-### Capsule Closure Flow (Critical for Cost)
-```
-User clicks "Close" → Generate Archive → User Downloads → Verify Download → Delete from Storage → Mark Capsule as "closed"
-```
+## Data and Trust-Critical Flows
 
-### Future Message Flow (Legacy Capsule)
-```
-Create Message → Store with unlock_date → Cron checks daily → On date: notify recipient → 30-day download window → Auto-delete
-```
+### Waitlist + consent
+`/api/waitlist` validates consent fields before insert and stores metadata for auditability.
 
-## Storage Architecture
+### Data export (DSAR)
+`/api/privacy/export` returns authenticated user profile + capsules export payload.
 
-### Bucket Structure
-```
-supabase-storage/
-├── avatars/                    # User profile pictures
-├── capsules/
-│   ├── legacy/
-│   │   └── {capsule_id}/
-│   │       ├── photos/
-│   │       ├── videos/
-│   │       ├── audio/
-│   │       └── future_messages/
-│   ├── together/
-│   │   └── {capsule_id}/...
-│   ├── social/
-│   │   └── {capsule_id}/...
-│   ├── pet/
-│   │   └── {capsule_id}/...
-│   ├── life-chapter/
-│   │   └── {capsule_id}/...
-│   └── origin/
-│       └── {capsule_id}/
-│           ├── photos/
-│           ├── videos/
-│           ├── audio/
-│           └── drawings/       # Unique to Origin
-└── downloads/                  # Temporary closed capsule archives
-```
+### Account deletion
+`/api/privacy/account` deletes user/capsule records and performs best-effort storage object cleanup.
 
-## Authentication
+## Known Gaps (Non-Code or Cross-Track)
 
-### Supported Methods
-1. **Email/Password** - Standard registration
-2. **Apple Sign-In** - iOS priority
-3. **Google OAuth** - Cross-platform
+1. Legal/compliance closure requires external artifacts (Art. 28 DPA evidence and Art. 44 transfer safeguards).
+2. Supabase architecture docs previously represented target state; this file now separates current runtime from target architecture.
 
-### Session Management
-- JWT tokens stored in secure cookies
-- Refresh token rotation enabled
-- Session timeout: 7 days (configurable)
+## Trust-State Classification
 
-## Security
-
-### Row Level Security (RLS)
-All tables use RLS policies:
-- Users can only read/write their own capsules
-- Recipients can read capsules they're invited to
-- Collaborators (Together capsule) can edit shared capsules
-
-### Data Retention
-- Active capsules: Retained until closure
-- Closed capsules: Deleted after user download confirmed
-- Future messages: 30-day window post-unlock, then deleted
-- Account deletion: Full data purge within 30 days
-
-## Scalability Considerations
-
-### Supabase Limits (Pro Plan - $25/mo)
-- Database: 8GB included
-- Storage: 100GB included
-- Bandwidth: 250GB included
-- Edge Functions: 500K invocations
-
-### Growth Path
-1. **0-1K users:** Free tier sufficient for testing
-2. **1K-10K users:** Pro plan ($25/mo)
-3. **10K+ users:** Team plan or custom
+- Live and normative:
+  - `PREREUNION_ANDREA/src/**`
+  - `POC_INTERNA/app/src/**`
+  - `.github/workflows/quality-gates.yml`
+- Aspirational or target:
+  - `docs/ARCHITECTURE_TARGET_SUPABASE.md`
+  - `POC_INTERNA/04_BACKEND/**`

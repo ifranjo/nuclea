@@ -12,10 +12,10 @@ export default function Capsules() {
     <section id="capsulas" aria-labelledby="capsulas-heading" className="py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <h2 id="capsulas-heading" className="font-display text-3xl text-center text-[#F4E4BA] mb-12">
-          5 Tipos de Capsulas
+          {capsuleEntries.length} Tipos de Capsulas
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {capsuleEntries.map(([key, type], index) => (
             <motion.div
               key={key}

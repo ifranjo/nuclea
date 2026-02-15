@@ -166,7 +166,7 @@ export function P3Manifesto({ onNext }: P3Props) {
               </motion.div>
             </motion.div>
 
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[11px] tracking-[0.16em] uppercase text-[#8A8C93]">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs tracking-[0.16em] uppercase text-[#8A8C93]">
               Archivo de memorias
             </div>
           </div>
@@ -180,13 +180,13 @@ export function P3Manifesto({ onNext }: P3Props) {
             transition={{ delay: 0.35, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="rounded-[26px] border border-[rgba(23,23,28,0.08)] bg-white/78 backdrop-blur-sm px-6 py-6 shadow-[0_14px_40px_rgba(18,18,24,0.08)]"
           >
-            <p className="font-display text-[20px] italic text-nuclea-text-secondary leading-snug">
+            <p className="font-display text-xl italic text-nuclea-text-secondary leading-snug">
               Somos las historias que recordamos.
             </p>
-            <p className="font-display text-[20px] italic text-nuclea-text-secondary leading-snug mb-5">
+            <p className="font-display text-xl italic text-nuclea-text-secondary leading-snug mb-5">
               Haz que las tuyas permanezcan.
             </p>
-            <p className="text-[16px] text-nuclea-text-secondary leading-relaxed">
+            <p className="text-base text-nuclea-text-secondary leading-relaxed">
               NUCLEA transforma tus recuerdos en legado. Un espacio íntimo donde guardar lo que importa: fotos, vídeos, mensajes y momentos que merecen perdurar.
             </p>
           </motion.div>
@@ -199,3 +199,4 @@ export function P3Manifesto({ onNext }: P3Props) {
     </div>
   )
 }
+

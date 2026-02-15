@@ -25,7 +25,6 @@ export function PolaroidPlaceholder({
   const borderSide = 8
   const borderBottom = 24
   const innerSize = size - borderSide * 2
-  const iconSize = Math.max(14, Math.round(size * 0.14))
 
   return (
     <div

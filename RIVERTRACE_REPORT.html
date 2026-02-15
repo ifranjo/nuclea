@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUCLEA Rivertrace Report</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    color: #4A4A4A;
+    background: #FDFDFB;
+    line-height: 1.72;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Sidebar ──────────────────────────────────────────────── */
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 280px; height: 100vh;
+    background: #F7F7F4;
+    border-right: 1px solid #E8E0D5;
+    overflow-y: auto;
+    z-index: 100;
+    padding: 28px 0 40px;
+    transition: transform .28s ease;
+  }
+  .sidebar-brand {
+    padding: 0 24px 20px;
+    border-bottom: 1px solid #E8E0D5;
+    margin-bottom: 12px;
+  }
+  .sidebar-brand h1 {
+    font-size: 18px; font-weight: 600; color: #3D3D3D; letter-spacing: .4px;
+  }
+  .sidebar-brand p {
+    font-size: 11px; color: #9A9A9A; margin-top: 2px; letter-spacing: .2px;
+  }
+  .sidebar nav { padding: 0 12px; }
+  .sidebar nav a {
+    display: block;
+    padding: 7px 14px;
+    font-size: 13px;
+    color: #6B6B6B;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background .15s, color .15s;
+    line-height: 1.45;
+    margin-bottom: 1px;
+  }
+  .sidebar nav a:hover { background: #EDEAE4; color: #3D3D3D; }
+  .sidebar nav a.active {
+    background: #E8E0D5;
+    color: #3D3D3D;
+    font-weight: 500;
+  }
+  .sidebar nav .nav-group {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: #9A9A9A;
+    padding: 14px 14px 4px;
+  }
+
+  /* ── Hamburger ────────────────────────────────────────────── */
+  .hamburger {
+    display: none;
+    position: fixed; top: 14px; left: 14px;
+    z-index: 200;
+    width: 40px; height: 40px;
+    background: #F7F7F4;
+    border: 1px solid #E8E0D5;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .hamburger span {
+    display: block; width: 20px; height: 2px;
+    background: #4A4A4A; border-radius: 2px;
+    transition: transform .2s, opacity .2s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.25); z-index: 90;
+  }
+
+  /* ── Main Content ─────────────────────────────────────────── */
+  .main {
+    margin-left: 280px;
+    padding: 48px 56px 80px;
+    max-width: 1240px;
+  }
+  .main > section { margin-bottom: 56px; }
+
+  /* ── Typography ───────────────────────────────────────────── */
+  h2 {
+    font-size: 26px; font-weight: 500; color: #3D3D3D;
+    border-bottom: 2px solid #E8E0D5;
+    padding-bottom: 10px; margin-bottom: 24px;
+  }
+  h3 {
+    font-size: 18px; font-weight: 500; color: #3D3D3D;
+    margin: 28px 0 12px;
+  }
+  h4 {
+    font-size: 15px; font-weight: 500; color: #6B6B6B;
+    margin: 20px 0 8px;
+  }
+  p { margin-bottom: 14px; }
+  strong { font-weight: 500; color: #3D3D3D; }
+
+  /* ── Tables ───────────────────────────────────────────────── */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 16px 0 24px; font-size: 14px;
+  }
+  thead th {
+    text-align: left; padding: 10px 14px;
+    background: #E8E0D5; color: #3D3D3D;
+    font-weight: 500; font-size: 12px;
+    letter-spacing: .4px; text-transform: uppercase;
+    border-bottom: 2px solid #D4C8B8;
+  }
+  tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #EDEAE4;
+  }
+  tbody tr:nth-child(even) td { background: #F7F7F4; }
+  tbody tr:nth-child(odd) td { background: #FDFDFB; }
+  tbody tr:hover td { background: #F3F0EB; }
+  td code, th code {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12.5px;
+    background: #EDEAE4;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── Code Blocks ──────────────────────────────────────────── */
+  .code-wrap {
+    position: relative; margin: 14px 0 22px;
+  }
+  pre {
+    background: #F7F7F4;
+    border: 1px solid #E8E0D5;
+    border-radius: 6px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #3D3D3D;
+  }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: #E8E0D5; border: none;
+    border-radius: 4px; padding: 4px 10px;
+    font-size: 11px; color: #6B6B6B;
+    cursor: pointer; opacity: 0;
+    transition: opacity .15s;
+  }
+  .code-wrap:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: #D4C8B8; color: #3D3D3D; }
+
+  /* ── Flow Diagrams ────────────────────────────────────────── */
+  .flow {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 0; margin: 18px 0 24px;
+  }
+  .flow-box {
+    background: #F7F7F4;
+    border: 1px solid #D4C8B8;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #3D3D3D;
+    text-align: center;
+    min-width: 110px;
+    line-height: 1.4;
+  }
+  .flow-box small { display: block; font-size: 11px; color: #9A9A9A; }
+  .flow-arrow {
+    font-size: 18px; color: #8B7355; padding: 0 6px;
+    font-weight: 300;
+  }
+
+  /* ── KPI Cards ────────────────────────────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin: 20px 0 28px;
+  }
+  .kpi {
+    background: #F7F7F4;
+    border: 1px solid #E8E0D5;
+    border-radius: 8px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+  .kpi-value {
+    font-size: 28px; font-weight: 300; color: #8B7355;
+    line-height: 1.1;
+  }
+  .kpi-label {
+    font-size: 12px; color: #9A9A9A;
+    margin-top: 6px; letter-spacing: .3px;
+  }
+
+  /* ── Accent Bar ───────────────────────────────────────────── */
+  .accent-bar {
+    border-left: 3px solid #8B7355;
+    padding: 12px 18px;
+    background: #F7F7F4;
+    margin: 16px 0 22px;
+    font-size: 14px;
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* ── Details / Collapsible ────────────────────────────────── */
+  details {
+    margin: 12px 0 18px;
+    border: 1px solid #E8E0D5;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  details summary {
+    padding: 12px 18px;
+    background: #F7F7F4;
+    font-weight: 500;
+    font-size: 14px;
+    color: #3D3D3D;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  details summary::before {
+    content: '\25B6'; margin-right: 10px;
+    font-size: 10px; color: #9A9A9A;
+    display: inline-block;
+    transition: transform .15s;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  details > div { padding: 16px 18px; }
+
+  /* ── Risk Tags ────────────────────────────────────────────── */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .3px;
+  }
+  .tag-p0 { background: #F5D5D5; color: #8B3A3A; }
+  .tag-p1 { background: #F5E6D0; color: #8B6B35; }
+  .tag-p2 { background: #E8E0D5; color: #6B6B6B; }
+  .tag-live { background: #D5E8D5; color: #3A6B3A; }
+  .tag-aspirational { background: #D5DEE8; color: #3A5A8B; }
+  .tag-historical { background: #E8E0D5; color: #6B6B6B; }
+
+  /* ── Back to Top ──────────────────────────────────────────── */
+  .back-top {
+    position: fixed; bottom: 28px; right: 28px;
+    width: 40px; height: 40px;
+    background: #E8E0D5; border: 1px solid #D4C8B8;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0; pointer-events: none;
+    transition: opacity .2s;
+    z-index: 80;
+    font-size: 18px; color: #6B6B6B;
+  }
+  .back-top.visible { opacity: 1; pointer-events: auto; }
+  .back-top:hover { background: #D4C8B8; }
+
+  /* ── Responsive ───────────────────────────────────────────── */
+  @media (max-width: 860px) {
+    .hamburger { display: flex; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.1); }
+    .sidebar-overlay.open { display: block; }
+    .main { margin-left: 0; padding: 64px 20px 60px; }
+    .flow { flex-direction: column; align-items: stretch; }
+    .flow-arrow { transform: rotate(90deg); align-self: center; }
+  }
+
+  /* ── Print ────────────────────────────────────────────────── */
+  @media print {
+    .sidebar, .hamburger, .sidebar-overlay, .back-top, .copy-btn { display: none !important; }
+    .main { margin-left: 0; padding: 20px; max-width: 100%; }
+    body { font-size: 11pt; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; font-size: 9pt; }
+    details { border: none; }
+    details[open] summary { background: none; }
+    pre { font-size: 9pt; border: 1px solid #ccc; }
+    .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    a { color: #4A4A4A; text-decoration: none; }
+    a::after { content: ' (' attr(href) ')'; font-size: 8pt; color: #9A9A9A; }
+    .flow-box { border: 1px solid #aaa; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hamburger (mobile) -->
+<button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+  <span></span><span></span><span></span>
+</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <h1>NUCLEA</h1>
+    <p>Rivertrace Investigation Report</p>
+  </div>
+  <nav id="sidebarNav">
+    <div class="nav-group">Overview</div>
+    <a href="#executive-summary">1. Executive Summary</a>
+    <a href="#repository-map">2. Repository Map</a>
+    <div class="nav-group">Applications</div>
+    <a href="#production-app">3. Production App</a>
+    <a href="#poc-app">4. POC App</a>
+    <div class="nav-group">Infrastructure</div>
+    <a href="#documentation-system">5. Documentation System</a>
+    <a href="#codex-prompt-system">6. CODEX Prompt System</a>
+    <a href="#quality-gates">7. Quality Gates</a>
+    <div class="nav-group">Business</div>
+    <a href="#investor-documentation">8. Investor Documentation</a>
+    <a href="#design-source-material">9. Design Source Material</a>
+    <div class="nav-group">Architecture</div>
+    <a href="#type-system">10. Type System</a>
+    <a href="#cross-app-comparison">11. Cross-App Comparison</a>
+    <a href="#critical-findings">12. Critical Findings</a>
+    <a href="#architecture-decisions">13. Architecture Decisions</a>
+    <a href="#file-manifest">14. File Manifest</a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main">
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="executive-summary">
+  <h2>1. Executive Summary</h2>
+  <div class="accent-bar">
+    <strong>NUCLEA</strong> is a Spanish digital legacy platform that enables users to create memory capsules &mdash; emotional containers for photos, videos, audio, and text &mdash; with optional AI avatars powered by ElevenLabs voice cloning and video synthesis. The product targets end-of-life planning, couples, families, and pet owners across the Spanish-speaking market.
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-value">3,226</div>
+      <div class="kpi-label">LOC Production App</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">1,517</div>
+      <div class="kpi-label">LOC POC App</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">28</div>
+      <div class="kpi-label">Visual Regression Tests</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">27</div>
+      <div class="kpi-label">Active CODEX Prompts</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">13</div>
+      <div class="kpi-label">Design PDFs</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">6</div>
+      <div class="kpi-label">Capsule Types</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">&euro;150K</div>
+      <div class="kpi-label">Pre-seed Target</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">Feb 2026</div>
+      <div class="kpi-label">Current Stage</div>
+    </div>
+  </div>
+
+  <p>The repository contains two Next.js applications (a production-ready dark-themed app with Firebase backend and a white-themed onboarding POC with no backend), a comprehensive documentation system with trust-state classification, a CTO-level AI prompt library (CODEX) with 27 active prompts across 7 domains, investor documentation spanning 5 categories, and 13 authoritative design PDFs from the designer.</p>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="repository-map">
+  <h2>2. Repository Map</h2>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>nuclea/
+&#9500;&#9472;&#9472; PREREUNION_ANDREA/           Production app (port 3000, dark theme, Firebase)
+&#9474;   &#9500;&#9472;&#9472; src/app/                 Pages &amp; API routes
+&#9474;   &#9500;&#9472;&#9472; src/components/          13 React components
+&#9474;   &#9500;&#9472;&#9472; src/hooks/               useAuth, useCapsules
+&#9474;   &#9500;&#9472;&#9472; src/lib/                 Firebase SDK, Zustand store
+&#9474;   &#9492;&#9472;&#9472; src/types/               Canonical type definitions
+&#9500;&#9472;&#9472; POC_INTERNA/                 Internal POC
+&#9474;   &#9500;&#9472;&#9472; 01_SPECS/                Design system, user flows, capsule types
+&#9474;   &#9492;&#9472;&#9472; app/                     Onboarding POC (port 3001, white theme, no backend)
+&#9474;       &#9500;&#9472;&#9472; src/components/      11 source files (onboarding steps, UI)
+&#9474;       &#9500;&#9472;&#9472; tests/               Visual regression (28 assertions)
+&#9474;       &#9492;&#9472;&#9472; screenshots/         Playwright captures &amp; regression baselines
+&#9500;&#9472;&#9472; docs/                        Architecture &amp; type documentation
+&#9474;   &#9500;&#9472;&#9472; SOURCE_OF_TRUTH.md       Trust-state registry
+&#9474;   &#9500;&#9472;&#9472; ARCHITECTURE.md          Current Firebase runtime
+&#9474;   &#9500;&#9472;&#9472; ARCHITECTURE_TARGET_SUPABASE.md  Future migration
+&#9474;   &#9492;&#9472;&#9472; api/                     Endpoint contracts
+&#9500;&#9472;&#9472; CODEX_PROMPTS_FOR_OPUS$/     AI prompt library (27 prompts, 7 domains)
+&#9474;   &#9500;&#9472;&#9472; domains/                 01_product through 07_ops
+&#9474;   &#9500;&#9472;&#9472; outputs/                 Execution artifacts
+&#9474;   &#9492;&#9472;&#9472; registry/                Status tracking &amp; review log
+&#9500;&#9472;&#9472; POC_INVERSION_NUCLEA/        Investor documentation (5 categories)
+&#9500;&#9472;&#9472; DISE&Ntilde;O_ANDREA_PANTALLAS/    UI mockups (13 PDFs)
+&#9500;&#9472;&#9472; .github/workflows/           Quality gates CI (quality-gates.yml)
+&#9492;&#9472;&#9472; *.html                       Generated analysis reports</pre>
+  </div>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="production-app">
+  <h2>3. Production App (PREREUNION_ANDREA)</h2>
+
+  <h3>Tech Stack</h3>
+  <table>
+    <thead><tr><th>Layer</th><th>Technology</th><th>Version</th></tr></thead>
+    <tbody>
+      <tr><td>Framework</td><td>Next.js (App Router)</td><td>16.1.4</td></tr>
+      <tr><td>Language</td><td>TypeScript</td><td>5.7.2</td></tr>
+      <tr><td>UI Library</td><td>React</td><td>18.3.1</td></tr>
+      <tr><td>Styling</td><td>Tailwind CSS</td><td>3.4.17</td></tr>
+      <tr><td>State</td><td>Zustand</td><td>5.0.2</td></tr>
+      <tr><td>Animation</td><td>Framer Motion</td><td>11.15.0</td></tr>
+      <tr><td>Auth &amp; DB</td><td>Firebase (Auth, Firestore, Storage)</td><td>10.14.1</td></tr>
+      <tr><td>Admin SDK</td><td>Firebase Admin</td><td>12.7.0</td></tr>
+      <tr><td>Validation</td><td>Zod</td><td>3.24.1</td></tr>
+      <tr><td>Icons</td><td>Lucide React</td><td>0.469.0</td></tr>
+      <tr><td>Dates</td><td>date-fns</td><td>4.1.0</td></tr>
+      <tr><td>IDs</td><td>uuid</td><td>11.0.4</td></tr>
+      <tr><td>Notifications</td><td>React Hot Toast</td><td>2.4.1</td></tr>
+      <tr><td>Font (body)</td><td>DM Sans</td><td>Google Fonts</td></tr>
+      <tr><td>Font (display)</td><td>Cormorant Garamond</td><td>Google Fonts</td></tr>
+      <tr><td>Deploy</td><td>Vercel</td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Pages &amp; Routes</h3>
+  <table>
+    <thead><tr><th>Route</th><th>Type</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>/</code></td><td>Landing</td><td>Hero &rarr; Capsules &rarr; AI &rarr; Pricing &rarr; Waitlist</td></tr>
+      <tr><td><code>/login</code></td><td>Auth</td><td>Email + Google sign-in</td></tr>
+      <tr><td><code>/registro</code></td><td>Auth</td><td>Registration with terms acceptance</td></tr>
+      <tr><td><code>/dashboard</code></td><td>Protected</td><td>Capsule management (grid/list, CRUD)</td></tr>
+      <tr><td><code>/capsulas/[id]</code></td><td>Protected</td><td>Edit capsule</td></tr>
+      <tr><td><code>/privacidad</code></td><td>Legal</td><td>Privacy policy (GDPR)</td></tr>
+      <tr><td><code>/terminos</code></td><td>Legal</td><td>Terms of service</td></tr>
+      <tr><td><code>/consentimiento</code></td><td>Legal</td><td>AI avatar consent (Art. 9 RGPD)</td></tr>
+      <tr><td><code>/contacto</code></td><td>Info</td><td>Support channels</td></tr>
+    </tbody>
+  </table>
+
+  <h3>API Routes</h3>
+  <table>
+    <thead><tr><th>Endpoint</th><th>Methods</th><th>Auth</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>/api/waitlist</code></td><td>GET, POST</td><td>None</td><td>Waitlist management (count &amp; signup)</td></tr>
+      <tr><td><code>/api/waitlist/unsubscribe</code></td><td>GET, POST</td><td>Token</td><td>Unsubscribe flow</td></tr>
+      <tr><td><code>/api/capsules</code></td><td>GET, POST</td><td>Bearer</td><td>Capsule CRUD (enforces plan limits)</td></tr>
+      <tr><td><code>/api/privacy/export</code></td><td>GET</td><td>Bearer</td><td>GDPR data export (Art. 20)</td></tr>
+      <tr><td><code>/api/privacy/account</code></td><td>DELETE</td><td>Bearer</td><td>Account + data erasure (Art. 17)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Data Flow Diagrams</h3>
+
+  <h4>Registration Flow</h4>
+  <div class="flow">
+    <div class="flow-box">User fills form<small>/registro</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">signUpWithEmail()<small>useAuth hook</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">createUser<small>Firebase Auth</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">Firestore write<small>users/{uid}</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">onAuthStateChanged<small>listener</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">router.push<small>/dashboard</small></div>
+  </div>
+  <p style="font-size:13px;color:#9A9A9A;">Consent metadata (<code>termsAcceptedAt</code>, <code>privacyAcceptedAt</code>, <code>consentVersion</code>) is persisted to the user document during registration. Profile creation happens only in explicit registration flows.</p>
+
+  <h4>Capsule CRUD Flow</h4>
+  <div class="flow">
+    <div class="flow-box">Dashboard<small>createCapsule()</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">POST /api/capsules<small>API route</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">verifyBearerToken<small>Firebase Admin</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">Check plan limits<small>PLANS constant</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">Firestore write<small>capsules/{id}</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">onSnapshot<small>real-time update</small></div>
+  </div>
+
+  <h4>Account Deletion Flow (GDPR Art. 17)</h4>
+  <div class="flow">
+    <div class="flow-box">Dashboard<small>delete request</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">DELETE /api/privacy/account<small>verify token</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">Query capsules<small>by userId</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">Delete Storage files<small>Firebase Storage</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">Batch delete docs<small>capsules + user</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box">deleteUser(uid)<small>Auth cleanup</small></div>
+  </div>
+
+  <h3>State Management</h3>
+  <table>
+    <thead><tr><th>Layer</th><th>Mechanism</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Auth state</td><td><code>useAuth</code> hook</td><td>Firebase Auth wrapper (user, loading, error, auth methods)</td></tr>
+      <tr><td>Capsule data</td><td><code>useCapsules</code> hook</td><td>Firestore subscription + CRUD operations</td></tr>
+      <tr><td>UI state</td><td>Zustand store</td><td>Sidebar, modal, capsule type, notifications (underutilized)</td></tr>
+      <tr><td>Component state</td><td><code>useState</code></td><td>Local form state, toggles, loading indicators</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Firebase Integration</h3>
+  <table>
+    <thead><tr><th>Module</th><th>File</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Client SDK</td><td><code>src/lib/firebase.ts</code></td><td>App init with demo fallback credentials (30 lines)</td></tr>
+      <tr><td>Admin SDK</td><td><code>src/lib/firebase-admin.ts</code></td><td>Lazy init, server-side only, token verification (91 lines)</td></tr>
+      <tr><td>Region</td><td colspan="2"><code>europe-west1</code> (EU data residency)</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Firestore Collections</h4>
+  <table>
+    <thead><tr><th>Collection</th><th>Document Shape</th><th>Access Pattern</th></tr></thead>
+    <tbody>
+      <tr><td><code>users/{uid}</code></td><td>Profile, plan tier, consent metadata</td><td>Read on auth, write on registration</td></tr>
+      <tr><td><code>capsules/{id}</code></td><td>Capsule with contents[] array, optional aiAvatar</td><td>Real-time subscription via onSnapshot</td></tr>
+      <tr><td><code>waitlist/{id}</code></td><td>Email, source, consent, unsubscribe token</td><td>POST on signup, GET for count</td></tr>
+    </tbody>
+  </table>
+
+  <details>
+    <summary>Component Inventory (13 files, 3,226 LOC total)</summary>
+    <div>
+      <table>
+        <thead><tr><th>Component</th><th>Lines</th><th>Purpose</th><th>Key Dependencies</th></tr></thead>
+        <tbody>
+          <tr><td><code>Header.tsx</code></td><td>138</td><td>Top navigation (memo'd)</td><td>useAuth</td></tr>
+          <tr><td><code>Footer.tsx</code></td><td>92</td><td>Site footer with links</td><td>none</td></tr>
+          <tr><td><code>CapsuleCard.tsx</code></td><td>156</td><td>Capsule display card</td><td>capsule, onEdit, onDelete, onShare</td></tr>
+          <tr><td><code>WaitlistForm.tsx</code></td><td>125</td><td>Email signup</td><td>standalone</td></tr>
+          <tr><td><code>Hero.tsx</code></td><td>57</td><td>Landing banner</td><td>none</td></tr>
+          <tr><td><code>Capsules.tsx</code></td><td>43</td><td>6 type grid showcase</td><td>CAPSULE_TYPES</td></tr>
+          <tr><td><code>AISection.tsx</code></td><td>70</td><td>AI technology showcase</td><td>none</td></tr>
+          <tr><td><code>Pricing.tsx</code></td><td>104</td><td>3 pricing tiers</td><td>PLANS</td></tr>
+          <tr><td><code>Waitlist.tsx</code></td><td>32</td><td>Signup CTA section</td><td>WaitlistForm</td></tr>
+          <tr><td><code>CapsuleIcons.tsx</code></td><td>57</td><td>Icon map by type</td><td>CapsuleType</td></tr>
+          <tr><td><code>dashboard/page.tsx</code></td><td>341</td><td>Capsule management (grid/list, CRUD)</td><td>useAuth, useCapsules</td></tr>
+          <tr><td><code>login/page.tsx</code></td><td>163</td><td>Sign-in (email + Google)</td><td>useAuth</td></tr>
+          <tr><td><code>registro/page.tsx</code></td><td>219</td><td>Registration + terms</td><td>useAuth</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Design System (Dark Theme)</summary>
+    <div>
+      <table>
+        <thead><tr><th>Token</th><th>Value</th><th>Tailwind Class</th></tr></thead>
+        <tbody>
+          <tr><td>Background</td><td><code>#0D0D12</code></td><td><code>nuclea-bg</code></td></tr>
+          <tr><td>Elevated BG</td><td><code>#14141A</code></td><td><code>nuclea-bg-elevated</code></td></tr>
+          <tr><td>Gold accent</td><td><code>#D4AF37</code></td><td><code>nuclea-gold</code></td></tr>
+          <tr><td>Gold light</td><td><code>#F4E4BA</code></td><td><code>nuclea-gold-light</code></td></tr>
+          <tr><td>Gold muted</td><td><code>#B8956B</code></td><td><code>nuclea-gold-muted</code></td></tr>
+          <tr><td>Text primary</td><td><code>#FAFAFA</code></td><td><code>text-primary</code></td></tr>
+          <tr><td>Text secondary</td><td><code>rgba(250,250,250,0.7)</code></td><td><code>text-secondary</code></td></tr>
+          <tr><td>Glass effect</td><td><code>backdrop-blur: 12px</code></td><td>custom</td></tr>
+          <tr><td>Display font</td><td>Cormorant Garamond</td><td><code>font-display</code></td></tr>
+          <tr><td>Body font</td><td>DM Sans</td><td><code>font-sans</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Environment Variables (11 total)</summary>
+    <div>
+      <table>
+        <thead><tr><th>Variable</th><th>Scope</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_API_KEY</code></td><td>Client</td><td>Firebase API key</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN</code></td><td>Client</td><td>Auth domain</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_PROJECT_ID</code></td><td>Client</td><td>Project identifier</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET</code></td><td>Client</td><td>Storage bucket</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID</code></td><td>Client</td><td>Messaging sender</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_APP_ID</code></td><td>Client</td><td>App identifier</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_REGION</code></td><td>Client</td><td>Region (<code>europe-west1</code>)</td></tr>
+          <tr><td><code>FIREBASE_PROJECT_ID</code></td><td>Server</td><td>Admin SDK project ID</td></tr>
+          <tr><td><code>FIREBASE_CLIENT_EMAIL</code></td><td>Server</td><td>Service account email</td></tr>
+          <tr><td><code>FIREBASE_PRIVATE_KEY</code></td><td>Server</td><td>Service account key</td></tr>
+          <tr><td><code>ANALYZE</code></td><td>Build</td><td>Enable bundle analysis</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="poc-app">
+  <h2>4. POC App (POC_INTERNA)</h2>
+
+  <h3>Tech Stack</h3>
+  <table>
+    <thead><tr><th>Layer</th><th>Technology</th><th>Version</th></tr></thead>
+    <tbody>
+      <tr><td>Framework</td><td>Next.js (App Router)</td><td>15.1.0+</td></tr>
+      <tr><td>UI Library</td><td>React</td><td>19</td></tr>
+      <tr><td>Animation</td><td>Framer Motion</td><td>Latest</td></tr>
+      <tr><td>Styling</td><td>Tailwind CSS</td><td>Latest</td></tr>
+      <tr><td>Font (body)</td><td>Inter</td><td>Google Fonts</td></tr>
+      <tr><td>Font (display)</td><td>Cormorant Garamond</td><td>Google Fonts</td></tr>
+      <tr><td>Theme</td><td>White (<code>#FFFFFF</code>)</td><td>&mdash;</td></tr>
+      <tr><td>Backend</td><td>None</td><td>Pure UI</td></tr>
+    </tbody>
+  </table>
+
+  <div class="accent-bar">
+    The POC demonstrates the <strong>emotional experience</strong> of NUCLEA through a 4-step onboarding flow. It is <em>aesthetics over functionality</em> &mdash; no data persistence, no authentication, no API calls. The capsule is treated as a physical emotional object, not a file-management container.
+  </div>
+
+  <h3>The 4-Step Onboarding Flow</h3>
+
+  <h4>P1 &mdash; Capsule Closed (<code>?step=1</code>)</h4>
+  <p>Metallic capsule image (240x120px mobile, 320x160px desktop) with floating + breathing animation on a 3.5s infinite cycle. "Toca para abrir" hint text fades in at 1.5s delay. User taps the capsule to transition to P2.</p>
+
+  <h4>P2 &mdash; Capsule Opening (<code>?step=2</code>)</h4>
+  <p>The capsule splits at the 46% seam using clip-path, with halves sliding &plusmn;60px apart. 8 polaroid cards float outward with staggered delays (0.7s to 1.75s). 5 floating capsule pills serve as decorative elements. 12 particle sparkles with gold tinting arc upward. Background gains warm radial gradients. A 4-second auto-advance timer with pause/resume control and progress bar countdown drives the transition to P3.</p>
+
+  <h4>P3 &mdash; Manifesto (<code>?step=3</code>)</h4>
+  <p>"Somos las historias que recordamos." / "Haz que las tuyas permanezcan." rendered in Cormorant Garamond italic. Body copy: "NUCLEA transforma tus recuerdos en legado..." with 9 floating pills, 5 mini-polaroids, and a central capsule with breathing animation. "Continuar" button advances to P4.</p>
+
+  <h4>P4 &mdash; Capsule Selection (<code>?step=4</code>)</h4>
+  <p>"Elige tu c&aacute;psula" title at 28px bold. 6 capsule type cards in an iOS-style list, each showing an icon, title, tagline, and chevron with hover animation (chevron slides right 2px). Cards link to <code>/onboarding/capsule/[type]</code> detail pages.</p>
+
+  <h3>Animation Specifications</h3>
+  <table>
+    <thead><tr><th>Animation</th><th>Duration</th><th>Easing</th><th>Repeat</th></tr></thead>
+    <tbody>
+      <tr><td>P1 capsule float</td><td>3.5s</td><td>easeInOut</td><td>Infinite</td></tr>
+      <tr><td>P2 capsule split</td><td>0.8s</td><td>[0.16, 1, 0.3, 1]</td><td>Once</td></tr>
+      <tr><td>P2 polaroid float</td><td>1.2s</td><td>[0.22, 1, 0.36, 1]</td><td>Once</td></tr>
+      <tr><td>P2 polaroid wobble</td><td>4&ndash;5.3s</td><td>[0.34, 1.56, 0.64, 1]</td><td>Infinite</td></tr>
+      <tr><td>P3 elements fade</td><td>0.65&ndash;0.8s</td><td>[0.16, 1, 0.3, 1]</td><td>Once</td></tr>
+      <tr><td>P3 pills drift</td><td>5&ndash;6.6s</td><td>easeInOut</td><td>Infinite</td></tr>
+      <tr><td>P4 cards slide-up</td><td>0.5&ndash;0.55s</td><td>[0.16, 1, 0.3, 1]</td><td>Once</td></tr>
+    </tbody>
+  </table>
+
+  <details>
+    <summary>Component Inventory (18 files, 1,517 LOC total)</summary>
+    <div>
+      <table>
+        <thead><tr><th>File</th><th>Lines</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>P1CapsuleClosed.tsx</code></td><td>74</td><td>Step 1: closed capsule with floating animation</td></tr>
+          <tr><td><code>P2CapsuleOpening.tsx</code></td><td>353</td><td>Step 2: capsule split + polaroid float + particles</td></tr>
+          <tr><td><code>P3Manifesto.tsx</code></td><td>201</td><td>Step 3: manifesto copy + decorative elements</td></tr>
+          <tr><td><code>P4CapsuleSelection.tsx</code></td><td>169</td><td>Step 4: capsule type selection cards</td></tr>
+          <tr><td><code>CapsulePlaceholder.tsx</code></td><td>36</td><td>Metallic capsule visual component</td></tr>
+          <tr><td><code>PolaroidPlaceholder.tsx</code></td><td>92</td><td>Photo card with hover effect</td></tr>
+          <tr><td><code>Button.tsx</code></td><td>27</td><td>Primary action button</td></tr>
+          <tr><td><code>CapsuleTypeCard.tsx</code></td><td>52</td><td>iOS-style selection card</td></tr>
+          <tr><td><code>Header.tsx</code></td><td>21</td><td>Minimal header bar</td></tr>
+          <tr><td><code>CapsuleIcons.tsx</code></td><td>27</td><td>Icon map by capsule type</td></tr>
+          <tr><td><code>capsuleDetails.ts</code></td><td>85</td><td>Detail page content data</td></tr>
+          <tr><td><code>types/index.ts</code></td><td>49</td><td>POC-specific type definitions</td></tr>
+          <tr><td><code>app/layout.tsx</code></td><td>46</td><td>Root layout (Inter + Cormorant fonts)</td></tr>
+          <tr><td><code>app/page.tsx</code></td><td>5</td><td>Root redirect to /onboarding</td></tr>
+          <tr><td><code>onboarding/page.tsx</code></td><td>106</td><td>Step orchestrator (AnimatePresence)</td></tr>
+          <tr><td><code>onboarding/layout.tsx</code></td><td>11</td><td>Onboarding layout wrapper</td></tr>
+          <tr><td><code>onboarding/error.tsx</code></td><td>41</td><td>Error boundary for onboarding</td></tr>
+          <tr><td><code>capsule/[type]/page.tsx</code></td><td>122</td><td>Capsule detail page (dynamic)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Testing Infrastructure</summary>
+    <div>
+      <h4>Visual Regression Tests</h4>
+      <p><code>tests/test_onboarding_visual.py</code> &mdash; 28 assertions covering P1-P4 plus design system compliance. Checks include DOM presence, text content, computed CSS (fonts, colors, border-radius), and screenshot capture. Uses <code>reducedMotion: 'reduce'</code> browser context for reliable headless captures.</p>
+
+      <h4>Playwright Capture</h4>
+      <p><code>screenshots/capture_all.mjs</code> &mdash; Captures mobile (390x844) and desktop (1440x900) screenshots. Uses warmup hit before captures, generous timeouts (2.5s) between navigations, and separate browser contexts for mobile/desktop.</p>
+
+      <h4>Automated Healing Scripts</h4>
+      <table>
+        <thead><tr><th>Script</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>npm run autocheck</code></td><td>Lint + build + runtime flow check + PDF alignment</td></tr>
+          <tr><td><code>npm run autocheck:pdf</code></td><td>Validate copy against source PDFs only</td></tr>
+          <tr><td><code>npm run heal:session</code></td><td>Stops on first successful autocheck; cleans cache between attempts</td></tr>
+          <tr><td><code>npm run heal:stability</code></td><td>3 full autocheck iterations; fails if any fails</td></tr>
+          <tr><td><code>npm run heal:insights</code></td><td>Rebuild aggregated trends from healing history</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="documentation-system">
+  <h2>5. Documentation System</h2>
+
+  <h3>Trust-State Classification</h3>
+  <p>The documentation system uses a three-tier trust model defined in <code>docs/SOURCE_OF_TRUTH.md</code>. Each document is classified by its relationship to the running system.</p>
+
+  <table>
+    <thead><tr><th>Trust State</th><th>Meaning</th><th>Artifacts</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-live">Live &amp; normative</span></td>
+        <td>Defines production-facing runtime behavior</td>
+        <td>
+          <code>PREREUNION_ANDREA/src/**</code>,
+          <code>POC_INTERNA/app/src/**</code>,
+          <code>ARCHITECTURE.md</code>,
+          <code>TYPESCRIPT_TYPES.md</code>,
+          <code>DESIGN_SYSTEM.md</code>,
+          <code>SOURCE_OF_TRUTH.md</code>,
+          <code>api/RUNTIME_ENDPOINTS.md</code>,
+          <code>quality-gates.yml</code>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-aspirational">Aspirational / target</span></td>
+        <td>Future design intent, not yet implemented</td>
+        <td>
+          <code>ARCHITECTURE_TARGET_SUPABASE.md</code>,
+          <code>DATABASE_SCHEMA.md</code>,
+          <code>MVP_SCOPE.md</code>,
+          <code>capsules/**</code>,
+          <code>flows/**</code>,
+          <code>spec/**</code>,
+          <code>api/ENDPOINTS.md</code>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-historical">Historical / vestigial</span></td>
+        <td>Delivery-era notes, not runtime contract</td>
+        <td>
+          <code>AGENT-9-*.md</code>,
+          <code>CODEX outputs/*.md</code>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Key Documents</h3>
+  <table>
+    <thead><tr><th>Document</th><th>Purpose</th><th>Trust State</th></tr></thead>
+    <tbody>
+      <tr><td><code>SOURCE_OF_TRUTH.md</code></td><td>Trust-state map and canonical ontology lock</td><td><span class="tag tag-live">Live</span></td></tr>
+      <tr><td><code>ARCHITECTURE.md</code></td><td>Current Firebase runtime architecture</td><td><span class="tag tag-live">Live</span></td></tr>
+      <tr><td><code>ARCHITECTURE_TARGET_SUPABASE.md</code></td><td>Future Supabase migration blueprint</td><td><span class="tag tag-aspirational">Aspirational</span></td></tr>
+      <tr><td><code>TYPESCRIPT_TYPES.md</code></td><td>Canonical type contracts and compatibility mapping</td><td><span class="tag tag-live">Live</span></td></tr>
+      <tr><td><code>DESIGN_SYSTEM.md</code></td><td>Design tokens and component guidance</td><td><span class="tag tag-live">Live</span></td></tr>
+      <tr><td><code>api/RUNTIME_ENDPOINTS.md</code></td><td>Implemented API route contracts</td><td><span class="tag tag-live">Live</span></td></tr>
+      <tr><td><code>api/ENDPOINTS.md</code></td><td>Expanded target API contract</td><td><span class="tag tag-aspirational">Aspirational</span></td></tr>
+      <tr><td><code>README.md</code> (docs)</td><td>Documentation entrypoint and reading order</td><td><span class="tag tag-live">Live</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="codex-prompt-system">
+  <h2>6. CODEX Prompt System</h2>
+
+  <div class="accent-bar">
+    CTO-level AI prompt library designed for delegation to Claude Opus 4.6. Contains 27 active prompts across 7 domains, with a formal review cycle (16 reviews, REV-001 through REV-016, Feb 7&ndash;10, 2026).
+  </div>
+
+  <h3>Domain Distribution (27 Prompts)</h3>
+  <table>
+    <thead><tr><th>Domain</th><th>Count</th><th>Key Prompts</th></tr></thead>
+    <tbody>
+      <tr><td><strong>01_product</strong></td><td>4</td><td>PRD Spec-to-Build, Implementation Planner, Type Contract Alignment, Cross-App Parity</td></tr>
+      <tr><td><strong>02_experience</strong></td><td>7</td><td>UX Flow Critic, Visual Direction, Onboarding Copy Engine, Hover/Focus/Touch, Responsive Viewport Audit, Interactive Capsule Hover, Capsule Placement</td></tr>
+      <tr><td><strong>03_quality</strong></td><td>8</td><td>QA Regression Gate, ESLint Diagnostics, Firebase Security Gate, Playwright PDF Alignment, Performance Budget, Privacy Compliance, POC ESLint Baseline, Next16 Lint CLI</td></tr>
+      <tr><td><strong>04_growth</strong></td><td>1</td><td>Growth Storytelling</td></tr>
+      <tr><td><strong>05_stakeholder</strong></td><td>1</td><td>Investor Stakeholder Update</td></tr>
+      <tr><td><strong>06_trust</strong></td><td>2</td><td>Legal Trust Messaging, Privacy/GDPR/LOPD Compliance</td></tr>
+      <tr><td><strong>07_ops</strong></td><td>3</td><td>Work Packet Builder, Remediation Sprint, 3-Stage Self-Check Chain</td></tr>
+      <tr><td><em>_retired</em></td><td>&mdash;</td><td>PromptOps Reviewer (meta-prompt for review cycle)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Critical Audit Findings (REV-013 to REV-015)</h3>
+  <table>
+    <thead><tr><th>Area</th><th>Finding</th><th>Severity</th></tr></thead>
+    <tbody>
+      <tr><td>Performance</td><td>Firebase vendor bundle 489KB; POC capsule PNGs 9.4MB total</td><td><span class="tag tag-p1">P1</span></td></tr>
+      <tr><td>Responsive</td><td>Tailwind breakpoint mismatch: 640px default vs 375px design spec</td><td><span class="tag tag-p1">P1</span></td></tr>
+      <tr><td>Touch targets</td><td>4 elements below 44x44px minimum (PolaroidPlaceholder, CapsuleTypeCard)</td><td><span class="tag tag-p1">P1</span></td></tr>
+      <tr><td>Privacy</td><td>Score improved from 32/100 to 58/100; missing policy links; no consent persistence</td><td><span class="tag tag-p0">P0</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="quality-gates">
+  <h2>7. Quality Gates (CI/CD)</h2>
+
+  <p>Defined in <code>.github/workflows/quality-gates.yml</code>. Triggered on push to <code>master</code>/<code>main</code> and all pull requests.</p>
+
+  <h3>Pipeline Structure</h3>
+  <div class="flow">
+    <div class="flow-box"><strong>docs-governance</strong><small>Source-of-truth coverage</small></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box"><strong>prereunion-quality</strong><small>8 checks (lint, types, ontology, build, smoke, analyze)</small></div>
+  </div>
+  <div class="flow" style="margin-top: -8px;">
+    <div class="flow-box" style="visibility:hidden;min-width:110px;">spacer</div>
+    <span class="flow-arrow" style="visibility:hidden;">x</span>
+    <div class="flow-box"><strong>poc-quality</strong><small>4 checks (lint, types, build)</small></div>
+  </div>
+  <p style="font-size:13px;color:#9A9A9A;margin-top:4px;">Both app jobs run in parallel after docs-governance passes.</p>
+
+  <h3>Check Details</h3>
+  <table>
+    <thead><tr><th>Job</th><th>Step</th><th>Command</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="8"><strong>prereunion-quality</strong></td><td>Lint</td><td><code>npm run lint</code></td></tr>
+      <tr><td>Typecheck</td><td><code>npx tsc --noEmit</code></td></tr>
+      <tr><td>Ontology drift</td><td><code>npm run check:ontology</code></td></tr>
+      <tr><td>Production build</td><td><code>npm run build</code> (Turbopack)</td></tr>
+      <tr><td>Smoke routes</td><td><code>npm run smoke:routes</code></td></tr>
+      <tr><td>Webpack analyze</td><td><code>ANALYZE=true npx next build --webpack</code></td></tr>
+      <tr><td>Upload artifacts</td><td>Bundle analysis reports</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td rowspan="3"><strong>poc-quality</strong></td><td>Lint</td><td><code>npm run lint</code></td></tr>
+      <tr><td>Typecheck</td><td><code>npx tsc --noEmit</code></td></tr>
+      <tr><td>Production build</td><td><code>npm run build</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="investor-documentation">
+  <h2>8. Investor Documentation</h2>
+
+  <p>Located in <code>POC_INVERSION_NUCLEA/</code> with a 5-category structure targeting the pre-seed round of &euro;150K.</p>
+
+  <table>
+    <thead><tr><th>Category</th><th>Folder</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td>1. Executive Summary</td><td><code>01_EXECUTIVE_SUMMARY</code></td><td>Problem statement, user personas, hypotheses to validate</td></tr>
+      <tr><td>2. Technical Architecture</td><td><code>02_TECHNICAL_ARCHITECTURE</code></td><td>Stack decisions, performance benchmarks, scalability plan</td></tr>
+      <tr><td>3. Market Validation</td><td><code>03_MARKET_VALIDATION</code></td><td>TAM/SAM/SOM analysis, competitive landscape mapping</td></tr>
+      <tr><td>4. Business Model</td><td><code>04_BUSINESS_MODEL</code></td><td>Pricing strategy, unit economics (CAC/LTV), revenue projections</td></tr>
+      <tr><td>5. Risk &amp; Roadmap</td><td><code>05_RISK_ROADMAP</code></td><td>Risk matrix, go/no-go gates, milestone timeline</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Key Metrics (from investor materials)</h3>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-value">287</div>
+      <div class="kpi-label">Waitlist Signups</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">4,200</div>
+      <div class="kpi-label">Landing Visits</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">6.8%</div>
+      <div class="kpi-label">Conversion Rate</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value">$15&ndash;26B</div>
+      <div class="kpi-label">TAM Estimate</div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="design-source-material">
+  <h2>9. Design Source Material</h2>
+
+  <p>Located in <code>DISE&Ntilde;O_ANDREA_PANTALLAS/</code> &mdash; 13 PDF mockups from Andrea that serve as the authoritative visual reference for all UI implementation. These are the source of truth for layout, spacing, typography, and visual direction.</p>
+
+  <table>
+    <thead><tr><th>PDF</th><th>Coverage</th></tr></thead>
+    <tbody>
+      <tr><td><code>NUCLEA_INICIO.pdf</code></td><td>Landing page layout and hero section</td></tr>
+      <tr><td><code>NUCLEA_REGISTRO.pdf</code></td><td>Registration form and onboarding entry</td></tr>
+      <tr><td><code>NUCLEA_CAPSULAS.pdf</code></td><td>Capsule type overview and selection grid</td></tr>
+      <tr><td><code>Nuclea_Capsulas_Base_y_Botones_AJUSTADO.pdf</code></td><td>Button system, base components, adjustments</td></tr>
+      <tr><td><code>NUCLEA_LEGACY CAPSULE.pdf</code></td><td>Legacy capsule detail view</td></tr>
+      <tr><td><code>NUCLEA_LEGACY MENSJ FUUROS.pdf</code></td><td>Legacy future messages interface</td></tr>
+      <tr><td><code>NUCLEA_TOGETHER CAPSULE_COMPARTIR.pdf</code></td><td>Together capsule &mdash; sharing mode</td></tr>
+      <tr><td><code>NUCLEA_TOGETHER_REGALAR.pdf</code></td><td>Together capsule &mdash; gifting mode</td></tr>
+      <tr><td><code>NUCLEA_SOCIAL CAPSULE.pdf</code></td><td>Social capsule diary interface</td></tr>
+      <tr><td><code>NUCLEA_PET CAPSULE.pdf</code></td><td>Pet memorial capsule</td></tr>
+      <tr><td><code>NUCLEA_LIFE CHAPTER.pdf</code></td><td>Life chapter capsule</td></tr>
+      <tr><td><code>NUCLEA_CIERRE CAPSULA.pdf</code></td><td>Capsule closure ceremony</td></tr>
+      <tr><td><code>nuclea.zip</code></td><td>Complete asset package (all above)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="type-system">
+  <h2>10. Type System (Canonical)</h2>
+
+  <h3>Capsule Type Ontology</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre>type CapsuleType = 'legacy' | 'together' | 'social' | 'pet' | 'life-chapter' | 'origin'
+type StoredCapsuleType = CapsuleType | 'everlife'  // backward compatibility alias
+
+// Normalization: everlife -&gt; legacy (at app boundary)
+function normalizeCapsuleType(type: string): CapsuleType</pre>
+  </div>
+
+  <table>
+    <thead><tr><th>Type</th><th>Purpose</th><th>AI Avatar</th><th>Icon</th></tr></thead>
+    <tbody>
+      <tr><td><code>legacy</code></td><td>Post-mortem inheritance</td><td>Yes (EverLife)</td><td>&#10024;</td></tr>
+      <tr><td><code>together</code></td><td>Couples shared memories</td><td>No</td><td>&#129309;</td></tr>
+      <tr><td><code>social</code></td><td>Private diary for friends</td><td>No</td><td>&#128101;</td></tr>
+      <tr><td><code>pet</code></td><td>Pet memorials</td><td>No</td><td>&#128062;</td></tr>
+      <tr><td><code>life-chapter</code></td><td>Document life stages</td><td>Optional</td><td>&#128214;</td></tr>
+      <tr><td><code>origin</code></td><td>Parents &rarr; children</td><td>Optional</td><td>&#128118;</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Subscription Plans</h3>
+  <table>
+    <thead><tr><th>Plan</th><th>Price</th><th>Capsules</th><th>Storage</th><th>Sharing</th><th>AI Avatar</th></tr></thead>
+    <tbody>
+      <tr><td>Free (Gratuito)</td><td>&euro;0</td><td>1</td><td>500 MB</td><td>3 users</td><td>No</td></tr>
+      <tr><td>Esencial</td><td>&euro;9.99/mo</td><td>2</td><td>5 GB</td><td>10 users</td><td>No</td></tr>
+      <tr><td>Familiar</td><td>&euro;24.99/mo</td><td>10</td><td>50 GB</td><td>Unlimited</td><td>Yes</td></tr>
+      <tr><td>EverLife Premium</td><td>&euro;99 one-time</td><td>1</td><td>100 GB</td><td>Unlimited</td><td>Yes</td></tr>
+    </tbody>
+  </table>
+
+  <details>
+    <summary>Core TypeScript Interfaces</summary>
+    <div>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre>interface User {
+  id: string; email: string; displayName: string;
+  photoURL?: string;
+  plan: 'free' | 'esencial' | 'familiar' | 'premium';
+  createdAt: Date; capsuleCount: number; storageUsed: number;
+  termsAcceptedAt?: Date; privacyAcceptedAt?: Date; consentVersion?: string;
+}
+
+interface Capsule {
+  id: string; userId: string; type: CapsuleType;
+  title: string; description: string; coverImage?: string;
+  createdAt: Date; updatedAt: Date;
+  isPublic: boolean; sharedWith: string[];
+  contents: CapsuleContent[]; aiAvatar?: AIAvatar;
+  scheduledRelease?: Date; tags: string[];
+}
+
+interface CapsuleContent {
+  id: string;
+  type: 'photo' | 'video' | 'audio' | 'text' | 'document';
+  url?: string; text?: string; caption?: string;
+  createdAt: Date; metadata?: Record&lt;string, unknown&gt;;
+}
+
+interface AIAvatar {
+  id: string; voiceId: string;  // ElevenLabs
+  voiceModelUrl?: string; profilePhotoUrl: string;
+  videoUrls: string[]; consentDocumentUrl: string;
+  consentSignedAt: Date; isActive: boolean;
+  personalityPrompt?: string; createdAt: Date;
+}
+
+interface WaitlistEntry {
+  id: string; email: string; createdAt: Date;
+  source: string; notified: boolean;
+  consentVersion?: string; consentSource?: string;
+  privacyAcceptedAt?: Date; termsAcceptedAt?: Date;
+  requestMeta?: { ip?: string; userAgent?: string; };
+  unsubscribeToken?: string; unsubscribedAt?: Date | null;
+}
+
+interface Interaction {
+  id: string; capsuleId: string; userId: string;
+  message: string; response: string;
+  audioUrl?: string; videoUrl?: string; createdAt: Date;
+}</pre>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="cross-app-comparison">
+  <h2>11. Cross-App Comparison</h2>
+
+  <table>
+    <thead><tr><th>Aspect</th><th>Production (PREREUNION_ANDREA)</th><th>POC (POC_INTERNA/app)</th></tr></thead>
+    <tbody>
+      <tr><td>Port</td><td>3000</td><td>3001</td></tr>
+      <tr><td>Theme</td><td>Dark (<code>#0D0D12</code>)</td><td>White (<code>#FFFFFF</code>)</td></tr>
+      <tr><td>Backend</td><td>Firebase (Auth, Firestore, Storage)</td><td>None (pure UI)</td></tr>
+      <tr><td>Next.js</td><td>16.1.4</td><td>15.1.0+</td></tr>
+      <tr><td>React</td><td>18.3.1</td><td>19</td></tr>
+      <tr><td>Body Font</td><td>DM Sans</td><td>Inter</td></tr>
+      <tr><td>Display Font</td><td>Cormorant Garamond</td><td>Cormorant Garamond</td></tr>
+      <tr><td>State</td><td>Zustand + hooks</td><td>useState only</td></tr>
+      <tr><td>Auth</td><td>Firebase Auth</td><td>None</td></tr>
+      <tr><td>Testing</td><td>Smoke routes only</td><td>28 visual assertions + Playwright</td></tr>
+      <tr><td>Source Files</td><td>27 files</td><td>18 files</td></tr>
+      <tr><td>Total LOC</td><td>3,226</td><td>1,517</td></tr>
+      <tr><td>Capsule Types</td><td>6 (same ontology)</td><td>6 (same ontology)</td></tr>
+      <tr><td>Path Alias</td><td><code>@/*</code> &rarr; <code>./src/*</code></td><td><code>@/*</code> &rarr; <code>./src/*</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="critical-findings">
+  <h2>12. Critical Findings &amp; Risks</h2>
+
+  <h3><span class="tag tag-p0">P0</span> Immediate Blockers</h3>
+  <table>
+    <thead><tr><th>#</th><th>Finding</th><th>Impact</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Privacy policy pages return 404</td><td>Art. 13 GDPR violation &mdash; legal liability</td></tr>
+      <tr><td>2</td><td>Registration consent NOT persisted to Firestore</td><td>No audit trail for consent compliance</td></tr>
+      <tr><td>3</td><td>Google OAuth creates users without consent prompt</td><td>Missing GDPR consent gate for third-party auth</td></tr>
+      <tr><td>4</td><td>AI Avatar biometric data (voice, face) collected without Art. 9 explicit consent</td><td>Special category data requires explicit, granular consent</td></tr>
+      <tr><td>5</td><td>No DPAs signed (Firebase, ElevenLabs, Vercel)</td><td>Data Processing Agreements required under GDPR Art. 28</td></tr>
+    </tbody>
+  </table>
+
+  <h3><span class="tag tag-p1">P1</span> High Priority</h3>
+  <table>
+    <thead><tr><th>#</th><th>Finding</th><th>Impact</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Lighthouse metrics gathered on dev server only &mdash; no production evidence</td><td>Performance claims unsubstantiated</td></tr>
+      <tr><td>2</td><td>Tailwind breakpoint mismatch (640px vs 375px design spec)</td><td>Responsive classes don't match intended breakpoints</td></tr>
+      <tr><td>3</td><td>4 touch targets below 44x44px minimum</td><td>Accessibility and mobile usability failure</td></tr>
+      <tr><td>4</td><td>Bundle size: POC 9.4MB capsule assets, production 489KB vendor (Firebase dominates)</td><td>First-load performance degradation</td></tr>
+      <tr><td>5</td><td>No API rate limiting on waitlist endpoint</td><td>Abuse vector for spam signups</td></tr>
+    </tbody>
+  </table>
+
+  <h3><span class="tag tag-p2">P2</span> Medium Priority</h3>
+  <table>
+    <thead><tr><th>#</th><th>Finding</th><th>Impact</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>25 simultaneous Framer Motion animations in P2</td><td>Main-thread blocking risk on low-end devices</td></tr>
+      <tr><td>2</td><td>Text size deviations 1&ndash;2px in 55% of components</td><td>Design spec drift</td></tr>
+      <tr><td>3</td><td><code>everlife</code> &rarr; <code>legacy</code> normalization fragile</td><td>Pre-scale migration needed before persistence layer change</td></tr>
+      <tr><td>4</td><td>Next 16 <code>next start</code> ENOENT prerender-manifest</td><td>Blocks production Lighthouse testing</td></tr>
+      <tr><td>5</td><td>Zustand store initialized but underutilized</td><td>Redundant dependency; state logic scattered across hooks</td></tr>
+      <tr><td>6</td><td>Zod imported but not used for runtime validation</td><td>Dead dependency; API inputs unvalidated at runtime</td></tr>
+      <tr><td>7</td><td>No React Error Boundary in production app</td><td>Unhandled errors crash entire page</td></tr>
+      <tr><td>8</td><td>No pagination on capsule queries</td><td>Performance degradation at scale</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="architecture-decisions">
+  <h2>13. Architecture Decisions</h2>
+
+  <table>
+    <thead><tr><th>Decision</th><th>Current</th><th>Target</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Backend</td><td>Firebase</td><td>Supabase</td><td><span class="tag tag-aspirational">Planning</span></td></tr>
+      <tr><td>Authentication</td><td>Firebase Auth</td><td>Supabase Auth</td><td><span class="tag tag-aspirational">Planning</span></td></tr>
+      <tr><td>Database</td><td>Firestore (NoSQL)</td><td>PostgreSQL (relational)</td><td><span class="tag tag-aspirational">Planning</span></td></tr>
+      <tr><td>Storage</td><td>Firebase Storage</td><td>Supabase Storage</td><td><span class="tag tag-aspirational">Planning</span></td></tr>
+      <tr><td>Deployment</td><td>Vercel</td><td>Vercel</td><td><span class="tag tag-live">Active</span></td></tr>
+      <tr><td>AI Voice</td><td>&mdash;</td><td>ElevenLabs</td><td><span class="tag tag-aspirational">Planned</span></td></tr>
+      <tr><td>AI Video</td><td>&mdash;</td><td>Wan 2.1 + ComfyUI</td><td><span class="tag tag-historical">Research</span></td></tr>
+      <tr><td>Data Region</td><td>europe-west1 (EU)</td><td>EU</td><td><span class="tag tag-live">Active</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Migration Rationale (Firebase &rarr; Supabase)</h3>
+  <div class="accent-bar">
+    The decision is documented in <code>STACK_DECISION_FIREBASE_VS_SUPABASE.html</code>. Key drivers: relational data model better fits capsule relationships, PostgreSQL row-level security for GDPR compliance, lower vendor lock-in, open-source ecosystem, and cost predictability at scale. The migration is planned but not yet started.
+  </div>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<section id="file-manifest">
+  <h2>14. File Manifest</h2>
+
+  <h3>Production App &mdash; PREREUNION_ANDREA/src/ (27 files, 3,226 LOC)</h3>
+  <table>
+    <thead><tr><th>File</th><th>Lines</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>app/page.tsx</code></td><td>25</td><td>Landing page (imports all landing sections)</td></tr>
+      <tr><td><code>app/layout.tsx</code></td><td>76</td><td>Root layout (fonts, metadata, providers)</td></tr>
+      <tr><td><code>app/globals.css</code></td><td>360</td><td>Tailwind config + custom utilities</td></tr>
+      <tr><td><code>app/login/page.tsx</code></td><td>163</td><td>Email + Google sign-in</td></tr>
+      <tr><td><code>app/registro/page.tsx</code></td><td>219</td><td>Registration with consent</td></tr>
+      <tr><td><code>app/dashboard/page.tsx</code></td><td>341</td><td>Capsule management (grid/list, CRUD)</td></tr>
+      <tr><td><code>app/capsulas/[id]/page.tsx</code></td><td>&mdash;</td><td>Edit capsule (dynamic route)</td></tr>
+      <tr><td><code>app/privacidad/page.tsx</code></td><td>&mdash;</td><td>Privacy policy (GDPR)</td></tr>
+      <tr><td><code>app/terminos/page.tsx</code></td><td>&mdash;</td><td>Terms of service</td></tr>
+      <tr><td><code>app/consentimiento/page.tsx</code></td><td>&mdash;</td><td>AI avatar consent (Art. 9)</td></tr>
+      <tr><td><code>app/contacto/page.tsx</code></td><td>&mdash;</td><td>Support channels</td></tr>
+      <tr><td><code>app/api/capsules/route.ts</code></td><td>115</td><td>Capsule CRUD API (GET, POST)</td></tr>
+      <tr><td><code>app/api/waitlist/route.ts</code></td><td>95</td><td>Waitlist management (GET count, POST signup)</td></tr>
+      <tr><td><code>app/api/waitlist/unsubscribe/route.ts</code></td><td>88</td><td>Unsubscribe flow</td></tr>
+      <tr><td><code>app/api/privacy/export/route.ts</code></td><td>49</td><td>GDPR data export</td></tr>
+      <tr><td><code>app/api/privacy/account/route.ts</code></td><td>86</td><td>Account + data erasure</td></tr>
+      <tr><td><code>components/Header.tsx</code></td><td>138</td><td>Top navigation (memo'd)</td></tr>
+      <tr><td><code>components/Footer.tsx</code></td><td>92</td><td>Site footer</td></tr>
+      <tr><td><code>components/CapsuleCard.tsx</code></td><td>156</td><td>Capsule display card</td></tr>
+      <tr><td><code>components/WaitlistForm.tsx</code></td><td>125</td><td>Email signup form</td></tr>
+      <tr><td><code>components/landing/Hero.tsx</code></td><td>57</td><td>Landing hero section</td></tr>
+      <tr><td><code>components/landing/Capsules.tsx</code></td><td>43</td><td>Capsule type showcase grid</td></tr>
+      <tr><td><code>components/landing/AISection.tsx</code></td><td>70</td><td>AI technology showcase</td></tr>
+      <tr><td><code>components/landing/Pricing.tsx</code></td><td>104</td><td>Pricing tiers display</td></tr>
+      <tr><td><code>components/landing/Waitlist.tsx</code></td><td>32</td><td>Waitlist CTA section</td></tr>
+      <tr><td><code>components/icons/CapsuleIcons.tsx</code></td><td>57</td><td>Icon map by capsule type</td></tr>
+      <tr><td><code>hooks/useAuth.ts</code></td><td>160</td><td>Firebase Auth hook</td></tr>
+      <tr><td><code>hooks/useCapsules.ts</code></td><td>200</td><td>Firestore subscription + CRUD</td></tr>
+      <tr><td><code>lib/firebase.ts</code></td><td>30</td><td>Client SDK init (demo fallback)</td></tr>
+      <tr><td><code>lib/firebase-admin.ts</code></td><td>91</td><td>Admin SDK (lazy init, server-side)</td></tr>
+      <tr><td><code>lib/store.ts</code></td><td>82</td><td>Zustand store</td></tr>
+      <tr><td><code>types/index.ts</code></td><td>172</td><td>Canonical type definitions + constants</td></tr>
+    </tbody>
+  </table>
+
+  <h3>POC App &mdash; POC_INTERNA/app/src/ (18 files, 1,517 LOC)</h3>
+  <table>
+    <thead><tr><th>File</th><th>Lines</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>app/page.tsx</code></td><td>5</td><td>Root redirect to /onboarding</td></tr>
+      <tr><td><code>app/layout.tsx</code></td><td>46</td><td>Root layout (Inter + Cormorant fonts)</td></tr>
+      <tr><td><code>app/onboarding/page.tsx</code></td><td>106</td><td>Step orchestrator (AnimatePresence)</td></tr>
+      <tr><td><code>app/onboarding/layout.tsx</code></td><td>11</td><td>Onboarding layout wrapper</td></tr>
+      <tr><td><code>app/onboarding/error.tsx</code></td><td>41</td><td>Error boundary</td></tr>
+      <tr><td><code>app/onboarding/capsule/[type]/page.tsx</code></td><td>122</td><td>Capsule detail page (dynamic)</td></tr>
+      <tr><td><code>components/onboarding/P1CapsuleClosed.tsx</code></td><td>74</td><td>Step 1: closed capsule</td></tr>
+      <tr><td><code>components/onboarding/P2CapsuleOpening.tsx</code></td><td>353</td><td>Step 2: split + float + particles</td></tr>
+      <tr><td><code>components/onboarding/P3Manifesto.tsx</code></td><td>201</td><td>Step 3: manifesto + decorative</td></tr>
+      <tr><td><code>components/onboarding/P4CapsuleSelection.tsx</code></td><td>169</td><td>Step 4: type selection cards</td></tr>
+      <tr><td><code>components/capsule/CapsulePlaceholder.tsx</code></td><td>36</td><td>Metallic capsule visual</td></tr>
+      <tr><td><code>components/capsule/PolaroidPlaceholder.tsx</code></td><td>92</td><td>Photo card with hover</td></tr>
+      <tr><td><code>components/ui/Button.tsx</code></td><td>27</td><td>Primary action button</td></tr>
+      <tr><td><code>components/ui/CapsuleTypeCard.tsx</code></td><td>52</td><td>iOS-style selection card</td></tr>
+      <tr><td><code>components/ui/Header.tsx</code></td><td>21</td><td>Minimal header bar</td></tr>
+      <tr><td><code>components/icons/CapsuleIcons.tsx</code></td><td>27</td><td>Icon map by capsule type</td></tr>
+      <tr><td><code>lib/capsuleDetails.ts</code></td><td>85</td><td>Detail page content data</td></tr>
+      <tr><td><code>types/index.ts</code></td><td>49</td><td>POC type definitions</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<!-- Footer -->
+<footer style="margin-top:64px; padding-top:24px; border-top:2px solid #E8E0D5; font-size:13px; color:#9A9A9A;">
+  <table style="border:none;">
+    <tbody>
+      <tr style="background:none;"><td style="border:none;padding:3px 14px;font-weight:500;color:#6B6B6B;">Report Generated</td><td style="border:none;padding:3px 14px;">February 14, 2026</td></tr>
+      <tr style="background:none;"><td style="border:none;padding:3px 14px;font-weight:500;color:#6B6B6B;">Investigation Method</td><td style="border:none;padding:3px 14px;">Rivertrace (data flow + architecture trace)</td></tr>
+      <tr style="background:none;"><td style="border:none;padding:3px 14px;font-weight:500;color:#6B6B6B;">Scope</td><td style="border:none;padding:3px 14px;">Full repository (all subdirectories)</td></tr>
+      <tr style="background:none;"><td style="border:none;padding:3px 14px;font-weight:500;color:#6B6B6B;">Agent</td><td style="border:none;padding:3px 14px;">Claude Opus 4.6</td></tr>
+    </tbody>
+  </table>
+</footer>
+
+</div><!-- .main -->
+
+<!-- Back to Top -->
+<button class="back-top" id="backTop" aria-label="Back to top" onclick="window.scrollTo({top:0})">&#8593;</button>
+
+<script>
+// ── Copy to Clipboard ──────────────────────────────────────────
+function copyCode(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ── Scroll-Aware Sidebar ───────────────────────────────────────
+(function() {
+  const links = document.querySelectorAll('#sidebarNav a[href^="#"]');
+  const sections = [];
+  links.forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ el, a });
+  });
+
+  function updateActive() {
+    let current = sections[0];
+    const offset = window.scrollY + 120;
+    for (const s of sections) {
+      if (s.el.offsetTop <= offset) current = s;
+    }
+    links.forEach(a => a.classList.remove('active'));
+    if (current) current.a.classList.add('active');
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => { updateActive(); ticking = false; });
+      ticking = true;
+    }
+  });
+  updateActive();
+})();
+
+// ── Back to Top ────────────────────────────────────────────────
+(function() {
+  const btn = document.getElementById('backTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+})();
+
+// ── Mobile Hamburger ───────────────────────────────────────────
+(function() {
+  const ham = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+
+  function toggle() {
+    ham.classList.toggle('open');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  ham.addEventListener('click', toggle);
+  overlay.addEventListener('click', toggle);
+
+  // Close on nav click (mobile)
+  document.querySelectorAll('#sidebarNav a').forEach(a => {
+    a.addEventListener('click', () => {
+      if (window.innerWidth <= 860) toggle();
+    });
+  });
+})();
+</script>
+</body>
+</html>

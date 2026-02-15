@@ -1,3 +1,7 @@
+> [!WARNING]
+> Historical artifact (Jan 2026).
+> This document is preserved for delivery traceability and is not the live runtime contract.
+> Use `docs/SOURCE_OF_TRUTH.md`, `PREREUNION_ANDREA/CLAUDE.md`, and `docs/TYPESCRIPT_TYPES.md` for current normative behavior.
 # Agent 9: Delivery Documentation Index
 
 **Completion Date:** 2026-01-17
@@ -239,3 +243,4 @@ console.log('Capsules:', useCapsuleStore.getState())
 **Agent 9 Complete. Ready for integration.** 🚀
 
 For detailed information, see individual documentation files listed above.
+

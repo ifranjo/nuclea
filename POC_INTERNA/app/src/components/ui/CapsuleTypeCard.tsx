@@ -35,10 +35,10 @@ export function CapsuleTypeCard({ capsuleType, onClick, isFirst, isLast }: Capsu
         <CapsuleIcon type={capsuleType.id} size={20} />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="text-[18px] font-medium text-nuclea-text leading-snug tracking-[-0.01em]">
+        <h3 className="text-lg font-medium text-nuclea-text leading-snug tracking-[-0.01em]">
           {capsuleType.name}
         </h3>
-        <p className="text-[14px] text-nuclea-text-secondary mt-0.5 leading-snug">
+        <p className="text-sm text-nuclea-text-secondary mt-0.5 leading-snug">
           {capsuleType.tagline}
         </p>
       </div>
@@ -50,3 +50,4 @@ export function CapsuleTypeCard({ capsuleType, onClick, isFirst, isLast }: Capsu
     </button>
   )
 }
+

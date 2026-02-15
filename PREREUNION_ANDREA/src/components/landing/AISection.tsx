@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Brain, Mic, Video, MessageSquare, Shield, Check } from 'lucide-react'
+import { Brain, Mic, Video, MessageSquare, Shield } from 'lucide-react'
 
 const techStack = [
   { name: 'ElevenLabs', icon: Mic, desc: 'Clonacion de voz', status: 'integrated' },

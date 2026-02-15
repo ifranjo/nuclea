@@ -65,10 +65,11 @@ export function P1CapsuleClosed({ onNext }: P1Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 0.8, ease: 'easeOut' }}
-        className="mt-8 font-sans text-[13px] text-nuclea-text-muted tracking-wide"
+        className="mt-8 font-sans text-sm text-nuclea-text-muted tracking-wide"
       >
         Toca para abrir
       </motion.p>
     </div>
   )
 }
+

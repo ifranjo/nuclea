@@ -11,7 +11,7 @@ export type CapsuleType =
   | 'together'
   | 'social'
   | 'pet'
-  | 'life_chapter'
+  | 'life-chapter'
   | 'origin';
 
 // Capsule Status
@@ -34,7 +34,8 @@ export type SubscriptionTier =
   | 'free'
   | 'esencial'
   | 'familiar'
-  | 'everlife';
+  | 'premium'
+  | 'everlife'; // legacy label kept for historical compatibility
 
 // Future Message Status
 export type FutureMessageStatus =
@@ -65,6 +66,11 @@ export type ReactionEmoji =
   | '👏'
   | '🤗';
 ```
+
+Compatibility note:
+- UI/runtime slug standard: `life-chapter`.
+- Legacy alias still found in existing data: `everlife` (normalize to `legacy` at app boundary).
+- SQL enum naming may use underscore variants (for example `life_chapter`) and should be mapped in data-access layers.
 
 ---
 

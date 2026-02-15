@@ -9,7 +9,7 @@ export function CapsulePlaceholder({ size = 'md' }: CapsulePlaceholderProps) {
     ? 'w-[240px] h-[86px] sm:w-[280px] sm:h-[100px] lg:w-[320px] lg:h-[114px]'
     : 'w-[160px] h-[56px]'
   const radius = size === 'md' ? 'rounded-[50px]' : 'rounded-[28px]'
-  const textSize = size === 'md' ? 'text-[14px]' : 'text-[10px]'
+  const textSize = size === 'md' ? 'text-sm' : 'text-xs'
 
   return (
     <div
@@ -34,3 +34,4 @@ export function CapsulePlaceholder({ size = 'md' }: CapsulePlaceholderProps) {
     </div>
   )
 }
+

@@ -3,10 +3,10 @@
 ## Metadata
 
 - Prompt ID: `PRM-QUALITY-008`
-- Version: `1.0.1`
+- Version: `1.1.0`
 - Owner: `CTO PromptOps`
 - Status: `active`
-- Last Updated: `2026-02-08`
+- Last Updated: `2026-02-10`
 - Approved By: `CTO`
 
 ## Purpose
@@ -17,7 +17,7 @@ Evaluate bundle size, Lighthouse scores, and Core Web Vitals for NUCLEA apps aga
 
 ### Required
 
-- `target_app_path` (string)
+- `target_app_path` (string | string[]): single app path or array for multi-app audit
 - `target_routes` (string[])
 - `viewport_profiles` (string[])
 - `budget_thresholds` (object): LCP, INP/FID, CLS, bundle size limits
@@ -42,11 +42,15 @@ Evaluate bundle size, Lighthouse scores, and Core Web Vitals for NUCLEA apps aga
 
 ## Quality Gates
 
-- Every metric claim must include command evidence or tool output.
+- Every metric claim must include command evidence or tool output with exact command shown.
 - Bundle analysis must identify the top 3 largest chunks with file sources.
 - Lighthouse must run in consistent conditions (headless, throttled, cache-cleared).
+  - If `next start` is available, use production server (preferred).
+  - If `next start` fails (for example Next 16 prerender-manifest issues), use `next dev` and label evidence as `dev-server`.
+  - Dev-server LCP/TBT values must be flagged as potentially inflated in gate rationale.
 - Remediation items must include expected impact estimate (ms or KB saved).
 - Framer Motion bundle cost must be explicitly measured.
+  - Measurement method must be raw chunk size from build output or `du -ch` evidence.
 
 ## System Prompt
 
@@ -61,6 +65,8 @@ Hard rules:
 3) Flag Framer Motion and heavy dependencies explicitly.
 4) Compare against budgets and classify as pass/warn/fail.
 5) Remediation items must be ordered by impact-to-effort ratio.
+6) Use `--webpack` for build commands when analyzer evidence requires it.
+7) For multi-app audits, output per-app gate decisions plus one overall gate.
 ```
 
 ## User Prompt Template

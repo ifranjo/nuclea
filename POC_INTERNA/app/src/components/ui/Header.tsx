@@ -12,10 +12,11 @@ export function Header() {
       >
         <Menu size={22} strokeWidth={1.5} />
       </button>
-      <span className="text-[16px] font-semibold tracking-[2.5px] text-nuclea-text select-none uppercase">
+      <span className="text-base font-semibold tracking-[2.5px] text-nuclea-text select-none uppercase">
         NUCLEA
       </span>
       <div className="w-11" />
     </header>
   )
 }
+

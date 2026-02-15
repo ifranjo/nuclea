@@ -47,7 +47,7 @@ async function waitForServer(maxAttempts = 45) {
       if (response.ok) {
         return;
       }
-    } catch (_error) {
+    } catch {
       // Server is still booting.
     }
     await new Promise((r) => setTimeout(r, 1000));
@@ -63,7 +63,7 @@ function killTree(pid) {
   }
   try {
     process.kill(pid, 'SIGTERM');
-  } catch (_error) {
+  } catch {
     // Process may already be gone.
   }
 }

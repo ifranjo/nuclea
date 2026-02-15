@@ -134,10 +134,10 @@ export function P4CapsuleSelection() {
             <div className="absolute -right-8 -top-6 w-[110px] h-[55px] rotate-[18deg] opacity-30">
               <Image src="/images/capsule-closed-nobg.png" alt="" fill className="object-cover" />
             </div>
-            <h1 className="text-[28px] font-semibold text-nuclea-text text-center mt-1 mb-1">
+            <h1 className="text-3xl font-semibold text-nuclea-text text-center mt-1 mb-1">
               Elige tu cápsula
             </h1>
-            <p className="text-[15px] text-nuclea-text-muted text-center mb-0">
+            <p className="text-base text-nuclea-text-muted text-center mb-0">
               Aquí guardas lo que no quieres perder
             </p>
           </motion.div>
@@ -167,3 +167,4 @@ export function P4CapsuleSelection() {
     </div>
   )
 }
+

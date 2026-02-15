@@ -29,8 +29,9 @@
 | PRM-UX-007 | domains/02_experience/Capsule_Placement_Tokenization.md | experience | active | 2026-02-07 | Use to centralize placement constants into responsive token system |
 | PRM-OPS-001 | domains/07_ops/OPUS46_Work_Packet_Builder.md | ops | active | 2026-02-07 | Default packet generator for worker runs |
 | PRM-OPS-002 | domains/07_ops/Remediation_Sprint_Packet.md | ops | active | 2026-02-07 | v1.1 tuned; validate command-evidence strictness on next worker batch |
+| PRM-OPS-003 | domains/07_ops/Three_Stage_Self_Check_Chain.md | ops | active | 2026-02-10 | Use as default for 3-stage chained execution with go/hold self-check gates |
 | PRM-QUALITY-006 | domains/03_quality/POC_ESLint_Baseline_Restore.md | quality | active | 2026-02-08 | v1.1 tuned; enforce patch-ready config diff and strict lint gate evidence |
 | PRM-QUALITY-007 | domains/03_quality/Next16_Lint_CLI_Migration.md | quality | active | 2026-02-08 | v1.1 tuned; enforce script-before/after patch and dual local/CI validation evidence |
-| PRM-QUALITY-008 | domains/03_quality/Performance_Budget_Gate.md | quality | needs-tuning | 2026-02-09 | REV-015 measured: Perf 75/53, LCP 8.8s/14.9s, TBT 90ms/1010ms; gate WARN; prompt audit pending (v1.0.1→v1.1.0 patch proposed) |
+| PRM-QUALITY-008 | domains/03_quality/Performance_Budget_Gate.md | quality | active | 2026-02-10 | v1.1.0 applied (dev/prod evidence split, multi-app gate contract, webpack analyzer rule); run chained self-check batch with PRM-UX-008 + PRM-TRUST-002 |
 | PRM-UX-008 | domains/02_experience/Responsive_Viewport_Audit.md | experience | active | 2026-02-09 | REV-015 re-run: WARN (was FAIL); 27→10 violations, 0 FAIL remaining; P1: text size 1px deviations, P2: padding consistency |
 | PRM-TRUST-002 | domains/06_trust/Privacy_Data_Handling_Compliance.md | trust | active | 2026-02-09 | REV-015 re-run: WARN (was FAIL); 32→58/100; legal pages + consent fixed; P1: data rights (Art. 15/17/20), DPAs (Art. 28) |

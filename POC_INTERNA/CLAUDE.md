@@ -6,7 +6,7 @@ See `../CLAUDE.md` for project overview, canonical capsule types, and workspace 
 
 ## Purpose
 
-POC_INTERNA is the **source of truth** for NUCLEA's design and specifications:
+POC_INTERNA is the implementation/spec reference for the onboarding PoC. For cross-workstream reality status, use `../docs/SOURCE_OF_TRUTH.md`.
 
 - `01_SPECS/` — Design system, user flows, capsule types, data model
 - `05_PROMPTS/` — AI asset generation prompts (Midjourney/DALL-E)
@@ -59,7 +59,7 @@ type CapsuleType = 'legacy' | 'together' | 'social' | 'pet' | 'life-chapter' | '
 type OnboardingStep = 1 | 2 | 3 | 4
 ```
 
-All 6 capsule types are defined here (production code only has 5 — see root `CLAUDE.md` for discrepancy details).
+All 6 canonical capsule types are defined here and aligned with runtime-facing docs.
 
 ### Navigation Flow
 

@@ -1,5 +1,9 @@
 # NUCLEA API Endpoints
 
+> [!IMPORTANT]
+> This file is the target/expanded API contract (aspirational scope).
+> For currently implemented runtime endpoints, see `RUNTIME_ENDPOINTS.md`.
+
 **Base URL:** `/api` (Next.js API Routes) or Supabase Edge Functions
 **Authentication:** Supabase JWT (Bearer token)
 
@@ -68,6 +72,9 @@ List user's capsules.
 // Query params
 ?status=active|closed|all
 ?type=legacy|together|social|pet|life_chapter|origin
+
+// Runtime note: current UI/runtime slug uses `life-chapter`.
+// `life_chapter` is retained here for target schema-level compatibility.
 
 // Response
 {

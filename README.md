@@ -6,7 +6,8 @@ Central workspace for NUCLEA product documentation, internal PoC assets, and inv
 
 | Goal | Read this first | Then continue with |
 |------|-----------------|--------------------|
-| Understand technical architecture | `docs/README.md` | `docs/ARCHITECTURE.md`, `docs/DATABASE_SCHEMA.md`, `docs/api/ENDPOINTS.md` |
+| Understand what is live vs target vs historical | `docs/SOURCE_OF_TRUTH.md` | `docs/README.md` |
+| Understand technical architecture | `docs/README.md` | `docs/ARCHITECTURE.md`, `docs/DATABASE_SCHEMA.md`, `docs/api/RUNTIME_ENDPOINTS.md`, `docs/api/ENDPOINTS.md` |
 | Work on the internal onboarding PoC | `POC_INTERNA/README.md` | `POC_INTERNA/app/README.md` |
 | Run the internal PoC app locally | `POC_INTERNA/app/README.md` | `POC_INTERNA/app/src/app/onboarding/page.tsx` |
 | Prepare business/investor material | `POC_INVERSION_NUCLEA/README.md` | `PREREUNION_ANDREA/README.md` |

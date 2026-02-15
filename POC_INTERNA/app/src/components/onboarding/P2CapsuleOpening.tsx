@@ -332,12 +332,12 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
           <button
             type="button"
             onClick={() => setPaused((current) => !current)}
-            className="text-[12px] font-medium text-nuclea-text/70 hover:text-nuclea-text transition-colors"
+            className="text-xs font-medium text-nuclea-text/70 hover:text-nuclea-text transition-colors"
             aria-label={paused ? 'Reanudar apertura' : 'Pausar apertura'}
           >
             {paused ? 'Reanudar' : 'Pausar'}
           </button>
-          <span className="text-[12px] text-nuclea-text-muted">
+          <span className="text-xs text-nuclea-text-muted">
             {paused ? 'Pausado' : `Continua en ${remainingSeconds}s`}
           </span>
         </div>
@@ -351,3 +351,4 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
     </div>
   )
 }
+
