@@ -63,3 +63,21 @@ export function validateSearchParams<T>(schema: z.ZodType<T>, searchParams: URLS
   const raw = Object.fromEntries(searchParams.entries())
   return validateWithSchema(schema, raw, 'query parameters')
 }
+
+// ---------------------------------------------------------------------------
+// Biometric Consent (Art. 9.2.a RGPD)
+// ---------------------------------------------------------------------------
+
+export const biometricConsentSchema = z.object({
+  voiceConsent: z.boolean(),
+  faceConsent: z.boolean(),
+  personalityConsent: z.boolean(),
+}).refine(
+  (data) => data.voiceConsent || data.faceConsent || data.personalityConsent,
+  { message: 'Al menos un tipo de consentimiento debe ser aceptado' }
+)
+
+export const revokeConsentSchema = z.object({
+  consentId: z.string().min(1, 'consentId es obligatorio'),
+  reason: z.string().max(1000).optional(),
+})

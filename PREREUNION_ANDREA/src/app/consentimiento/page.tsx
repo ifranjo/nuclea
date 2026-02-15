@@ -1,22 +1,179 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@/hooks/useAuth'
+
+interface ActiveConsent {
+  consentId: string
+  voiceConsent: boolean
+  faceConsent: boolean
+  personalityConsent: boolean
+  consentVersion: string
+  signedAt: string
+}
 
 export default function ConsentimientoPage() {
+  const { firebaseUser, loading: authLoading } = useAuth()
+
   const [voiceConsent, setVoiceConsent] = useState(false)
   const [faceConsent, setFaceConsent] = useState(false)
   const [personalityConsent, setPersonalityConsent] = useState(false)
-  const [signed, setSigned] = useState(false)
+
+  // API states
+  const [submitting, setSubmitting] = useState(false)
+  const [revoking, setRevoking] = useState(false)
+  const [loadingConsent, setLoadingConsent] = useState(false)
+  const [activeConsent, setActiveConsent] = useState<ActiveConsent | null>(null)
+  const [signedConsentId, setSignedConsentId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [revokeReason, setRevokeReason] = useState('')
+  const [showRevokeConfirm, setShowRevokeConfirm] = useState(false)
 
   const allChecked = voiceConsent && faceConsent && personalityConsent
   const anyChecked = voiceConsent || faceConsent || personalityConsent
 
-  function handleSign() {
-    if (!allChecked) return
-    setSigned(true)
-    // In production this would persist to Firestore via an API call
+  // Fetch token helper
+  const getAuthToken = useCallback(async (): Promise<string | null> => {
+    if (!firebaseUser) return null
+    try {
+      return await firebaseUser.getIdToken()
+    } catch {
+      return null
+    }
+  }, [firebaseUser])
+
+  // Load active consent on mount (when user is authenticated)
+  useEffect(() => {
+    if (authLoading || !firebaseUser) return
+
+    let cancelled = false
+
+    async function fetchConsent() {
+      setLoadingConsent(true)
+      try {
+        const token = await firebaseUser!.getIdToken()
+        const res = await fetch('/api/consent/biometric', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        if (!res.ok) throw new Error('Error al cargar el consentimiento')
+
+        const data = await res.json()
+
+        if (!cancelled) {
+          if (data.hasActiveConsent && data.consent) {
+            setActiveConsent(data.consent)
+          } else {
+            setActiveConsent(null)
+          }
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Error fetching consent:', err)
+        }
+      } finally {
+        if (!cancelled) setLoadingConsent(false)
+      }
+    }
+
+    fetchConsent()
+    return () => { cancelled = true }
+  }, [firebaseUser, authLoading])
+
+  async function handleSign() {
+    if (!anyChecked) return
+
+    setError(null)
+    setSubmitting(true)
+
+    try {
+      const token = await getAuthToken()
+      if (!token) {
+        setError('No se pudo obtener el token de autenticacion')
+        return
+      }
+
+      const res = await fetch('/api/consent/biometric', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ voiceConsent, faceConsent, personalityConsent }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Error al registrar el consentimiento')
+        return
+      }
+
+      setSignedConsentId(data.consentId)
+      setActiveConsent({
+        consentId: data.consentId,
+        voiceConsent,
+        faceConsent,
+        personalityConsent,
+        consentVersion: '2.0',
+        signedAt: data.signedAt,
+      })
+    } catch {
+      setError('Error de red al registrar el consentimiento')
+    } finally {
+      setSubmitting(false)
+    }
   }
+
+  async function handleRevoke() {
+    if (!activeConsent) return
+
+    setError(null)
+    setRevoking(true)
+
+    try {
+      const token = await getAuthToken()
+      if (!token) {
+        setError('No se pudo obtener el token de autenticacion')
+        return
+      }
+
+      const res = await fetch('/api/consent/biometric', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          consentId: activeConsent.consentId,
+          ...(revokeReason.trim() ? { reason: revokeReason.trim() } : {}),
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Error al revocar el consentimiento')
+        return
+      }
+
+      setActiveConsent(null)
+      setSignedConsentId(null)
+      setShowRevokeConfirm(false)
+      setRevokeReason('')
+      setVoiceConsent(false)
+      setFaceConsent(false)
+      setPersonalityConsent(false)
+    } catch {
+      setError('Error de red al revocar el consentimiento')
+    } finally {
+      setRevoking(false)
+    }
+  }
+
+  const isAuthenticated = !!firebaseUser
+  const hasActiveConsent = !!activeConsent || !!signedConsentId
 
   return (
     <main className="min-h-screen bg-nuclea-bg py-16 px-6">
@@ -133,6 +290,7 @@ export default function ConsentimientoPage() {
               Para retirar tu consentimiento, puedes:
             </p>
             <ul className="list-disc list-inside space-y-2 mb-4">
+              <li>Utilizar el boton de revocacion en esta misma pagina</li>
               <li>Escribir a <span className="text-nuclea-gold">privacidad@nuclea.app</span></li>
               <li>Utilizar la opci&oacute;n de revocaci&oacute;n en la configuraci&oacute;n de tu cuenta</li>
             </ul>
@@ -145,124 +303,237 @@ export default function ConsentimientoPage() {
             </ul>
           </section>
 
-          {/* Consent checkboxes */}
+          {/* Consent checkboxes / status */}
           <section>
             <h2 className="text-white text-lg font-semibold mb-3">
               Otorgamiento del consentimiento
             </h2>
-            <p className="mb-4">
-              Marca cada casilla de forma individual para otorgar tu consentimiento expl&iacute;cito para
-              cada categor&iacute;a de datos biom&eacute;tricos:
-            </p>
 
-            {signed ? (
-              <div className="p-6 rounded-xl border border-green-500/30 bg-green-500/[0.05]">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-green-400 font-semibold">Consentimiento firmado</h3>
-                </div>
-                <p className="text-white/60 text-sm">
-                  Has otorgado tu consentimiento expl&iacute;cito para el tratamiento de datos de voz,
-                  imagen facial y personalidad. Puedes revocar este consentimiento en cualquier momento
-                  desde la configuraci&oacute;n de tu cuenta o escribiendo a{' '}
-                  <span className="text-nuclea-gold">privacidad@nuclea.app</span>.
+            {/* Not authenticated */}
+            {!authLoading && !isAuthenticated && (
+              <div className="p-6 rounded-xl border border-nuclea-gold/20 bg-nuclea-gold/[0.03]">
+                <p className="text-white/70 text-sm mb-3">
+                  Para firmar el consentimiento biometrico, necesitas iniciar sesion en tu cuenta NUCLEA.
                 </p>
+                <Link
+                  href="/login"
+                  className="inline-block px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#F4E4BA] text-[#0D0D12] font-medium text-sm hover:shadow-[0_8px_32px_rgba(212,175,55,0.25)] transition-all duration-300"
+                >
+                  Iniciar sesion
+                </Link>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {/* Voice consent */}
-                <label className="flex items-start gap-3 p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-nuclea-gold/30 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={voiceConsent}
-                    onChange={(e) => setVoiceConsent(e.target.checked)}
-                    className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-nuclea-gold focus:ring-nuclea-gold/50 accent-[#D4AF37]"
-                  />
-                  <div>
-                    <span className="text-white text-sm font-semibold block mb-1">
-                      Datos de voz
-                    </span>
-                    <span className="text-white/60 text-sm">
-                      Consiento de forma expl&iacute;cita el tratamiento de mis grabaciones de voz para la
-                      clonaci&oacute;n vocal mediante ElevenLabs, incluyendo la transferencia internacional
-                      de estos datos a EE.UU. bajo cl&aacute;usulas contractuales tipo.
-                    </span>
-                  </div>
-                </label>
+            )}
 
-                {/* Face consent */}
-                <label className="flex items-start gap-3 p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-nuclea-gold/30 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={faceConsent}
-                    onChange={(e) => setFaceConsent(e.target.checked)}
-                    className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-nuclea-gold focus:ring-nuclea-gold/50 accent-[#D4AF37]"
-                  />
-                  <div>
-                    <span className="text-white text-sm font-semibold block mb-1">
-                      Datos de imagen facial
-                    </span>
-                    <span className="text-white/60 text-sm">
-                      Consiento de forma expl&iacute;cita el tratamiento de mis fotograf&iacute;as y
-                      v&iacute;deos faciales para la generaci&oacute;n de v&iacute;deo del Avatar IA.
-                    </span>
-                  </div>
-                </label>
+            {/* Loading auth or consent */}
+            {(authLoading || loadingConsent) && isAuthenticated && (
+              <div className="p-6 rounded-xl border border-white/[0.06] bg-white/[0.02] flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-nuclea-gold/40 border-t-nuclea-gold rounded-full animate-spin" />
+                <span className="text-white/50 text-sm">Cargando estado del consentimiento...</span>
+              </div>
+            )}
 
-                {/* Personality consent */}
-                <label className="flex items-start gap-3 p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-nuclea-gold/30 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={personalityConsent}
-                    onChange={(e) => setPersonalityConsent(e.target.checked)}
-                    className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-nuclea-gold focus:ring-nuclea-gold/50 accent-[#D4AF37]"
-                  />
-                  <div>
-                    <span className="text-white text-sm font-semibold block mb-1">
-                      Datos de personalidad
-                    </span>
-                    <span className="text-white/60 text-sm">
-                      Consiento de forma expl&iacute;cita el tratamiento de mis textos, patrones de
-                      comunicaci&oacute;n y preferencias personales para el entrenamiento del modelo de
-                      personalidad del Avatar IA.
-                    </span>
+            {/* Active consent — show signed state */}
+            {isAuthenticated && !authLoading && !loadingConsent && hasActiveConsent && (
+              <div className="space-y-6">
+                <div className="p-6 rounded-xl border border-green-500/30 bg-green-500/[0.05]">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-green-400 font-semibold">Consentimiento firmado</h3>
                   </div>
-                </label>
-
-                {/* Sign button */}
-                <div className="pt-4">
-                  <button
-                    onClick={handleSign}
-                    disabled={!allChecked}
-                    className={`
-                      w-full py-4 rounded-xl font-medium text-sm tracking-wide transition-all duration-300
-                      ${allChecked
-                        ? 'bg-gradient-to-r from-[#D4AF37] to-[#F4E4BA] text-[#0D0D12] hover:shadow-[0_8px_32px_rgba(212,175,55,0.25)] hover:scale-[1.01]'
-                        : 'bg-white/[0.05] text-white/30 cursor-not-allowed border border-white/[0.06]'
-                      }
-                    `}
-                  >
-                    {allChecked
-                      ? 'Firmar consentimiento'
-                      : anyChecked
-                        ? 'Marca todas las casillas para continuar'
-                        : 'Selecciona los datos para los que otorgas consentimiento'
-                    }
-                  </button>
-                  {!allChecked && (
-                    <p className="text-white/40 text-xs text-center mt-3">
-                      Debes marcar las tres casillas de consentimiento para firmar. Cada casilla
-                      representa un consentimiento espec&iacute;fico e independiente conforme al Art. 9.2.a RGPD.
+                  <p className="text-white/60 text-sm mb-3">
+                    Has otorgado tu consentimiento explicito para el tratamiento de datos biometricos.
+                  </p>
+                  {activeConsent && (
+                    <div className="space-y-1 text-xs text-white/40">
+                      <p>ID de consentimiento: <span className="text-white/60 font-mono">{activeConsent.consentId}</span></p>
+                      <p>Version: {activeConsent.consentVersion}</p>
+                      {activeConsent.signedAt && (
+                        <p>Firmado: {new Date(activeConsent.signedAt).toLocaleString('es-ES')}</p>
+                      )}
+                      <div className="flex gap-4 mt-2 text-white/50">
+                        {activeConsent.voiceConsent && <span>Voz</span>}
+                        {activeConsent.faceConsent && <span>Imagen facial</span>}
+                        {activeConsent.personalityConsent && <span>Personalidad</span>}
+                      </div>
+                    </div>
+                  )}
+                  {signedConsentId && !activeConsent && (
+                    <p className="text-xs text-white/40">
+                      ID de consentimiento: <span className="text-white/60 font-mono">{signedConsentId}</span>
                     </p>
                   )}
                 </div>
+
+                {/* Revocation section */}
+                {activeConsent && (
+                  <div className="p-5 rounded-xl border border-red-500/20 bg-red-500/[0.03]">
+                    <h3 className="text-red-400/80 font-semibold text-sm mb-2">Revocar consentimiento</h3>
+                    <p className="text-white/50 text-xs mb-4">
+                      Puedes revocar tu consentimiento en cualquier momento. Esta accion desactivara tu Avatar IA
+                      y eliminara tus datos biometricos de nuestros servidores.
+                    </p>
+
+                    {!showRevokeConfirm ? (
+                      <button
+                        onClick={() => setShowRevokeConfirm(true)}
+                        className="px-5 py-2 rounded-lg border border-red-500/30 text-red-400/80 text-sm hover:bg-red-500/10 transition-colors"
+                      >
+                        Revocar consentimiento
+                      </button>
+                    ) : (
+                      <div className="space-y-3">
+                        <textarea
+                          value={revokeReason}
+                          onChange={(e) => setRevokeReason(e.target.value)}
+                          placeholder="Motivo de la revocacion (opcional)"
+                          rows={2}
+                          className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white/70 text-sm placeholder:text-white/30 resize-none focus:outline-none focus:border-red-500/30"
+                        />
+                        <div className="flex gap-3">
+                          <button
+                            onClick={handleRevoke}
+                            disabled={revoking}
+                            className="px-5 py-2 rounded-lg bg-red-600/80 text-white text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                          >
+                            {revoking && (
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            )}
+                            Confirmar revocacion
+                          </button>
+                          <button
+                            onClick={() => { setShowRevokeConfirm(false); setRevokeReason('') }}
+                            className="px-5 py-2 rounded-lg border border-white/[0.08] text-white/50 text-sm hover:text-white/70 transition-colors"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
+
+            {/* No active consent — show form */}
+            {isAuthenticated && !authLoading && !loadingConsent && !hasActiveConsent && (
+              <>
+                <p className="mb-4">
+                  Marca cada casilla de forma individual para otorgar tu consentimiento expl&iacute;cito para
+                  cada categor&iacute;a de datos biom&eacute;tricos:
+                </p>
+
+                <div className="space-y-4">
+                  {/* Voice consent */}
+                  <label className="flex items-start gap-3 p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-nuclea-gold/30 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={voiceConsent}
+                      onChange={(e) => setVoiceConsent(e.target.checked)}
+                      className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-nuclea-gold focus:ring-nuclea-gold/50 accent-[#D4AF37]"
+                    />
+                    <div>
+                      <span className="text-white text-sm font-semibold block mb-1">
+                        Datos de voz
+                      </span>
+                      <span className="text-white/60 text-sm">
+                        Consiento de forma expl&iacute;cita el tratamiento de mis grabaciones de voz para la
+                        clonaci&oacute;n vocal mediante ElevenLabs, incluyendo la transferencia internacional
+                        de estos datos a EE.UU. bajo cl&aacute;usulas contractuales tipo.
+                      </span>
+                    </div>
+                  </label>
+
+                  {/* Face consent */}
+                  <label className="flex items-start gap-3 p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-nuclea-gold/30 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={faceConsent}
+                      onChange={(e) => setFaceConsent(e.target.checked)}
+                      className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-nuclea-gold focus:ring-nuclea-gold/50 accent-[#D4AF37]"
+                    />
+                    <div>
+                      <span className="text-white text-sm font-semibold block mb-1">
+                        Datos de imagen facial
+                      </span>
+                      <span className="text-white/60 text-sm">
+                        Consiento de forma expl&iacute;cita el tratamiento de mis fotograf&iacute;as y
+                        v&iacute;deos faciales para la generaci&oacute;n de v&iacute;deo del Avatar IA.
+                      </span>
+                    </div>
+                  </label>
+
+                  {/* Personality consent */}
+                  <label className="flex items-start gap-3 p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] cursor-pointer hover:border-nuclea-gold/30 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={personalityConsent}
+                      onChange={(e) => setPersonalityConsent(e.target.checked)}
+                      className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-nuclea-gold focus:ring-nuclea-gold/50 accent-[#D4AF37]"
+                    />
+                    <div>
+                      <span className="text-white text-sm font-semibold block mb-1">
+                        Datos de personalidad
+                      </span>
+                      <span className="text-white/60 text-sm">
+                        Consiento de forma expl&iacute;cita el tratamiento de mis textos, patrones de
+                        comunicaci&oacute;n y preferencias personales para el entrenamiento del modelo de
+                        personalidad del Avatar IA.
+                      </span>
+                    </div>
+                  </label>
+
+                  {/* Error message */}
+                  {error && (
+                    <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/[0.05]">
+                      <p className="text-red-400 text-sm">{error}</p>
+                    </div>
+                  )}
+
+                  {/* Sign button */}
+                  <div className="pt-4">
+                    <button
+                      onClick={handleSign}
+                      disabled={!anyChecked || submitting}
+                      className={`
+                        w-full py-4 rounded-xl font-medium text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2
+                        ${anyChecked && !submitting
+                          ? 'bg-gradient-to-r from-[#D4AF37] to-[#F4E4BA] text-[#0D0D12] hover:shadow-[0_8px_32px_rgba(212,175,55,0.25)] hover:scale-[1.01]'
+                          : 'bg-white/[0.05] text-white/30 cursor-not-allowed border border-white/[0.06]'
+                        }
+                      `}
+                    >
+                      {submitting && (
+                        <div className="w-4 h-4 border-2 border-[#0D0D12]/30 border-t-[#0D0D12] rounded-full animate-spin" />
+                      )}
+                      {submitting
+                        ? 'Registrando consentimiento...'
+                        : anyChecked
+                          ? 'Firmar consentimiento'
+                          : 'Selecciona los datos para los que otorgas consentimiento'
+                      }
+                    </button>
+                    {!anyChecked && (
+                      <p className="text-white/40 text-xs text-center mt-3">
+                        Debes marcar al menos una casilla de consentimiento para firmar. Cada casilla
+                        representa un consentimiento espec&iacute;fico e independiente conforme al Art. 9.2.a RGPD.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </section>
+
+          {/* Error display (for revocation errors) */}
+          {error && hasActiveConsent && (
+            <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/[0.05]">
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
 
           {/* Legal references */}
           <section>

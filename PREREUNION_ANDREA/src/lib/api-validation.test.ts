@@ -6,6 +6,8 @@ import {
   waitlistUnsubscribeQuerySchema,
   capsulesListQuerySchema,
   capsulesCreateBodySchema,
+  biometricConsentSchema,
+  revokeConsentSchema,
 } from './api-validation'
 
 test('waitlistPostBodySchema normalizes and validates payload', () => {
@@ -56,5 +58,101 @@ test('capsules create schema requires title and valid type', () => {
   assert.throws(
     () => capsulesCreateBodySchema.parse({ type: 'invalid', title: 'x' }),
     /type/i
+  )
+})
+
+// ---------------------------------------------------------------------------
+// Biometric Consent Schemas
+// ---------------------------------------------------------------------------
+
+test('biometricConsentSchema accepts all three consents true', () => {
+  const parsed = biometricConsentSchema.parse({
+    voiceConsent: true,
+    faceConsent: true,
+    personalityConsent: true,
+  })
+
+  assert.equal(parsed.voiceConsent, true)
+  assert.equal(parsed.faceConsent, true)
+  assert.equal(parsed.personalityConsent, true)
+})
+
+test('biometricConsentSchema accepts partial consent (at least one true)', () => {
+  const voiceOnly = biometricConsentSchema.parse({
+    voiceConsent: true,
+    faceConsent: false,
+    personalityConsent: false,
+  })
+  assert.equal(voiceOnly.voiceConsent, true)
+  assert.equal(voiceOnly.faceConsent, false)
+
+  const faceOnly = biometricConsentSchema.parse({
+    voiceConsent: false,
+    faceConsent: true,
+    personalityConsent: false,
+  })
+  assert.equal(faceOnly.faceConsent, true)
+
+  const personalityOnly = biometricConsentSchema.parse({
+    voiceConsent: false,
+    faceConsent: false,
+    personalityConsent: true,
+  })
+  assert.equal(personalityOnly.personalityConsent, true)
+})
+
+test('biometricConsentSchema rejects all false', () => {
+  assert.throws(
+    () => biometricConsentSchema.parse({
+      voiceConsent: false,
+      faceConsent: false,
+      personalityConsent: false,
+    }),
+    /al menos un tipo/i
+  )
+})
+
+test('biometricConsentSchema rejects missing fields', () => {
+  assert.throws(
+    () => biometricConsentSchema.parse({ voiceConsent: true }),
+  )
+})
+
+test('biometricConsentSchema rejects non-boolean values', () => {
+  assert.throws(
+    () => biometricConsentSchema.parse({
+      voiceConsent: 'yes',
+      faceConsent: true,
+      personalityConsent: true,
+    }),
+  )
+})
+
+test('revokeConsentSchema accepts valid input', () => {
+  const parsed = revokeConsentSchema.parse({
+    consentId: 'abc123',
+    reason: 'Ya no quiero participar',
+  })
+
+  assert.equal(parsed.consentId, 'abc123')
+  assert.equal(parsed.reason, 'Ya no quiero participar')
+})
+
+test('revokeConsentSchema accepts without reason', () => {
+  const parsed = revokeConsentSchema.parse({ consentId: 'abc123' })
+  assert.equal(parsed.consentId, 'abc123')
+  assert.equal(parsed.reason, undefined)
+})
+
+test('revokeConsentSchema rejects empty consentId', () => {
+  assert.throws(
+    () => revokeConsentSchema.parse({ consentId: '' }),
+    /consentId/i
+  )
+})
+
+test('revokeConsentSchema rejects missing consentId', () => {
+  assert.throws(
+    () => revokeConsentSchema.parse({}),
   )
 })
