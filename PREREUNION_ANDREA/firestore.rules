@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // User profile document is private to the owner.
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if false;
+
+      // Consent lifecycle is handled via Admin SDK only.
+      match /consents/{consentId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+    }
+
+    // Capsule documents can only be accessed by the owner.
+    match /capsules/{capsuleId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Server-managed collections.
+    match /waitlist/{docId} {
+      allow read, write: if false;
+    }
+
+    match /_rate_limits/{docId} {
+      allow read, write: if false;
+    }
+
+    // Explicit default deny.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

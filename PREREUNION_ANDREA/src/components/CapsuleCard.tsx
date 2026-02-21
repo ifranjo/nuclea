@@ -6,6 +6,7 @@ import { Calendar, Users, Image as ImageIcon, MoreVertical, Trash2, Edit, Share2
 import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { AvatarDisabledError, assertAvatarActive } from '@/lib/avatar-guard'
 import { CAPSULE_TYPES, normalizeCapsuleType } from '@/types'
 import type { Capsule } from '@/types'
 
@@ -20,6 +21,16 @@ export default function CapsuleCard({ capsule, onEdit, onDelete, onShare }: Caps
   const [menuOpen, setMenuOpen] = useState(false)
   const normalizedType = normalizeCapsuleType(capsule.type)
   const typeInfo = CAPSULE_TYPES[normalizedType]
+  let avatarDisabled = false
+  if (capsule.aiAvatar) {
+    try {
+      assertAvatarActive(capsule.aiAvatar)
+    } catch (error) {
+      if (error instanceof AvatarDisabledError) {
+        avatarDisabled = true
+      }
+    }
+  }
 
   const getCapsuleClass = () => {
     const classes: Record<string, string> = {
@@ -147,7 +158,9 @@ export default function CapsuleCard({ capsule, onEdit, onDelete, onShare }: Caps
         {capsule.aiAvatar && (
           <div className="mt-3 px-3 py-1.5 bg-nuclea-gold/10 border border-nuclea-gold/30 rounded-lg flex items-center gap-2">
             <span className="text-sm">🤖</span>
-            <span className="text-xs text-nuclea-gold">Avatar IA Activo</span>
+            <span className="text-xs text-nuclea-gold">
+              {avatarDisabled ? 'Avatar IA Desactivado' : 'Avatar IA Activo'}
+            </span>
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore'
 import { deleteObject, ref as storageRef } from 'firebase/storage'
 import { db, storage } from '@/lib/firebase'
+import { authFetch } from '@/lib/auth-fetch'
 import { normalizeCapsuleType } from '@/types'
 import type { Capsule, CapsuleType, CapsuleContent } from '@/types'
 
@@ -72,6 +73,20 @@ interface CapsulesApiResponse {
   }
 }
 
+function assertCapsuleMutable(capsule: Capsule): void {
+  const lifecycleState = (capsule as Capsule & { giftLifecycle?: { state?: string } }).giftLifecycle?.state
+  if (!lifecycleState) return
+
+  const immutableStates = new Set(['closed', 'downloaded', 'expired', 'archived', 'deleted', 'video_purged'])
+  if (immutableStates.has(lifecycleState)) {
+    throw new Error(`Capsula bloqueada en estado '${lifecycleState}'`)
+  }
+}
+
+// getAuthToken is accepted for backward compatibility but is intentionally not
+// used internally.  Token acquisition is now handled by authFetch, which
+// performs automatic refresh on 401 without relying on an external callback.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function useCapsules(userId: string | undefined, getAuthToken?: () => Promise<string>) {
   const [capsules, setCapsules] = useState<Capsule[]>([])
   const [loading, setLoading] = useState(true)
@@ -89,23 +104,16 @@ export function useCapsules(userId: string | undefined, getAuthToken?: () => Pro
       return
     }
 
-    if (!getAuthToken) {
-      setError('Sesion no disponible para cargar capsulas')
-      setLoading(false)
-      return
-    }
-
-    const token = await getAuthToken()
     const params = new URLSearchParams({ limit: String(CAPSULES_PAGE_SIZE) })
     if (cursor) {
       params.set('cursor', cursor)
     }
 
-    const response = await fetch(`/api/capsules?${params.toString()}`, {
+    // authFetch attaches the Firebase ID token and retries once with a
+    // force-refreshed token on 401 — this handles sessions open for >1 hour
+    // where the cached token has expired without a page reload.
+    const response = await authFetch(`/api/capsules?${params.toString()}`, {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     })
 
     const payload = await response.json() as CapsulesApiResponse & { error?: string }
@@ -130,7 +138,7 @@ export function useCapsules(userId: string | undefined, getAuthToken?: () => Pro
 
     setHasMore(payload.pagination?.hasMore === true)
     setNextCursor(typeof payload.pagination?.nextCursor === 'string' ? payload.pagination.nextCursor : null)
-  }, [getAuthToken, userId])
+  }, [userId])
 
   const refreshCapsules = useCallback(async () => {
     try {
@@ -203,7 +211,15 @@ export function useCapsules(userId: string | undefined, getAuthToken?: () => Pro
     capsuleId: string,
     updates: Partial<Capsule>
   ) => {
+    if (!userId) throw new Error('Usuario no autenticado')
+
     try {
+      const target = capsules.find((item) => item.id === capsuleId)
+      if (!target || target.userId !== userId) {
+        throw new Error('No autorizado para actualizar esta capsula')
+      }
+      assertCapsuleMutable(target)
+
       await updateDoc(doc(db, 'capsules', capsuleId), {
         ...updates,
         updatedAt: serverTimestamp(),
@@ -213,13 +229,18 @@ export function useCapsules(userId: string | undefined, getAuthToken?: () => Pro
       console.error('Error updating capsule:', err)
       throw new Error('Error al actualizar la capsula')
     }
-  }, [refreshCapsules])
+  }, [capsules, refreshCapsules, userId])
 
   const deleteCapsule = useCallback(async (capsuleId: string) => {
     if (!userId) throw new Error('Usuario no autenticado')
 
     try {
       const capsule = capsules.find((item) => item.id === capsuleId)
+      if (!capsule || capsule.userId !== userId) {
+        throw new Error('No autorizado para eliminar esta capsula')
+      }
+      assertCapsuleMutable(capsule)
+
       const urls = capsule?.contents
         .map((content) => content.url)
         .filter((url): url is string => Boolean(url))
@@ -254,9 +275,13 @@ export function useCapsules(userId: string | undefined, getAuthToken?: () => Pro
     capsuleId: string,
     content: Omit<CapsuleContent, 'id' | 'createdAt'>
   ) => {
+    if (!userId) throw new Error('Usuario no autenticado')
+
     try {
       const capsule = capsules.find((c) => c.id === capsuleId)
       if (!capsule) throw new Error('Capsula no encontrada')
+      if (capsule.userId !== userId) throw new Error('No autorizado para modificar esta capsula')
+      assertCapsuleMutable(capsule)
 
       const newContent: CapsuleContent = {
         ...content,
@@ -274,7 +299,7 @@ export function useCapsules(userId: string | undefined, getAuthToken?: () => Pro
       console.error('Error adding content:', err)
       throw new Error('Error al agregar contenido')
     }
-  }, [capsules, refreshCapsules])
+  }, [capsules, refreshCapsules, userId])
 
   return {
     capsules,

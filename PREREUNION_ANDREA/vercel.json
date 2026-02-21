@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/biometric-cleanup",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/lifecycle",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}

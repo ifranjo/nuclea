@@ -30,7 +30,6 @@ export default function ConsentimientoPage() {
   const [revokeReason, setRevokeReason] = useState('')
   const [showRevokeConfirm, setShowRevokeConfirm] = useState(false)
 
-  const allChecked = voiceConsent && faceConsent && personalityConsent
   const anyChecked = voiceConsent || faceConsent || personalityConsent
 
   // Fetch token helper

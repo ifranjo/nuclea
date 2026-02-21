@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "test:unit": "tsx --test src/lib/*.test.ts",
+    "firebase:rules:deploy": "firebase deploy --only firestore:rules",
     "quality:prm-008": "node scripts/run-prm-quality-008-lighthouse.mjs",
     "quality:prm-008:full": "node scripts/run-prm-quality-008-full.mjs",
     "check:ontology": "node scripts/check-capsule-ontology.mjs",

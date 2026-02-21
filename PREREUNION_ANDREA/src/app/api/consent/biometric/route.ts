@@ -138,8 +138,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Revoke the consent document
+    const now = new Date()
+    const scheduledDeletionAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
     const updatePayload: Record<string, unknown> = {
       revokedAt: FieldValue.serverTimestamp(),
+      revocationIpAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      revocationUserAgent: request.headers.get('user-agent') || 'unknown',
+      scheduledProcessorDeletionAt: scheduledDeletionAt.toISOString(),
+      processorDeletionStatus: 'scheduled',
     }
     if (parsed.reason) {
       updatePayload.revocationReason = parsed.reason
@@ -154,12 +160,14 @@ export async function DELETE(request: NextRequest) {
 
     if (userData?.aiAvatar) {
       await userRef.update({
+        'aiAvatar.isActive': false,
         'aiAvatar.consentWithdrawnAt': FieldValue.serverTimestamp(),
       })
     }
 
     return NextResponse.json({
-      revokedAt: new Date().toISOString(),
+      revokedAt: now.toISOString(),
+      scheduledDeletionAt: scheduledDeletionAt.toISOString(),
       message: 'Consentimiento revocado',
     })
   } catch (error) {
