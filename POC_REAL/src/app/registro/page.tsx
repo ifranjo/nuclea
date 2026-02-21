@@ -8,6 +8,10 @@ export default function RegistroPage() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [acceptTerms, setAcceptTerms] = useState(false)
+  const [acceptPrivacy, setAcceptPrivacy] = useState(false)
+  const [termsAcceptedAt, setTermsAcceptedAt] = useState<string | null>(null)
+  const [privacyAcceptedAt, setPrivacyAcceptedAt] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { signUp } = useAuth()
@@ -17,7 +21,19 @@ export default function RegistroPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const { error } = await signUp(email, password, fullName)
+
+    if (!acceptTerms || !acceptPrivacy || !termsAcceptedAt || !privacyAcceptedAt) {
+      setError('Debes aceptar Terminos y Politica de Privacidad para continuar.')
+      setLoading(false)
+      return
+    }
+
+    const { error } = await signUp(email, password, fullName, {
+      termsAcceptedAt,
+      privacyAcceptedAt,
+      consentSource: 'signup_email',
+    })
+
     if (error) {
       setError('Error al crear la cuenta. Inténtalo de nuevo.')
       setLoading(false)
@@ -66,11 +82,41 @@ export default function RegistroPage() {
             />
           </div>
 
+          <label className='flex items-start gap-3 rounded-lg border border-nuclea-border bg-white p-3'>
+            <input
+              type='checkbox'
+              checked={acceptTerms}
+              onChange={e => {
+                const checked = e.target.checked
+                setAcceptTerms(checked)
+                setTermsAcceptedAt(checked ? new Date().toISOString() : null)
+              }}
+              className='mt-1'
+              required
+            />
+            <span className='text-sm text-nuclea-text-secondary'>Acepto los Términos de Servicio</span>
+          </label>
+
+          <label className='flex items-start gap-3 rounded-lg border border-nuclea-border bg-white p-3'>
+            <input
+              type='checkbox'
+              checked={acceptPrivacy}
+              onChange={e => {
+                const checked = e.target.checked
+                setAcceptPrivacy(checked)
+                setPrivacyAcceptedAt(checked ? new Date().toISOString() : null)
+              }}
+              className='mt-1'
+              required
+            />
+            <span className='text-sm text-nuclea-text-secondary'>Acepto la Política de Privacidad</span>
+          </label>
+
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !acceptTerms || !acceptPrivacy}
             className="w-full py-3 rounded-lg bg-nuclea-text text-white font-medium hover:bg-nuclea-text/90 transition-colors disabled:opacity-50"
           >
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}

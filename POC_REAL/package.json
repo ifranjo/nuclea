@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start -p 3002",
     "lint": "eslint .",
-    "seed": "npx tsx scripts/seed.ts"
+    "db:types": "npx supabase gen types typescript --local > src/lib/database.types.ts",
+    "seed": "npx tsx scripts/seed.ts",
+    "test:ceo": "node tests/ceo_bug_verification_final.mjs",
+    "test:beta": "node tests/beta_qa.mjs",
+    "test:upload": "node tests/upload_flow_e2e.mjs",
+    "test:playwright": "playwright test",
+    "test:install": "playwright install chromium"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.0",
@@ -18,7 +24,8 @@
     "lucide-react": "^0.469.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

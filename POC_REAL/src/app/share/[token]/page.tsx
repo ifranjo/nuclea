@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { CapsuleIcon } from '@/components/icons/CapsuleIcons'
+import { ExpiryUrgencyBanner } from '@/components/receiver/ExpiryUrgencyBanner'
+import { ReceiverActionOptions } from '@/components/receiver/ReceiverActionOptions'
 import type { CapsuleType } from '@/types'
 
 async function getCapsuleByToken(token: string) {
@@ -44,6 +46,17 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
       </header>
 
       <div className="px-6 py-6">
+        <div className='mb-6 space-y-3'>
+          <div className='bg-white rounded-xl border border-nuclea-border p-4'>
+            <p className='text-xs uppercase tracking-wide text-nuclea-text-muted'>Onboarding receptor</p>
+            <p className='text-sm text-nuclea-text-secondary mt-2'>
+              1) Verifica identidad (registro/login) 2) Reclama la capsula 3) Decide como vivir el regalo en 30 dias.
+            </p>
+          </div>
+          <ExpiryUrgencyBanner createdAt={capsule.created_at} />
+          <ReceiverActionOptions capsuleId={capsule.id} />
+        </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {contents.filter(c => c.type === 'photo' && c.file_path).map(c => (
             <div key={c.id} className="aspect-square rounded-xl overflow-hidden bg-white border border-nuclea-border">

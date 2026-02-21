@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { Header } from '@/components/ui/Header'
 import { CapsuleTypeCard } from '@/components/ui/CapsuleTypeCard'
 import { CAPSULE_TYPES } from '@/types'
+import type { Database } from '@/lib/database.types'
 import type { CapsuleTypeInfo } from '@/types'
 import { useAuth } from '@/hooks/useAuth'
 import { useCapsules } from '@/hooks/useCapsules'
@@ -47,10 +48,9 @@ export function P4CapsuleSelection() {
     const typeMap: Record<string, string> = {
       'life-chapter': 'life_chapter',
     }
-    const dbType = typeMap[capsuleType.id] || capsuleType.id
+    const dbType = (typeMap[capsuleType.id] || capsuleType.id) as Database['public']['Enums']['capsule_type']
 
     const { capsule, error } = await createCapsule({
-      owner_id: profile.id,
       type: dbType,
       title: capsuleType.name,
       description: capsuleType.description,

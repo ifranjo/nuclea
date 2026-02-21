@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { buildLoginRedirectParam, isAuthPagePath, isBetaGatedPath, isPublicPath } from '@/lib/middlewareAccess'
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -30,55 +31,55 @@ export async function middleware(request: NextRequest) {
     // Auth error (corrupted session, network) — treat as unauthenticated
   }
 
-  // Public paths — no auth required
-  const publicPaths = ['/', '/login', '/registro', '/share', '/onboarding', '/demo', '/legal', '/beta/accept', '/beta/waitlist']
-  const isPublic = publicPaths.some(p => request.nextUrl.pathname === p || request.nextUrl.pathname.startsWith(p + '/'))
+  const pathname = request.nextUrl.pathname
 
-  if (!user && !isPublic) {
+  if (!user && !isPublicPath(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('redirect', buildLoginRedirectParam(pathname, request.nextUrl.search))
     return NextResponse.redirect(url)
   }
 
-  if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/registro')) {
+  if (user && isAuthPagePath(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
   // Beta access gate — only for authenticated users on protected routes
-  const betaGatedPaths = ['/dashboard', '/capsule', '/settings']
-  const isBetaGated = betaGatedPaths.some(p => request.nextUrl.pathname === p || request.nextUrl.pathname.startsWith(p + '/'))
-
-  if (user && isBetaGated) {
+  if (user && isBetaGatedPath(pathname)) {
     // Check if BETA_GATE is enabled (disabled by default for POC testing)
     const betaGateEnabled = process.env.BETA_GATE_ENABLED === 'true'
 
     if (betaGateEnabled) {
-      // Look up user's beta_access using service client via admin API
-      // We use a lightweight check: query beta_access via the existing supabase client
-      // (RLS is disabled for POC, so anon key works)
-      const { data: userRow } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single()
-
-      if (userRow) {
-        const { data: access } = await supabase
-          .from('beta_access')
-          .select('enabled')
-          .eq('user_id', userRow.id)
-          .eq('enabled', true)
+      try {
+        // Look up user's beta_access (RLS disabled for POC)
+        const { data: userRow } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
           .single()
 
-        if (!access) {
+        if (userRow) {
+          const { data: access } = await supabase
+            .from('beta_access')
+            .select('enabled')
+            .eq('user_id', userRow.id)
+            .eq('enabled', true)
+            .single()
+
+          if (!access) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/beta/waitlist'
+            return NextResponse.redirect(url)
+          }
+        } else {
           const url = request.nextUrl.clone()
           url.pathname = '/beta/waitlist'
           return NextResponse.redirect(url)
         }
-      } else {
-        // User authenticated but no profile — send to waitlist
+      } catch {
+        // Fail closed for beta-gated routes, but do not crash middleware on transient errors.
         const url = request.nextUrl.clone()
         url.pathname = '/beta/waitlist'
         return NextResponse.redirect(url)

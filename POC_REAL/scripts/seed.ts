@@ -9,6 +9,7 @@ import { createClient } from '@supabase/supabase-js'
 import * as fs from 'fs'
 import * as path from 'path'
 import { randomUUID } from 'crypto'
+import { fileURLToPath } from 'url'
 
 // ---------------------------------------------------------------------------
 // Config
@@ -18,7 +19,8 @@ const SUPABASE_URL = 'http://127.0.0.1:54321'
 const SERVICE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
 
-const IMAGES_DIR = process.env.SEED_IMAGES_DIR || path.join(process.cwd(), 'public', 'images', 'polaroids')
+const DEFAULT_IMAGES_DIR = fileURLToPath(new URL('../public/images/polaroids', import.meta.url))
+const IMAGES_DIR = process.env.SEED_IMAGES_DIR || DEFAULT_IMAGES_DIR
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -264,6 +266,10 @@ async function seed() {
           email: user.email,
           full_name: user.fullName,
           avatar_url: null,
+          terms_accepted_at: new Date().toISOString(),
+          privacy_accepted_at: new Date().toISOString(),
+          consent_version: '2.0',
+          consent_source: 'seed_script',
         })
         .select('id')
         .single()
@@ -393,13 +399,17 @@ async function seed() {
     for (let i = 0; i < capsule.notes.length; i++) {
       try {
         const capturedAt = spreadDate(i, capsule.notes.length)
+        const noteText = capsule.notes[i]
+        const noteSize = Buffer.byteLength(noteText, 'utf8')
 
         const { error } = await supabase.from('contents').insert({
           capsule_id: capsuleId,
           created_by: ownerId,
           type: 'text',
-          text_content: capsule.notes[i],
+          text_content: noteText,
           title: `Nota ${i + 1}`,
+          file_size_bytes: noteSize,
+          mime_type: 'text/plain',
           captured_at: capturedAt,
         })
 
@@ -412,6 +422,43 @@ async function seed() {
   }
 
   console.log(`  ✓ ${totalNotes} text notes added`)
+
+  // -----------------------------------------------------------------------
+  // Step 6.5 — Persist storage_used_bytes on capsules
+  // -----------------------------------------------------------------------
+  console.log('\n🧮 Recalculating capsule storage usage...')
+  try {
+    const capsuleIds = Object.values(capsuleIdMap)
+    const { data: allContents, error: contentError } = await supabase
+      .from('contents')
+      .select('capsule_id, file_size_bytes, text_content')
+      .in('capsule_id', capsuleIds)
+
+    if (contentError) throw contentError
+
+    const totals: Record<string, number> = {}
+    for (const capsuleId of capsuleIds) totals[capsuleId] = 0
+
+    for (const row of allContents || []) {
+      const fallbackTextBytes = row.text_content ? Buffer.byteLength(row.text_content, 'utf8') : 0
+      const bytes = typeof row.file_size_bytes === 'number' && row.file_size_bytes > 0
+        ? row.file_size_bytes
+        : fallbackTextBytes
+      totals[row.capsule_id] = (totals[row.capsule_id] || 0) + bytes
+    }
+
+    for (const [capsuleId, totalBytes] of Object.entries(totals)) {
+      const { error: updateError } = await supabase
+        .from('capsules')
+        .update({ storage_used_bytes: totalBytes })
+        .eq('id', capsuleId)
+      if (updateError) throw updateError
+    }
+
+    console.log('  ✓ storage_used_bytes updated on capsules')
+  } catch (err) {
+    console.error('  ❌ Failed to recalculate capsule storage:', err)
+  }
 
   // -----------------------------------------------------------------------
   // Step 7 — Add collaborator (Marge → Homer's "Momentos en Springfield")

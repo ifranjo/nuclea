@@ -2,31 +2,35 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import type { Database } from '@/lib/database.types'
 
-interface UserProfile {
-  id: string
-  email: string
-  full_name: string | null
-  avatar_url: string | null
-}
+type UserProfile = Database['public']['Tables']['users']['Row']
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const supabaseRef = useRef(createClient())
   const supabase = supabaseRef.current
 
   const fetchProfile = useCallback(async (authId: string) => {
     try {
+      setError(null)
       const { data } = await supabase
         .from('users')
         .select('*')
         .eq('auth_id', authId)
         .maybeSingle()
       setProfile(data ?? null)
-    } catch {
+    } catch (err) {
       setProfile(null)
+      const message = err instanceof Error ? err.message.toLowerCase() : ''
+      setError(
+        message.includes('row-level security') || message.includes('permission denied')
+          ? 'No tienes permisos para acceder a tu perfil.'
+          : 'No se pudo cargar tu perfil.'
+      )
     }
   }, [supabase])
 
@@ -74,7 +78,16 @@ export function useAuth() {
     return { error }
   }, [supabase])
 
-  const signUp = useCallback(async (email: string, password: string, fullName: string) => {
+  const signUp = useCallback(async (
+    email: string,
+    password: string,
+    fullName: string,
+    consent: {
+      termsAcceptedAt: string
+      privacyAcceptedAt: string
+      consentSource: 'signup_email' | 'signup_google' | 'beta_invite'
+    }
+  ) => {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) return { error }
     if (data.user) {
@@ -82,6 +95,10 @@ export function useAuth() {
         auth_id: data.user.id,
         email,
         full_name: fullName,
+        terms_accepted_at: consent.termsAcceptedAt,
+        privacy_accepted_at: consent.privacyAcceptedAt,
+        consent_version: '2.0',
+        consent_source: consent.consentSource,
       })
     }
     return { error: null }
@@ -100,5 +117,5 @@ export function useAuth() {
     window.location.href = '/login'
   }, [supabase])
 
-  return { user, profile, loading, signIn, signUp, signOut }
+  return { user, profile, loading, error, signIn, signUp, signOut }
 }

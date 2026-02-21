@@ -1,3 +1,38 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Next.js
+/.next/
+/out/
+
+# Production build
+/build
+
+# Local env files — NEVER commit these
+# .env.example is intentionally NOT listed here (it should be committed)
+.env*.local
+.env
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test results
 test-results/
 
 # Temporary captures generated during design checks
@@ -7,3 +42,15 @@ screenshots/capture_all.mjs
 
 # Local image backups used during optimization experiments
 *.original
+
+# QA evidence - keep these directories tracked
+# screenshots/ceo_qa/
+# screenshots/beta_qa/
+# screenshots/upload_qa/
+
+# But ignore transient test artifacts
+screenshots/*.png
+screenshots/**/*.png
+!screenshots/ceo_qa/.gitkeep
+!screenshots/beta_qa/.gitkeep
+!screenshots/upload_qa/.gitkeep

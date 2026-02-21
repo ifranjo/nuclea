@@ -1,25 +1,31 @@
 'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import type { Database } from '@/lib/database.types'
+import { buildCapsuleSizeMap } from '@/lib/storageSize'
 
-export interface Capsule {
-  id: string
-  owner_id: string
-  type: string
-  status: string
-  title: string | null
-  description: string | null
-  cover_image_url: string | null
-  share_token: string | null
-  storage_used_bytes: number
-  created_at: string
-  updated_at: string
-  closed_at: string | null
+export type Capsule = Database['public']['Tables']['capsules']['Row']
+
+function toUserFacingErrorMessage(error: unknown, fallback: string): string {
+  if (!error || typeof error !== 'object') return fallback
+  const message = 'message' in error && typeof error.message === 'string' ? error.message.toLowerCase() : ''
+  if (message.includes('row-level security') || message.includes('permission denied')) {
+    return 'No tienes permisos para acceder a esta capsula.'
+  }
+  return fallback
+}
+
+function assertCapsuleMutable(status: string): void {
+  const immutableStates = ['closed', 'downloaded', 'expired', 'archived']
+  if (immutableStates.includes(status)) {
+    throw new Error(`Capsule is ${status} and cannot be modified`)
+  }
 }
 
 export function useCapsules(userId?: string) {
   const [capsules, setCapsules] = useState<Capsule[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const supabaseRef = useRef(createClient())
   const supabase = supabaseRef.current
 
@@ -27,10 +33,12 @@ export function useCapsules(userId?: string) {
     if (!userId) {
       setCapsules([])
       setLoading(false)
+      setError(null)
       return
     }
 
     setLoading(true)
+    setError(null)
     try {
       // Owned capsules
       const { data: owned } = await supabase
@@ -63,13 +71,10 @@ export function useCapsules(userId?: string) {
       if (capsuleIds.length > 0) {
         const { data: contentSizes } = await supabase
           .from('contents')
-          .select('capsule_id, file_size_bytes')
+          .select('capsule_id, file_size_bytes, text_content')
           .in('capsule_id', capsuleIds)
         if (contentSizes) {
-          const sizeMap: Record<string, number> = {}
-          for (const row of contentSizes) {
-            sizeMap[row.capsule_id] = (sizeMap[row.capsule_id] || 0) + (row.file_size_bytes || 0)
-          }
+          const sizeMap = buildCapsuleSizeMap(contentSizes)
           for (const c of unique) {
             c.storage_used_bytes = sizeMap[c.id] || 0
           }
@@ -77,8 +82,9 @@ export function useCapsules(userId?: string) {
       }
 
       setCapsules(unique)
-    } catch {
+    } catch (err) {
       setCapsules([])
+      setError(toUserFacingErrorMessage(err, 'No se pudieron cargar las capsulas.'))
     } finally {
       setLoading(false)
     }
@@ -87,28 +93,74 @@ export function useCapsules(userId?: string) {
   useEffect(() => { fetchCapsules() }, [fetchCapsules])
 
   const createCapsule = useCallback(async (data: {
-    owner_id: string; type: string; title: string; description?: string
-  }) => {
+    type: Database['public']['Enums']['capsule_type']
+    title: string
+    description?: string
+  }): Promise<{ capsule: Capsule | null; error: Error | null }> => {
+    if (!userId) {
+      return { capsule: null, error: new Error('Not authenticated') }
+    }
+
     const shareToken = crypto.randomUUID().slice(0, 8)
     const { data: capsule, error } = await supabase
       .from('capsules')
-      .insert({ ...data, share_token: shareToken, status: 'active' })
+      .insert({
+        owner_id: userId,
+        type: data.type,
+        title: data.title,
+        description: data.description ?? null,
+        share_token: shareToken,
+        status: 'active',
+      })
       .select()
       .single()
-    if (!error) await fetchCapsules()
-    return { capsule, error }
-  }, [fetchCapsules, supabase])
+
+    if (error) {
+      return { capsule: null, error: new Error(error.message) }
+    }
+
+    await fetchCapsules()
+    return { capsule, error: null }
+  }, [fetchCapsules, supabase, userId])
 
   const closeCapsule = useCallback(async (id: string) => {
+    if (!userId) {
+      return { error: new Error('Not authenticated') }
+    }
+
+    const { data: capsule, error: readError } = await supabase
+      .from('capsules')
+      .select('status')
+      .eq('id', id)
+      .eq('owner_id', userId)
+      .maybeSingle()
+
+    if (readError) return { error: readError }
+    if (!capsule) return { error: new Error('Capsule not found or not owned by current user') }
+    try {
+      assertCapsuleMutable(capsule.status)
+    } catch (stateError) {
+      return { error: stateError as Error }
+    }
+    if (capsule.status !== 'active') {
+      return { error: new Error(`Cannot close capsule with status '${capsule.status}'`) }
+    }
+
     const { error } = await supabase
       .from('capsules')
       .update({ status: 'closed', closed_at: new Date().toISOString() })
       .eq('id', id)
+      .eq('owner_id', userId)
+      .eq('status', 'active')
     if (!error) await fetchCapsules()
     return { error }
-  }, [fetchCapsules, supabase])
+  }, [fetchCapsules, supabase, userId])
 
   const ensureShareToken = useCallback(async (capsuleId: string, currentToken?: string | null) => {
+    if (!userId) {
+      return { shareToken: null, error: new Error('Not authenticated') }
+    }
+
     if (currentToken) return { shareToken: currentToken, error: null }
 
     const shareToken = crypto.randomUUID().slice(0, 8)
@@ -116,6 +168,7 @@ export function useCapsules(userId?: string) {
       .from('capsules')
       .update({ share_token: shareToken })
       .eq('id', capsuleId)
+      .eq('owner_id', userId)
 
     if (!error) {
       setCapsules(prev => prev.map(c => (
@@ -124,7 +177,7 @@ export function useCapsules(userId?: string) {
     }
 
     return { shareToken: error ? null : shareToken, error }
-  }, [supabase])
+  }, [supabase, userId])
 
-  return { capsules, loading, fetchCapsules, createCapsule, closeCapsule, ensureShareToken }
+  return { capsules, loading, error, fetchCapsules, createCapsule, closeCapsule, ensureShareToken }
 }
