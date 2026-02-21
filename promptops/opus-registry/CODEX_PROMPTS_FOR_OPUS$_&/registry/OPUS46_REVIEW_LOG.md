@@ -670,3 +670,111 @@ Run 3 chained batches with self-check gates:
 1. Stage 1 (`PRM-UX-008`): close remaining responsive WARN items.
 2. Stage 2 (`PRM-TRUST-002`): close Art. 15/17/20 + Art. 28 gaps.
 3. Stage 3 (`PRM-QUALITY-008 v1.1.0`): re-measure and target `PASS` with production-grade evidence.
+
+## REV-2026-02-21-017
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Security prompt sequencing governance for domains/08_security`
+- Trigger: `Execution-order lock requested for SEC-001..SEC-008`
+- Source: `Security pack registration in PROMPT_STATUS + domains/08_security`
+
+### Outcome
+
+- Prompt coverage: pass (`SEC-001..SEC-008 present and active`)
+- Sequencing policy: locked
+- Dependency checks: pass
+
+### Locked Execution Order
+
+1. `SEC-001` (independent Firebase lane)
+2. `SEC-003` -> `SEC-006` -> `SEC-002` (P0 Supabase lane, strict dependency)
+3. `SEC-004` (parallel P0 lane)
+4. `SEC-005` (parallel P0 lane)
+5. `SEC-007` -> `SEC-008` (P1 sequential lane, types before consent fields)
+
+### Rationale
+
+1. `SEC-003` must precede `SEC-002` to remove service-role comparison pattern before RLS activation.
+2. `SEC-007` must precede `SEC-008` to avoid schema/type drift during consent-field expansion.
+3. `SEC-001` and `SEC-005` are independent and can run in parallel with Supabase-focused P0 work.
+
+### Prompt Actions
+
+1. Updated `registry/PROMPT_STATUS.md` next-action fields with explicit order markers and dependencies.
+2. Updated `README.md` prompt inventory and added security execution-order section.
+3. Cleared stale completed artifacts from `outputs/` and retained `.gitkeep`.
+
+### Next Iteration Objective
+
+Execute implementation batches using this locked order and record one evidence block per SEC prompt (commands, files changed, gate results).
+
+## REV-2026-02-21-019
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Documentation and ordering hardening for security execution`
+- Trigger: `Need actionable handoff package for remaining security closeout`
+- Source:
+  - `registry/PROMPT_STATUS.md`
+  - `README.md`
+  - `domains/08_security/SEC-EXECUTION-RUNBOOK.md` (new)
+
+### Outcome
+
+- Ordering governance: pass (single canonical runbook added)
+- Actionability: pass (phase-by-phase entry/work/verify/exit criteria)
+- Registry alignment: pass (SEC status rows now reference runbook phases)
+
+### Actions Applied
+
+1. Added new runbook:
+   - `domains/08_security/SEC-EXECUTION-RUNBOOK.md`
+   - includes locked order, dependencies, preflight, execution cards, evidence bundle, and exit criteria
+2. Updated `README.md`:
+   - linked security runbook from `Security Execution Order (Locked)` section
+3. Updated `registry/PROMPT_STATUS.md`:
+   - aligned `PRM-SEC-001..008` next actions to runbook phases
+   - preserved execution order and blocker visibility (`SEC-003`, `SEC-006`, `SEC-007`, `SEC-008`)
+
+### Next Iteration Objective
+
+Run the remaining operational closure directly from runbook phases:
+1. Phase 2 (`SEC-003`) and Phase 3 (`SEC-006`) blockers.
+2. Re-verify Phase 4 (`SEC-002`) after blockers close.
+3. Complete Phase 5 (`SEC-007`) canonical type generation and close Phase 6 (`SEC-008`).
+
+## REV-2026-02-21-018
+
+- Reviewer: `CTO PromptOps`
+- Scope: `Security execution snapshot and remaining-work ordering`
+- Trigger: `Need actionable handoff for final closure (documentation + ordering only)`
+- Source: `Post-implementation workspace audit (SEC tracks)`
+
+### Outcome
+
+- Ordering policy: unchanged (locked)
+- Documentation clarity: upgraded with done/pending/partial tracker
+- Remaining blockers: identified and isolated to `SEC-003` and `SEC-006`
+
+### Execution Snapshot
+
+1. `SEC-001`: done
+2. `SEC-003`: pending (P0 blocker)
+3. `SEC-006`: pending (P0 blocker)
+4. `SEC-002`: done (requires post-blocker re-verification)
+5. `SEC-004`: done
+6. `SEC-005`: done
+7. `SEC-007`: partial (manual types present; canonical generation blocked by local Docker availability)
+8. `SEC-008`: partial (consent implementation merged; final close after canonical types + lint sweep)
+
+### Prompt Actions
+
+1. Updated `registry/PROMPT_STATUS.md` security rows with explicit state labels (`DONE`, `PENDING`, `PARTIAL`) and concrete closure actions.
+2. Updated `README.md` with `Security Execution Tracker (2026-02-21 Snapshot)` table.
+3. Preserved the existing locked execution order without reordering.
+
+### Next Iteration Objective
+
+Close `SEC-003` and `SEC-006` first, then run post-closure verification pass:
+- `POC_REAL`: `npm run lint` + `npx tsc --noEmit`
+- `PREREUNION_ANDREA`: `npm run lint`
+- `SEC-007`: canonical type generation once Docker is available, then finalize `SEC-008`.

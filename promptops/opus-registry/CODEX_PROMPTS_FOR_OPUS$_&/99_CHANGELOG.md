@@ -89,3 +89,19 @@
   - registered `PRM-OPS-003` as `active`
 - Updated prompt inventory in `README.md`.
 - Cleared processed files from `outputs/` and retained `.gitkeep`.
+
+## 2026-02-21
+
+- Ingested security prompt pack presence check for `domains/08_security` (`SEC-001..SEC-008`).
+- Added review log entry `REV-2026-02-21-017` to lock security execution sequencing.
+- Updated `registry/PROMPT_STATUS.md` next actions for `PRM-SEC-001..PRM-SEC-008` with explicit order/dependency markers.
+- Updated `README.md` inventory to include all security prompts.
+- Added explicit `Security Execution Order (Locked)` section in `README.md`.
+- Cleared stale processed artifacts from `outputs/` and retained `.gitkeep`.
+- Added `domains/08_security/SEC-EXECUTION-RUNBOOK.md` with locked order, dependencies, execution cards, and verification criteria.
+- Added review log entry `REV-2026-02-21-019` for documentation/order hardening handoff.
+- Updated `registry/PROMPT_STATUS.md` SEC next-actions to reference runbook phases and remaining blockers.
+- Updated `README.md` security section with runbook reference link.
+- Added review log entry `REV-2026-02-21-018` with security execution snapshot (`done/pending/partial`) and remaining-work ordering.
+- Updated security rows in `registry/PROMPT_STATUS.md` to reflect real closure state and concrete next actions.
+- Added `Security Execution Tracker (2026-02-21 Snapshot)` in `README.md` for actionable handoff.

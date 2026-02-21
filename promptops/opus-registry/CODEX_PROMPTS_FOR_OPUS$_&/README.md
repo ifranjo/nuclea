@@ -51,6 +51,37 @@ Scope: product design, UX quality, implementation planning, QA gates, growth mes
 25. `domains/02_experience/Responsive_Viewport_Audit.md`
 26. `domains/06_trust/Privacy_Data_Handling_Compliance.md`
 27. `domains/07_ops/Three_Stage_Self_Check_Chain.md`
+28. `domains/08_security/SEC-001_Firestore_Security_Rules.md`
+29. `domains/08_security/SEC-002_Supabase_RLS_Enable.md`
+30. `domains/08_security/SEC-003_Admin_Key_Fix.md`
+31. `domains/08_security/SEC-004_Owner_Verification_Guards.md`
+32. `domains/08_security/SEC-005_GDPR_Biometric_Enforcement.md`
+33. `domains/08_security/SEC-006_Rate_Limiting_POC_REAL.md`
+34. `domains/08_security/SEC-007_Supabase_Generated_Types.md`
+35. `domains/08_security/SEC-008_Consent_Fields_POC_REAL.md`
+
+## Security Execution Order (Locked)
+
+1. `SEC-001`
+2. `SEC-003 -> SEC-006 -> SEC-002`
+3. `SEC-004` (parallel P0 lane)
+4. `SEC-005` (parallel P0 lane)
+5. `SEC-007 -> SEC-008`
+
+Reference runbook: `domains/08_security/SEC-EXECUTION-RUNBOOK.md`
+
+## Security Execution Tracker (2026-02-21 Snapshot)
+
+| SEC | Priority | Order | Status | Next Action |
+|---|---|---|---|---|
+| `SEC-001` | P0 | #1 | done | Keep Firestore rule/index drift checks in release verification |
+| `SEC-003` | P0 | #2 | pending | Replace any remaining service-role header checks with `ADMIN_API_SECRET` flow |
+| `SEC-006` | P0 | #3 | pending | Complete endpoint-level rate limiting for public `POC_REAL` routes |
+| `SEC-002` | P0 | #4 | done | Re-run RLS verification after `SEC-003` and `SEC-006` are fully closed |
+| `SEC-004` | P0 | parallel | done | Keep owner/state guard coverage in mutation paths |
+| `SEC-005` | P0 | parallel | done | Keep daily cleanup cron + processor deletion traceability checks |
+| `SEC-007` | P1 | #5 | partial | Generate canonical Supabase types (`supabase gen types --local`) when Docker is available |
+| `SEC-008` | P1 | #6 | partial | Finalize consent-field closure after canonical types + final lint pass |
 
 ## Operating Model
 
