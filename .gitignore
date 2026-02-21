@@ -42,3 +42,11 @@ coverage/
 # Misc
 *.pem
 nul
+
+# Media assets (not for version control)
+comentarios_andrea_fotos/
+*.mp4
+
+# Screenshots (generated artifacts)
+POC_INTERNA/app/screenshots/
+POC_REAL/screenshots/
