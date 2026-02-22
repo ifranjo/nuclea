@@ -52,8 +52,9 @@ function RegistroForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-nuclea-text-secondary mb-1">Nombre completo</label>
+            <label htmlFor="registro-name" className="block text-sm text-nuclea-text-secondary mb-1">Nombre completo</label>
             <input
+              id="registro-name"
               type="text"
               value={fullName}
               onChange={e => setFullName(e.target.value)}
@@ -63,8 +64,9 @@ function RegistroForm() {
             />
           </div>
           <div>
-            <label className="block text-sm text-nuclea-text-secondary mb-1">Email</label>
+            <label htmlFor="registro-email" className="block text-sm text-nuclea-text-secondary mb-1">Email</label>
             <input
+              id="registro-email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -73,8 +75,9 @@ function RegistroForm() {
             />
           </div>
           <div>
-            <label className="block text-sm text-nuclea-text-secondary mb-1">Contraseña</label>
+            <label htmlFor="registro-password" className="block text-sm text-nuclea-text-secondary mb-1">Contraseña</label>
             <input
+              id="registro-password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}

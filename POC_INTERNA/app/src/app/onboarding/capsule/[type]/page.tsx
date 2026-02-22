@@ -54,11 +54,12 @@ export default function CapsuleDetailPage({ params }: CapsuleDetailPageProps) {
       <div className="flex items-center justify-between px-5 pt-4 pb-2">
         <Link
           href="/onboarding?step=4"
+          aria-label="Volver"
           className="w-10 h-10 flex items-center justify-center -ml-2"
         >
           <ChevronLeft size={22} className="text-[#6B6B6B]" />
         </Link>
-        <button type="button" className="w-10 h-10 flex items-center justify-center -mr-2">
+        <button type="button" aria-label="Más opciones" className="w-10 h-10 flex items-center justify-center -mr-2">
           <MoreHorizontal size={20} className="text-[#6B6B6B]" />
         </button>
       </div>

@@ -43,11 +43,14 @@ export function MediaModal({ isOpen, onClose, title, children }: MediaModalProps
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="media-modal-title"
             className="relative w-full max-w-[420px] max-h-[85vh] bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#F0F0F0]">
-              <h3 className="text-base font-semibold text-[#1A1A1A]">{title}</h3>
+              <h3 id="media-modal-title" className="text-base font-semibold text-[#1A1A1A]">{title}</h3>
               <button
                 type="button"
                 onClick={onClose}

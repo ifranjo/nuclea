@@ -383,6 +383,11 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
         </div>
         <div className="h-[3px] bg-[#E5E5EA] rounded-full overflow-hidden">
           <div
+            role="progressbar"
+            aria-valuenow={progressPercent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Progreso de apertura"
             className="h-full bg-nuclea-text rounded-full"
             style={{ width: `${progressPercent}%` }}
           />

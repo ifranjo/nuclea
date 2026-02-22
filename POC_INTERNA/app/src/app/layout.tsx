@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
+import { MotionConfig } from 'framer-motion'
 import './globals.css'
 
 const inter = Inter({
@@ -20,8 +21,6 @@ const cormorant = Cormorant_Garamond({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: 'cover',
   themeColor: '#FFFFFF',
 }
@@ -39,7 +38,9 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="font-sans antialiased bg-white text-nuclea-text">
-        {children}
+        <MotionConfig reducedMotion="user">
+          {children}
+        </MotionConfig>
       </body>
     </html>
   )

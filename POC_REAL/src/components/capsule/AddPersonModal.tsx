@@ -32,8 +32,9 @@ export function AddPersonModal({ onClose, onSave }: AddPersonModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-nuclea-text-secondary mb-1">Nombre completo</label>
+            <label htmlFor="addperson-name" className="block text-sm text-nuclea-text-secondary mb-1">Nombre completo</label>
             <input
+              id="addperson-name"
               type="text"
               value={fullName}
               onChange={e => setFullName(e.target.value)}
@@ -42,8 +43,9 @@ export function AddPersonModal({ onClose, onSave }: AddPersonModalProps) {
             />
           </div>
           <div>
-            <label className="block text-sm text-nuclea-text-secondary mb-1">Email</label>
+            <label htmlFor="addperson-email" className="block text-sm text-nuclea-text-secondary mb-1">Email</label>
             <input
+              id="addperson-email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -52,8 +54,9 @@ export function AddPersonModal({ onClose, onSave }: AddPersonModalProps) {
             />
           </div>
           <div>
-            <label className="block text-sm text-nuclea-text-secondary mb-1">Relación</label>
+            <label htmlFor="addperson-relationship" className="block text-sm text-nuclea-text-secondary mb-1">Relación</label>
             <input
+              id="addperson-relationship"
               type="text"
               value={relationship}
               onChange={e => setRelationship(e.target.value)}
