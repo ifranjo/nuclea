@@ -1,16 +1,27 @@
+import { timingSafeEqual } from 'node:crypto'
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebase-admin'
 import { deleteBiometricFiles, deleteElevenLabsVoice } from '@/lib/elevenlabs'
+
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  if (bufA.length !== bufB.length) return false
+  return timingSafeEqual(bufA, bufB)
+}
 
 function isAuthorizedCronRequest(request: NextRequest): boolean {
   const secret = process.env.CRON_SECRET
   if (!secret) return false
 
   const authHeader = request.headers.get('authorization')
-  if (authHeader === `Bearer ${secret}`) return true
+  if (authHeader?.startsWith('Bearer ') && safeEqual(authHeader.slice(7), secret)) return true
 
-  return request.headers.get('x-cron-secret') === secret
+  const cronHeader = request.headers.get('x-cron-secret')
+  if (cronHeader && safeEqual(cronHeader, secret)) return true
+
+  return false
 }
 
 export async function GET(request: NextRequest) {

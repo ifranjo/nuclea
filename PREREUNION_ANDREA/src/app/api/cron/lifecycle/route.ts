@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminStorage } from '@/lib/firebase-admin'
@@ -43,6 +44,13 @@ interface VideoPurgeJob {
   status?: string
 }
 
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  if (bufA.length !== bufB.length) return false
+  return timingSafeEqual(bufA, bufB)
+}
+
 function isCronAuthorized(request: NextRequest): boolean {
   const configured = process.env.CRON_SECRET
   if (!configured) return false
@@ -50,7 +58,10 @@ function isCronAuthorized(request: NextRequest): boolean {
   const fromHeader = request.headers.get('x-cron-secret')
   const authHeader = request.headers.get('authorization')
   const bearer = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-  return configured === fromHeader || configured === bearer
+
+  if (fromHeader && safeEqual(fromHeader, configured)) return true
+  if (bearer && safeEqual(bearer, configured)) return true
+  return false
 }
 
 function normalizeState(state: unknown): GiftLifecycleState {
