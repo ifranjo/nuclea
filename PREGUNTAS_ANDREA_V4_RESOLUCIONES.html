@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUCLEA — 7 Preguntas Bloqueantes para Andrea · v4</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --opt-a: #2D6A2E;
+      --opt-b: #5D7A99;
+      --opt-c: #8B6B1E;
+      --risk: #A33;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    .doc-sidebar {
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 1.25rem;
+    }
+    .doc-sidebar h2 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .nav-section { margin-bottom: 1.5rem; }
+    .nav-section-title {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.3rem 0;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 0.75rem;
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text-primary); }
+    .nav-link.active {
+      color: var(--text-primary);
+      border-left-color: var(--border-heavy);
+      font-weight: 500;
+    }
+    .doc-content {
+      padding: 2.5rem 4rem 4rem;
+      max-width: 920px;
+    }
+    h1 {
+      font-size: 1.7rem;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-tertiary);
+      margin-bottom: 2.5rem;
+    }
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p { margin-bottom: 0.75rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.85rem;
+    }
+    th {
+      background: var(--bg-note);
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-weight: 600;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border-light);
+    }
+    td {
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.82em;
+      background: var(--bg-code);
+      padding: 0.15em 0.35em;
+      border-radius: 3px;
+    }
+    .question-card {
+      background: var(--bg-note);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .question-card .q-number {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.3rem;
+    }
+    .question-card .q-text {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+    .question-card .q-context {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .option-block {
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      margin: 0.75rem 0;
+      overflow: hidden;
+    }
+    .option-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .option-header.opt-a { background: #d4edda; color: var(--opt-a); }
+    .option-header.opt-b { background: #d1ecf1; color: var(--opt-b); }
+    .option-header.opt-c { background: #fff3cd; color: var(--opt-c); }
+    .option-body {
+      padding: 0.75rem;
+      font-size: 0.88rem;
+    }
+    .option-body p { margin-bottom: 0.5rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.1rem 0.35rem;
+      border-radius: 2px;
+      letter-spacing: 0.03em;
+    }
+    .badge-rec { background: #d4edda; color: var(--opt-a); }
+    .badge-alt { background: #d1ecf1; color: var(--opt-b); }
+    .badge-risk { background: #f8d7da; color: var(--risk); }
+    .badge-effort-low { background: #d4edda; color: var(--opt-a); }
+    .badge-effort-med { background: #fff3cd; color: var(--opt-c); }
+    .badge-effort-high { background: #f8d7da; color: var(--risk); }
+    .impact-box {
+      background: white;
+      border: 1px solid var(--border-light);
+      border-left: 3px solid var(--border-heavy);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+    .impact-box.warn { border-left-color: var(--opt-c); }
+    .impact-box.critical { border-left-color: var(--risk); }
+    .impact-box strong { display: block; margin-bottom: 0.25rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .prompt-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0.75rem;
+      background: var(--bg-note);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .prompt-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+    }
+    .copy-btn {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 0.18rem 0.45rem;
+      border: 1px solid var(--copy-btn);
+      background: transparent;
+      color: var(--copy-btn);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover { background: var(--copy-btn); color: white; }
+    .copy-btn.copied { background: var(--copy-btn); color: white; }
+    .prompt-content {
+      padding: 0.75rem;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.78rem;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    .verdict {
+      background: var(--bg-note);
+      border: 2px solid var(--border-heavy);
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .verdict strong {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-sidebar { display: none; }
+      .doc-content { padding: 1.5rem; }
+    }
+    @media print {
+      .doc-sidebar { display: none; }
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-content { padding: 1rem; max-width: 100%; }
+      .copy-btn { display: none; }
+      body { font-size: 11pt; }
+      .option-block { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <h2>Preguntas v4</h2>
+      <div class="nav-section">
+        <div class="nav-section-title">Contexto</div>
+        <a href="#intro" class="nav-link">Por qué importa</a>
+        <a href="#resumen" class="nav-link">Mapa de decisiones</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Modelo de negocio</div>
+        <a href="#q1" class="nav-link">Q1 · Suscripción vs Pago único</a>
+        <a href="#q2" class="nav-link">Q2 · Acceso del creador post-envío</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Receptor</div>
+        <a href="#q3" class="nav-link">Q3 · ¿El receptor paga?</a>
+        <a href="#q4" class="nav-link">Q4 · ¿Multi-receptor o 1:1?</a>
+        <a href="#q5" class="nav-link">Q5 · Nivel de acceso receptor</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Producto</div>
+        <a href="#q6" class="nav-link">Q6 · Video Regalo: quién personaliza</a>
+        <a href="#q7" class="nav-link">Q7 · Expiración vs Trust contacts</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Cierre</div>
+        <a href="#dependencias" class="nav-link">Dependencias cruzadas</a>
+        <a href="#mensaje" class="nav-link">Mensaje para Andrea</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1>7 Preguntas Bloqueantes para Andrea</h1>
+      <p class="subtitle">NUCLEA v4 · Resoluciones posibles y sus consecuencias arquitecturales</p>
+
+      <!-- ============================================================ -->
+      <h2 id="intro">Por qué importa</h2>
+      <p>
+        El PDF <em>NUCLEA_Explicacion_Modelo_Limpio_v4</em> introduce un cambio de producto fundamental:
+        la cápsula pasa de ser un <strong>objeto personal del creador</strong> a un <strong>regalo transferible con destinatario</strong>.
+        Este cambio afecta al schema de base de datos, permisos, pagos, notificaciones y UI.
+      </p>
+      <p>
+        Hemos completado el hardening de seguridad del modelo actual (SEC-001 a SEC-008), pero
+        <strong>cada día que pasa sin respuestas a estas preguntas, más código escribimos sobre supuestos no validados</strong>.
+        Algunas respuestas cambian la arquitectura de raíz; otras solo ajustan parámetros.
+      </p>
+
+      <div class="impact-box critical">
+        <strong>Coste de no decidir</strong>
+        Las policies RLS, el state machine, y el modelo de datos actuales asumen un ownership simple (creator-only).
+        Si la respuesta a Q1-Q5 confirma el modelo receptor, habrá que reescribir las migraciones 00005 y 00007,
+        y el state machine necesitará estados nuevos (<code>sent</code>, <code>claimed</code>, <code>experience_active</code>).
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="resumen">Mapa de Decisiones</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Pregunta</th>
+            <th>Impacto en código</th>
+            <th>Urgencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Q1</td>
+            <td>¿Suscripción, pago único, o ambos?</td>
+            <td>Stripe, tabla plans, UI pricing</td>
+            <td><span class="badge badge-risk">BLOQUEA TODO</span></td>
+          </tr>
+          <tr>
+            <td>Q2</td>
+            <td>¿El creador pierde acceso tras enviar?</td>
+            <td>RLS policies, ownership model</td>
+            <td><span class="badge badge-risk">BLOQUEA RLS</span></td>
+          </tr>
+          <tr>
+            <td>Q3</td>
+            <td>¿El receptor paga algo?</td>
+            <td>Payment gateway, UX flow</td>
+            <td><span class="badge badge-effort-med">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td>Q4</td>
+            <td>¿Una cápsula a muchos receptores?</td>
+            <td>Schema: FK vs junction table</td>
+            <td><span class="badge badge-risk">BLOQUEA SCHEMA</span></td>
+          </tr>
+          <tr>
+            <td>Q5</td>
+            <td>¿Receptor solo ve o puede descargar?</td>
+            <td>Permisos, storage policies</td>
+            <td><span class="badge badge-effort-med">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td>Q6</td>
+            <td>¿Quién configura el Video Regalo?</td>
+            <td>UI builder, AI pipeline</td>
+            <td><span class="badge badge-effort-low">BAJA (futuro)</span></td>
+          </tr>
+          <tr>
+            <td>Q7</td>
+            <td>¿Expiración anula trust contacts?</td>
+            <td>Cron logic, notification cascade</td>
+            <td><span class="badge badge-effort-med">MEDIA</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <!-- PREGUNTA 1 -->
+      <!-- ============================================================ -->
+      <h2 id="q1">Q1 · ¿Suscripción mensual, pago único por Video Regalo, o ambos?</h2>
+
+      <div class="question-card">
+        <div class="q-number">Pregunta 1 de 7</div>
+        <div class="q-text">El PDF v4 no menciona los 4 planes de suscripción (Free/Esencial/Familiar/EverLife) que están implementados en el código actual. La única monetización implícita es el pago único del Video Regalo. ¿Se elimina la suscripción?</div>
+        <div class="q-context">Actualmente: 4 planes con límites de cápsulas y storage. Código en PLANS constant + Pricing component + plan enforcement en API.</div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-a">Opción A: Solo pago único (Video Regalo) <span class="badge badge-rec">RECOMENDADA CTO</span></div>
+        <div class="option-body">
+          <p><strong>Qué implica:</strong> Eliminar los 4 planes, quitar límites de cápsulas/storage, la app es gratis para crear y enviar. Solo cobra al receptor cuando quiere el Video Regalo completo.</p>
+          <p><strong>Pros:</strong> Eliminación total de fricción. Más usuarios crean cápsulas. El receptor paga por un resultado tangible (película emocional), no por acceso.</p>
+          <p><strong>Contras:</strong> Ingresos = 0 hasta que el pipeline de vídeo esté listo. Sin ingresos recurrentes. Dependencia total de que los receptores quieran pagar.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-low">BAJO</span> Eliminar código es más fácil que añadirlo. Quitar PLANS, pricing page, plan enforcement.</p>
+          <p><strong>Código afectado:</strong> <code>PLANS</code> constant, <code>Pricing</code> component, plan check en <code>POST /api/capsules</code>, UI de upgrade.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-b">Opción B: Suscripción + pago único (híbrido)</div>
+        <div class="option-body">
+          <p><strong>Qué implica:</strong> Mantener planes para el creador (límite de cápsulas activas) + pago único del Video Regalo para el receptor. Dos flujos de pago.</p>
+          <p><strong>Pros:</strong> Ingresos recurrentes + puntuales. Modelo predecible para inversores (MRR + transaccional).</p>
+          <p><strong>Contras:</strong> Complejidad doble: Stripe subscriptions + Stripe one-time payments. UX más confusa ("¿por qué pago yo para crear y el receptor también paga?").</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-high">ALTO</span> Dos integraciones de Stripe, dos modelos de billing, dos UIs de pago.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-c">Opción C: Freemium con upsell a Video Regalo</div>
+        <div class="option-body">
+          <p><strong>Qué implica:</strong> Tier gratis ilimitado para crear/enviar. Tier "Premium" con Video Regalo, más storage, más personalización. Sin suscripción mensual — pago por cápsula premium.</p>
+          <p><strong>Pros:</strong> Barrera de entrada cero. El pago se asocia al momento emocional de recibir (alta conversión).</p>
+          <p><strong>Contras:</strong> Difícil proyectar ingresos. Requiere volumen alto para ser rentable.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-med">MEDIO</span> Un solo tipo de pago (Stripe Checkout per-capsule), pero con feature gating.</p>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <strong>Lo que cambia según la respuesta</strong>
+        <p>Si A: borrar ~200 líneas de código de planes. Si B: implementar Stripe Subscriptions + Checkout (2-3 sprints). Si C: implementar feature flags por cápsula (1 sprint).</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- PREGUNTA 2 -->
+      <!-- ============================================================ -->
+      <h2 id="q2">Q2 · ¿El creador mantiene acceso después de enviar la cápsula?</h2>
+
+      <div class="question-card">
+        <div class="q-number">Pregunta 2 de 7</div>
+        <div class="q-text">Cuando el creador envía la cápsula al receptor, ¿puede seguir viéndola, editándola, o pierde todo acceso? Esto define el modelo de ownership en base de datos.</div>
+        <div class="q-context">Actualmente: creator = owner único. Las RLS que acabamos de implementar asumen <code>owner_id = auth_user()</code>. Si hay co-ownership, hay que reescribir.</div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-a">Opción A: Creador pierde acceso tras envío <span class="badge badge-rec">COHERENTE CON PDF</span></div>
+        <div class="option-body">
+          <p><strong>Qué implica:</strong> Ownership se transfiere: <code>owner_id</code> cambia de creator a receiver al hacer claim. El creador ya no ve la cápsula en su dashboard.</p>
+          <p><strong>Emocionalmente:</strong> Es un regalo real. Cuando regalas algo, ya no es tuyo. Refuerza la metáfora.</p>
+          <p><strong>Técnicamente:</strong> Simple. <code>UPDATE capsules SET owner_id = receiver_id WHERE id = X</code>. Las RLS actuales siguen funcionando sin cambios.</p>
+          <p><strong>Riesgo:</strong> El creador no puede corregir errores post-envío. No puede eliminar contenido sensible si se arrepiente.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-low">BAJO</span> Un UPDATE en el claim flow. Añadir <code>creator_id</code> como campo histórico (para audit).</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-b">Opción B: Creador mantiene acceso de lectura</div>
+        <div class="option-body">
+          <p><strong>Qué implica:</strong> Ownership dual. Creator puede ver pero no editar. Receiver tiene full control.</p>
+          <p><strong>Técnicamente:</strong> Requiere campo <code>creator_id</code> + <code>receiver_id</code> en capsules. RLS necesita policy adicional: <code>creator_id = auth_user() → SELECT only</code>.</p>
+          <p><strong>Riesgo:</strong> Confuso para el receptor. "¿Quién más puede ver esto?".</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-med">MEDIO</span> Reescribir RLS policies + UI para diferenciar "mis cápsulas" vs "cápsulas que creé".</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-c">Opción C: Creador tiene control total siempre</div>
+        <div class="option-body">
+          <p><strong>Qué implica:</strong> No hay transferencia real. El receptor es un "viewer". El creador puede editar/eliminar en cualquier momento.</p>
+          <p><strong>Emocionalmente:</strong> Rompe la metáfora del regalo. Es más un "Google Drive compartido" que una cápsula del tiempo.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-low">BAJO</span> Modelo actual sin cambios. Receptor = collaborator con permisos de lectura.</p>
+        </div>
+      </div>
+
+      <div class="impact-box warn">
+        <strong>Impacto en código existente</strong>
+        Si A: añadir <code>creator_id</code> a capsules, RLS policies sin cambios, state machine añade estado <code>sent</code>.<br>
+        Si B: reescribir RLS de capsules (dual ownership), migration nueva, UI bifurcada.<br>
+        Si C: zero cambios, receptor = row en <code>collaborators</code>.
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- PREGUNTA 3 -->
+      <!-- ============================================================ -->
+      <h2 id="q3">Q3 · ¿El receptor paga algo?</h2>
+
+      <div class="question-card">
+        <div class="q-number">Pregunta 3 de 7</div>
+        <div class="q-text">Reclamar la cápsula es gratis. El periodo de 30 días es gratis. ¿El receptor paga SOLO por el Video Regalo, o hay algún otro punto de pago?</div>
+        <div class="q-context">El PDF solo menciona pago por Video Regalo. Pero no queda claro si "Continuar Herencia Emocional" (opción A del receptor) es gratis o de pago.</div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-a">Opción A: Solo paga por Video Regalo <span class="badge badge-rec">INTERPRETACIÓN DEL PDF</span></div>
+        <div class="option-body">
+          <p>Reclamar = gratis. 30 días = gratis. Continuar herencia = gratis. Solo el Video Regalo tiene coste.</p>
+          <p><strong>Pros:</strong> Simple. Un solo punto de pago. Baja fricción.</p>
+          <p><strong>Contras:</strong> Si el receptor elige "Continuar" (añadir contenido indefinidamente) sin pagar, NUCLEA tiene coste de storage sin ingreso.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-low">BAJO</span> Un Stripe Checkout puntual. Sin billing recurrente para el receptor.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-b">Opción B: Continuar herencia = suscripción del receptor</div>
+        <div class="option-body">
+          <p>Si el receptor quiere seguir añadiendo contenido tras los 30 días, paga una suscripción mensual.</p>
+          <p><strong>Pros:</strong> Cubre coste de storage a largo plazo. Ingresos recurrentes.</p>
+          <p><strong>Contras:</strong> El receptor recibe un regalo y luego le piden dinero. Experiencia cuestionable.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-high">ALTO</span> Stripe Subscriptions para receptores, billing UI, plan management.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-c">Opción C: Creador paga todo (receptor nunca paga)</div>
+        <div class="option-body">
+          <p>El creador paga por crear la cápsula (plan/pago único). El receptor tiene acceso completo gratis siempre. Video Regalo incluido o pagado por el creador.</p>
+          <p><strong>Pros:</strong> El receptor tiene una experiencia 100% de regalo. Máxima emoción.</p>
+          <p><strong>Contras:</strong> El creador paga "a ciegas" sin saber si el receptor lo usará. Ticket medio alto = barrera.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-med">MEDIO</span> Pago en el flow de creación, no en el de recepción.</p>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- PREGUNTA 4 -->
+      <!-- ============================================================ -->
+      <h2 id="q4">Q4 · ¿Una cápsula puede tener múltiples receptores?</h2>
+
+      <div class="question-card">
+        <div class="q-number">Pregunta 4 de 7</div>
+        <div class="q-text">¿Cada cápsula va dirigida a una sola persona, o un padre puede enviar la misma cápsula a sus 3 hijos?</div>
+        <div class="q-context">Cambia radicalmente el schema. 1:1 = columna <code>receiver_id</code>. 1:N = tabla <code>capsule_recipients</code> con junction.</div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-a">Opción A: 1:1 estricto (una cápsula → un receptor) <span class="badge badge-rec">SIMPLE + ESCALABLE DESPUÉS</span></div>
+        <div class="option-body">
+          <p><strong>Schema:</strong> <code>capsules.receiver_id UUID REFERENCES users(id)</code></p>
+          <p><strong>Pros:</strong> Simple. Un campo. RLS directa. Si quieres enviar a 3 hijos, creas 3 cápsulas.</p>
+          <p><strong>Contras:</strong> Duplicación de contenido si el creador quiere mandar lo mismo a varios.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-low">BAJO</span> Un ALTER TABLE + una columna.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-b">Opción B: 1:N (una cápsula → N receptores)</div>
+        <div class="option-body">
+          <p><strong>Schema:</strong> Tabla <code>capsule_recipients(capsule_id, user_id, claimed_at, status)</code></p>
+          <p><strong>Pros:</strong> Padre envía una cápsula a toda la familia. Sin duplicación. Cada receptor tiene su propia experiencia.</p>
+          <p><strong>Contras:</strong> RLS mucho más compleja (JOIN a recipients). Video Regalo: ¿uno por receptor o uno compartido? Ownership ambigua.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-high">ALTO</span> Nueva tabla, RLS con JOIN, UI de gestión de receptores, lógica de claim individual.</p>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <strong>Recomendación CTO</strong>
+        <p>Empezar con 1:1. Si los usuarios piden multi-receptor, migrar a junction table. Es más fácil ir de simple a complejo que al revés. El 90% de las cápsulas tendrá un solo receptor.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- PREGUNTA 5 -->
+      <!-- ============================================================ -->
+      <h2 id="q5">Q5 · ¿Qué puede hacer el receptor exactamente?</h2>
+
+      <div class="question-card">
+        <div class="q-number">Pregunta 5 de 7</div>
+        <div class="q-text">Durante los 30 días de experiencia, el receptor ¿solo visualiza el contenido, o puede descargar fotos/vídeos individuales? Si elige "Continuar Herencia", ¿puede añadir su propio contenido?</div>
+        <div class="q-context">Esto define los permisos de Storage (Supabase) y las policies de <code>contents</code>.</div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-a">Opción A: Solo visualizar (no descargar, no añadir)</div>
+        <div class="option-body">
+          <p>El receptor ve fotos y textos en la app pero no puede guardarlos en su dispositivo. Para tener algo descargable, paga el Video Regalo.</p>
+          <p><strong>Pros:</strong> Incentiva el pago del Video Regalo. Control total del contenido. Previene redistribución.</p>
+          <p><strong>Contras:</strong> Frustración: "me mandaron mis fotos de infancia y no puedo guardarlas". Técnicamente difícil impedir screenshots.</p>
+          <p><strong>Storage policy:</strong> URLs firmadas de corta duración (5 min). No hay botón de descarga. Stream-only.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-b">Opción B: Ver + descargar individual + añadir si "Continúa" <span class="badge badge-rec">EQUILIBRADO</span></div>
+        <div class="option-body">
+          <p>El receptor puede ver y descargar fotos/textos individualmente. Si elige "Continuar Herencia Emocional", también puede subir contenido nuevo.</p>
+          <p><strong>Pros:</strong> Experiencia natural. El regalo es tuyo, haz lo que quieras. La continuación añade valor (no solo consume).</p>
+          <p><strong>Contras:</strong> Menos incentivo para pagar el Video Regalo (ya tiene las fotos). Storage crece si el receptor sube contenido.</p>
+          <p><strong>Storage policy:</strong> Descargas individuales permitidas. Si continúa: <code>INSERT INTO contents</code> con <code>created_by = receiver_id</code>.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-c">Opción C: Acceso total (ver, descargar ZIP, añadir, editar)</div>
+        <div class="option-body">
+          <p>El receptor tiene las mismas capacidades que el creador original.</p>
+          <p><strong>Pros:</strong> Máxima libertad.</p>
+          <p><strong>Contras:</strong> ¿Puede borrar lo que el creador puso? ¿Puede modificar textos del creador fallecido? Éticamente cuestionable.</p>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- PREGUNTA 6 -->
+      <!-- ============================================================ -->
+      <h2 id="q6">Q6 · Video Regalo: ¿quién personaliza el estilo?</h2>
+
+      <div class="question-card">
+        <div class="q-number">Pregunta 6 de 7</div>
+        <div class="q-text">El Video Regalo es una película emocional generada por IA. ¿El creador elige el estilo/música al crear la cápsula, o el receptor personaliza cuando decide comprarlo?</div>
+        <div class="q-context">Esto define si el pipeline de vídeo se ejecuta al crear (background job) o al comprar (on-demand). Coste de infra muy diferente.</div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-a">Opción A: NUCLEA decide el estilo automáticamente <span class="badge badge-rec">MVP</span></div>
+        <div class="option-body">
+          <p>La IA analiza el contenido y elige estilo, música, narrativa. Ni creador ni receptor deciden. "Magia" automática.</p>
+          <p><strong>Pros:</strong> Mínimo esfuerzo de UX. No hay UI de personalización. Pipeline más simple.</p>
+          <p><strong>Contras:</strong> Si el resultado no gusta, no hay forma de cambiarlo. Menor percepción de valor.</p>
+          <p><strong>Pipeline:</strong> Generación on-demand al comprar. ~5 min de procesamiento. Resultado fijo.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-med">MEDIO</span> Pipeline de IA + ffmpeg, sin UI de opciones.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-b">Opción B: El creador configura al crear</div>
+        <div class="option-body">
+          <p>Al crear la cápsula, el creador elige: estilo visual (cinematográfico, nostálgico, alegre), música, y opcionalmente graba un mensaje de voz que se incluye.</p>
+          <p><strong>Pros:</strong> El regalo tiene la intención del creador. Más personal.</p>
+          <p><strong>Contras:</strong> UX de creación más compleja. El creador tiene que decidir antes de saber cómo reaccionará el receptor.</p>
+          <p><strong>Pipeline:</strong> Pre-configuración almacenada. Generación al comprar con parámetros del creador.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-high">ALTO</span> UI de personalización + almacenamiento de preferencias + pipeline paramétrico.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-c">Opción C: El receptor personaliza al comprar</div>
+        <div class="option-body">
+          <p>El receptor ve el mini-trailer gratis. Si quiere el completo, elige estilo/música antes de pagar.</p>
+          <p><strong>Pros:</strong> El receptor tiene control sobre su experiencia. Mayor satisfacción.</p>
+          <p><strong>Contras:</strong> Más fricción en el punto de pago. Generación es post-pago (tiempo de espera).</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-high">ALTO</span> UI de personalización en flow de compra + generación on-demand paramétrica.</p>
+        </div>
+      </div>
+
+      <div class="impact-box">
+        <strong>Nota técnica</strong>
+        Independientemente de quién personalice, el pipeline de vídeo es el componente más complejo y caro del v4.
+        Estimación: 4-6 sprints para MVP. Se recomienda empezar con Opción A (automático) y añadir personalización en v5.
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- PREGUNTA 7 -->
+      <!-- ============================================================ -->
+      <h2 id="q7">Q7 · ¿Qué pasa cuando la cápsula expira y tiene trust contacts?</h2>
+
+      <div class="question-card">
+        <div class="q-number">Pregunta 7 de 7</div>
+        <div class="q-text">El v4 dice que todas las cápsulas (excepto Social) tienen trust contacts, Y que las cápsulas expiran a los 30 días si el receptor no actúa. ¿Qué tiene prioridad: la expiración automática o la decisión de los contactos de confianza?</div>
+        <div class="q-context">Conflicto lógico: si la cápsula expira y se borra, los trust contacts no pueden decidir nada. Si los trust contacts tienen prioridad, la cápsula no expira realmente a los 30 días.</div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-a">Opción A: Expiración notifica a trust contacts ANTES de borrar <span class="badge badge-rec">EQUILIBRADO</span></div>
+        <div class="option-body">
+          <p><strong>Flujo:</strong></p>
+          <ol>
+            <li>Día 23: notificación al receptor ("te quedan 7 días")</li>
+            <li>Día 27: notificación a trust contacts ("la cápsula de X va a expirar en 3 días, ¿quieres reclamarla?")</li>
+            <li>Día 30: si nadie actúa → expiración + eliminación</li>
+            <li>Si un trust contact reclama → se reinicia el periodo de 30 días para ese contact</li>
+          </ol>
+          <p><strong>Pros:</strong> Respeta la expiración pero da una oportunidad a los trust contacts. Cascada natural.</p>
+          <p><strong>Contras:</strong> Complejidad: cron jobs escalonados, múltiples notificaciones, lógica de "quién reclama primero".</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-med">MEDIO</span> Cron de notificaciones escalonado + claim alternativo para trust contacts.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-b">Opción B: Trust contacts ANULAN la expiración</div>
+        <div class="option-body">
+          <p>Si una cápsula tiene trust contacts, NUNCA expira automáticamente. Los trust contacts deciden su destino cuando detectamos inactividad del receptor.</p>
+          <p><strong>Pros:</strong> Garantiza que el contenido no se pierde si hay personas que lo valoran.</p>
+          <p><strong>Contras:</strong> Storage infinito para cápsulas con trust contacts. La expiración de 30 días se vuelve irrelevante para la mayoría.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-low">BAJO</span> <code>IF trust_contacts.length > 0 THEN skip_expiry</code>.</p>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-header opt-c">Opción C: Trust contacts solo aplican por inactividad del CREADOR, no del receptor</div>
+        <div class="option-body">
+          <p>Los trust contacts se activan si el <strong>creador</strong> deja de entrar (fallecimiento, abandono). La expiración de 30 días del receptor es un proceso independiente.</p>
+          <p><strong>Pros:</strong> Separación clara de responsabilidades. Trust contacts = herencia. Expiración = TTL del regalo.</p>
+          <p><strong>Contras:</strong> Dos sistemas de "qué pasa cuando nadie actúa" corriendo en paralelo. Posible confusión.</p>
+          <p><strong>Esfuerzo:</strong> <span class="badge badge-effort-med">MEDIO</span> Dos crons independientes: uno de inactividad del creador, otro de TTL del receptor.</p>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <strong>Conflicto clave</strong>
+        <p>Este es el punto donde el modelo "regalo con TTL" (v4) choca con el modelo "herencia permanente" (v3). Andrea necesita decidir qué tiene prioridad: la urgencia del regalo o la permanencia de la herencia. No pueden coexistir sin reglas claras.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="dependencias">Dependencias Cruzadas</h2>
+      <p>Las respuestas no son independientes. Este es el grafo de dependencias:</p>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Grafo de dependencias</span>
+        </div>
+        <div class="prompt-content">Q1 (Monetización)
+ ├─→ Q3 (¿Receptor paga?) — si Q1=pago único, Q3 se responde sola
+ └─→ Q6 (Video Regalo) — si no hay Video Regalo, Q6 no aplica
+
+Q2 (Acceso creador)
+ └─→ Q5 (Permisos receptor) — si creador pierde acceso, receptor DEBE tener más
+
+Q4 (Multi-receptor)
+ └─→ Q7 (Expiración + trust) — si multi-receptor, trust contacts = otros receptores?
+
+Q7 (Expiración + trust)
+ └─→ requiere Q2 + Q4 resueltas primero
+
+ORDEN RECOMENDADO DE DECISIÓN:
+  1. Q1 (Monetización)     → define todo el modelo de negocio
+  2. Q4 (Multi-receptor)   → define el schema
+  3. Q2 (Acceso creador)   → define ownership
+  4. Q3 + Q5 (Receptor)    → se derivan de Q1 + Q2
+  5. Q7 (Expiración)       → se deriva de Q2 + Q4
+  6. Q6 (Video Regalo)     → puede decidirse después (es futuro)</div>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="mensaje">Mensaje para Andrea</h2>
+      <p>
+        Texto listo para enviar por WhatsApp. Directo, sin jerga técnica, con las 7 preguntas numeradas:
+      </p>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">WhatsApp para Andrea</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">Hola Andrea! 👋
+
+Estuve trabajando en el modelo v4 que mandaste (el PDF de la lógica limpia). Está muy bien pensado, pero hay 7 decisiones que necesito que tomes antes de implementar el modelo receptor + Video Regalo. Sin estas respuestas no puedo avanzar sin arriesgarme a tener que rehacerlo.
+
+Te las pongo fácil, con opciones:
+
+1. MONETIZACIÓN: ¿Quitamos los planes de suscripción y solo cobramos por el Video Regalo? ¿O mantenemos planes + Video Regalo?
+
+2. CREADOR POST-ENVÍO: Cuando el creador envía la cápsula, ¿pierde el acceso (es un regalo real) o puede seguir viéndola?
+
+3. RECEPTOR Y PAGO: El receptor, ¿solo paga por el Video Regalo o hay algún otro punto donde pague? Si elige "Continuar Herencia" y seguir añadiendo recuerdos, ¿eso es gratis?
+
+4. MULTI-RECEPTOR: ¿Una cápsula va a una sola persona, o un padre puede enviar la misma a sus 3 hijos?
+
+5. PERMISOS DEL RECEPTOR: Durante los 30 días, ¿el receptor solo puede ver las fotos/textos o también descargarlas? Y si elige "Continuar", ¿puede subir su propio contenido?
+
+6. VIDEO REGALO: La película emocional, ¿el estilo lo decide NUCLEA automáticamente, lo configura el creador al crear, o lo elige el receptor al comprar?
+
+7. EXPIRACIÓN vs CONTACTOS DE CONFIANZA: Si la cápsula expira a los 30 días pero tiene contactos de confianza, ¿qué tiene prioridad? ¿Se avisa a los contactos antes de borrar, o los contactos anulan la expiración?
+
+No hace falta que respondas todas de golpe. Si me dices la 1, 2 y 4, ya puedo avanzar con la base de datos y los permisos. Las demás pueden esperar un poco más.
+
+Gracias! 🙏</div>
+      </div>
+
+      <div class="footer">
+        NUCLEA — Preguntas Bloqueantes v4 · Generado el 22 de febrero de 2026 · Claude Opus 4.6
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function copyPrompt(button) {
+      const content = button.closest('.prompt-block').querySelector('.prompt-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        const original = button.textContent;
+        button.textContent = 'COPIED!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    const sections = document.querySelectorAll('[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (scrollY >= section.offsetTop - 100) current = section.getAttribute('id');
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>

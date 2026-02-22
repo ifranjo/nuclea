@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUCLEA — Cierre Técnico · 21 Feb 2026</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --pass: #2D6A2E;
+      --fail: #A33;
+      --warn: #8B6914;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    .doc-sidebar {
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 1.25rem;
+    }
+    .doc-sidebar h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .nav-section {
+      margin-bottom: 1.5rem;
+    }
+    .nav-section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.3rem 0;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 0.75rem;
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text-primary); }
+    .nav-link.active {
+      color: var(--text-primary);
+      border-left-color: var(--border-heavy);
+      font-weight: 500;
+    }
+    .doc-content {
+      padding: 2.5rem 4rem 4rem;
+      max-width: 920px;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-tertiary);
+      margin-bottom: 2.5rem;
+    }
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p { margin-bottom: 0.75rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.85rem;
+    }
+    th {
+      background: var(--bg-note);
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border-light);
+    }
+    td {
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      background: var(--bg-code);
+      padding: 0.15em 0.35em;
+      border-radius: 3px;
+    }
+    .prompt-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0.75rem;
+      background: var(--bg-note);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .prompt-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+    }
+    .copy-btn {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--copy-btn);
+      background: transparent;
+      color: var(--copy-btn);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover { background: var(--copy-btn); color: white; }
+    .copy-btn.copied { background: var(--copy-btn); color: white; }
+    .prompt-content {
+      padding: 0.75rem;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.12rem 0.4rem;
+      border-radius: 2px;
+      letter-spacing: 0.03em;
+    }
+    .badge-pass { background: #d4edda; color: var(--pass); }
+    .badge-fail { background: #f8d7da; color: var(--fail); }
+    .badge-warn { background: #fff3cd; color: var(--warn); }
+    .badge-info { background: #d1ecf1; color: #0c5460; }
+    .badge-p0 { background: #f8d7da; color: var(--fail); }
+    .badge-p1 { background: #fff3cd; color: var(--warn); }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .kpi-card {
+      background: var(--bg-note);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .kpi-value {
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--text-primary);
+    }
+    .kpi-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      margin-top: 0.25rem;
+    }
+    .note-box {
+      background: var(--bg-note);
+      border-left: 3px solid var(--border-heavy);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+    .note-box.warn { border-left-color: var(--warn); }
+    .note-box.critical { border-left-color: var(--fail); }
+    .note-box strong { display: block; margin-bottom: 0.25rem; }
+    .timeline {
+      border-left: 2px solid var(--border-light);
+      margin: 1rem 0 1rem 0.5rem;
+      padding-left: 1.25rem;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.55rem;
+      top: 0.4rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border-light);
+      border: 2px solid var(--bg-page);
+    }
+    .timeline-item.done::before { background: var(--pass); }
+    .timeline-item.blocked::before { background: var(--warn); }
+    .timeline-time {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+    }
+    .timeline-desc {
+      font-size: 0.88rem;
+      margin-top: 0.1rem;
+    }
+    .footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-sidebar { display: none; }
+      .doc-content { padding: 1.5rem; }
+    }
+    @media print {
+      .doc-sidebar { display: none; }
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-content { padding: 1rem; max-width: 100%; }
+      .copy-btn { display: none; }
+      body { font-size: 11pt; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <h2>Cierre Técnico</h2>
+      <div class="nav-section">
+        <div class="nav-section-title">Resumen</div>
+        <a href="#resumen" class="nav-link">Resumen Ejecutivo</a>
+        <a href="#kpis" class="nav-link">KPIs de Sesión</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Seguridad</div>
+        <a href="#sec-status" class="nav-link">Estado SEC-001–008</a>
+        <a href="#rls-fix" class="nav-link">RLS Recursion Fix</a>
+        <a href="#smoke" class="nav-link">Smoke Tests</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Verificación</div>
+        <a href="#lint-tsc" class="nav-link">Lint + TypeScript</a>
+        <a href="#db-types" class="nav-link">Supabase Types</a>
+        <a href="#consent-db" class="nav-link">Consent Fields DB</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Entrega</div>
+        <a href="#commits" class="nav-link">Commits</a>
+        <a href="#archivos" class="nav-link">Archivos Tocados</a>
+        <a href="#riesgos" class="nav-link">Riesgos Residuales</a>
+        <a href="#next" class="nav-link">Próximos Pasos</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1>Cierre Técnico — Sesión 21 Feb 2026</h1>
+      <p class="subtitle">NUCLEA · Security Hardening + Operational Closure · POC_REAL + PREREUNION_ANDREA</p>
+
+      <!-- ============================================================ -->
+      <h2 id="resumen">Resumen Ejecutivo</h2>
+      <p>
+        Sesión de cierre técnico que auditó, verificó y cerró los 8 prompts de seguridad (SEC-001 a SEC-008)
+        generados en la sesión anterior. Se encontró y corrigió un <strong>bug crítico de recursión infinita en RLS</strong>,
+        se regeneraron los tipos TypeScript desde la base de datos real, y se ejecutaron smoke tests de seguridad
+        runtime contra los dos servidores en local.
+      </p>
+
+      <div class="note-box">
+        <strong>Bug encontrado y resuelto en esta sesión</strong>
+        Las políticas RLS de <code>00005_enable_rls.sql</code> tenían subqueries cruzados entre
+        <code>capsules</code> y <code>collaborators</code> que provocaban <code>42P17: infinite recursion detected</code>.
+        Corregido en migración <code>00007_fix_rls_recursion.sql</code> con funciones <code>SECURITY DEFINER</code>.
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="kpis">KPIs de Sesión</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value">8/8</div>
+          <div class="kpi-label">SEC Prompts Cerrados</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">9/9</div>
+          <div class="kpi-label">Smoke Tests PASS</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">0</div>
+          <div class="kpi-label">Errores Lint + TSC</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">5</div>
+          <div class="kpi-label">Commits Organizados</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">32/32</div>
+          <div class="kpi-label">State Machine Tests</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">1</div>
+          <div class="kpi-label">Bug Crítico Resuelto</div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="sec-status">Estado SEC-001 – SEC-008</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>App</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Evidencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>SEC-001</code></td>
+            <td>Firestore Security Rules</td>
+            <td>PREREUNION</td>
+            <td><span class="badge badge-p0">P0</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td><code>firestore.rules</code> en repo — owner-only, deny-by-default</td>
+          </tr>
+          <tr>
+            <td><code>SEC-002</code></td>
+            <td>Supabase RLS Enable</td>
+            <td>POC_REAL</td>
+            <td><span class="badge badge-p0">P0</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td>8 tablas con RLS + fix recursión (00007). Anon devuelve <code>[]</code></td>
+          </tr>
+          <tr>
+            <td><code>SEC-003</code></td>
+            <td>Admin Key Fix</td>
+            <td>POC_REAL</td>
+            <td><span class="badge badge-p0">P0</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td><code>ADMIN_API_SECRET</code> en <code>admin-api-auth.ts</code>. Key inválido → 401</td>
+          </tr>
+          <tr>
+            <td><code>SEC-004</code></td>
+            <td>Owner Verification Guards</td>
+            <td>Ambas</td>
+            <td><span class="badge badge-p0">P0</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td>Guards en capsule mutations + state validation</td>
+          </tr>
+          <tr>
+            <td><code>SEC-005</code></td>
+            <td>GDPR Biometric Enforcement</td>
+            <td>PREREUNION</td>
+            <td><span class="badge badge-p0">P0</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td>Cron con ElevenLabs deletion, 30-day retention, retry. Auth gate → 401</td>
+          </tr>
+          <tr>
+            <td><code>SEC-006</code></td>
+            <td>Rate Limiting POC_REAL</td>
+            <td>POC_REAL</td>
+            <td><span class="badge badge-p0">P0</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td>Fixed-window en Supabase. 6th attempt → 429 + headers</td>
+          </tr>
+          <tr>
+            <td><code>SEC-007</code></td>
+            <td>Supabase Generated Types</td>
+            <td>POC_REAL</td>
+            <td><span class="badge badge-p1">P1</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td><code>database.types.ts</code> generado desde DB real con consent fields</td>
+          </tr>
+          <tr>
+            <td><code>SEC-008</code></td>
+            <td>Consent Fields POC_REAL</td>
+            <td>POC_REAL</td>
+            <td><span class="badge badge-p1">P1</span></td>
+            <td><span class="badge badge-pass">CERRADO</span></td>
+            <td>Migración 00006 + seed con 5/5 users con <code>consent_version='2.0'</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="rls-fix">RLS Recursion Fix</h2>
+      <h3>Problema</h3>
+      <p>
+        La migración <code>00005_enable_rls.sql</code> definía políticas con subqueries cruzados:
+      </p>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Cadena de recursión</span>
+        </div>
+        <div class="prompt-content">capsules_collaborator_select → SELECT FROM collaborators
+collaborators_owner_all       → SELECT FROM capsules
+                              → capsules → collaborators → capsules → ∞
+
+PostgreSQL error: 42P17 infinite recursion detected in policy for relation "capsules"</div>
+      </div>
+
+      <h3>Solución (00007_fix_rls_recursion.sql)</h3>
+      <p>
+        3 funciones <code>SECURITY DEFINER</code> que ejecutan con permisos del owner (postgres),
+        bypaseando RLS en sus subqueries internas:
+      </p>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Helper functions</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">-- Get internal user ID from auth.uid()
+auth_user_internal_id() → uuid
+
+-- Check capsule ownership (bypasses RLS)
+is_capsule_owner(cap_id uuid) → boolean
+
+-- Check collaborator status (bypasses RLS)
+is_capsule_collaborator(cap_id uuid) → boolean</div>
+      </div>
+      <p>
+        Las políticas de <code>capsules</code>, <code>contents</code>, <code>collaborators</code> y
+        <code>designated_persons</code> ahora usan estas funciones en lugar de subqueries directos.
+      </p>
+
+      <!-- ============================================================ -->
+      <h2 id="smoke">Smoke Tests de Seguridad</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Test</th><th>Endpoint</th><th>Esperado</th><th>Resultado</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Admin key inválido</td>
+            <td><code>POST /api/beta/invite</code></td>
+            <td>401</td>
+            <td><span class="badge badge-pass">401</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Admin key válido</td>
+            <td><code>POST /api/beta/invite</code></td>
+            <td>200</td>
+            <td><span class="badge badge-pass">200 + invitation JSON</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Rate limit — 5 intentos OK</td>
+            <td><code>GET /api/beta/accept</code></td>
+            <td>400 (token inválido)</td>
+            <td><span class="badge badge-pass">400 x5</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Rate limit — 6to intento bloqueado</td>
+            <td><code>GET /api/beta/accept</code></td>
+            <td>429</td>
+            <td><span class="badge badge-pass">429 + headers</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Rate limit headers presentes</td>
+            <td><code>GET /api/beta/accept</code></td>
+            <td>X-RateLimit-*</td>
+            <td><span class="badge badge-pass">Limit:5, Remaining:0, Reset:epoch</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>RLS — anon no ve cápsulas</td>
+            <td>REST <code>/capsules</code></td>
+            <td><code>[]</code></td>
+            <td><span class="badge badge-pass">[]</span></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>RLS — service_role ve todo</td>
+            <td>REST <code>/capsules</code></td>
+            <td>5 cápsulas</td>
+            <td><span class="badge badge-pass">5 rows</span></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Cron sin secret</td>
+            <td><code>GET /api/cron/biometric-cleanup</code></td>
+            <td>401</td>
+            <td><span class="badge badge-pass">401</span></td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Cron con bearer válido</td>
+            <td><code>GET /api/cron/biometric-cleanup</code></td>
+            <td>500 (Firebase no disponible)</td>
+            <td><span class="badge badge-pass">500 (auth OK, Firebase not configured)</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="lint-tsc">Lint + TypeScript</h2>
+      <table>
+        <thead>
+          <tr><th>App</th><th>Lint Errors</th><th>Lint Warnings</th><th>TSC Errors</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>POC_REAL</td>
+            <td><span class="badge badge-pass">0</span></td>
+            <td><span class="badge badge-warn">5</span> (preexistentes: img, unused vars)</td>
+            <td><span class="badge badge-pass">0</span></td>
+          </tr>
+          <tr>
+            <td>PREREUNION_ANDREA</td>
+            <td><span class="badge badge-pass">0</span></td>
+            <td><span class="badge badge-pass">0</span></td>
+            <td><span class="badge badge-pass">0</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>Fix aplicado:</strong> Eliminada variable <code>allChecked</code> no usada en
+        <code>PREREUNION_ANDREA/src/app/consentimiento/page.tsx</code> (era el único warning).
+      </p>
+      <p>
+        Los 5 warnings de POC_REAL son preexistentes: 2x <code>&lt;img&gt;</code> sin <code>&lt;Image/&gt;</code>,
+        2x unused vars en <code>P3Manifesto.tsx</code>, 1x unused import en <code>NoteEditor.tsx</code>.
+      </p>
+
+      <!-- ============================================================ -->
+      <h2 id="db-types">Supabase Generated Types</h2>
+      <p>
+        Tipos regenerados desde la instancia Supabase local con todas las migraciones (00001–00007) aplicadas:
+      </p>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Comando ejecutado</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">cd POC_REAL && npx supabase gen types typescript --local > src/lib/database.types.ts</div>
+      </div>
+      <p>
+        El script <code>npm run db:types</code> fue corregido (faltaba <code>npx</code> prefix).
+        El archivo <code>database.types.ts</code> incluye Row/Insert/Update types para las 9 tablas
+        incluyendo los campos de consent de SEC-008.
+      </p>
+
+      <!-- ============================================================ -->
+      <h2 id="consent-db">Consent Fields en DB</h2>
+      <p>
+        SEC-008 verificado contra la base de datos real:
+      </p>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Query de verificación (REST API)</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">GET /rest/v1/users?select=email,consent_version,consent_source,terms_accepted_at,privacy_accepted_at</div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Email</th><th>Version</th><th>Source</th><th>Terms</th><th>Privacy</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>homer@nuclea.test</td>
+            <td>2.0</td>
+            <td>seed_script</td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+          </tr>
+          <tr>
+            <td>marge@nuclea.test</td>
+            <td>2.0</td>
+            <td>seed_script</td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+          </tr>
+          <tr>
+            <td>bart@nuclea.test</td>
+            <td>2.0</td>
+            <td>seed_script</td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+          </tr>
+          <tr>
+            <td>lisa@nuclea.test</td>
+            <td>2.0</td>
+            <td>seed_script</td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+          </tr>
+          <tr>
+            <td>maggie@nuclea.test</td>
+            <td>2.0</td>
+            <td>seed_script</td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+            <td><span class="badge badge-pass">2026-02-21</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Gate 5 (SEC-008):</strong> 0 rows con <code>consent_version IS NULL</code>.</p>
+
+      <!-- ============================================================ -->
+      <h2 id="commits">Commits</h2>
+      <p>5 commits organizados por área, pusheados a <code>origin/master</code>:</p>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Hash</th><th>Scope</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><code>b665b20</code></td>
+            <td>chore</td>
+            <td>Gitignore — media assets, screenshots, mp4</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><code>bec4a31</code></td>
+            <td>feat(poc-real)</td>
+            <td>Security hardening — RLS, admin auth, rate limit, consent, state machine, types</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><code>4433835</code></td>
+            <td>feat(prereunion)</td>
+            <td>Firebase rules, biometric cron, token refresh, API types</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><code>5adf2ca</code></td>
+            <td>feat</td>
+            <td>Capsule lifecycle, receiver experience, test infrastructure</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><code>caab25b</code></td>
+            <td>docs</td>
+            <td>Architectural audit v4, SEC prompts, CLAUDE.md rewrite</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="archivos">Archivos Tocados (esta sesión)</h2>
+      <h3>Nuevos</h3>
+      <table>
+        <thead>
+          <tr><th>Archivo</th><th>Motivo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POC_REAL/supabase/migrations/00007_fix_rls_recursion.sql</code></td>
+            <td>Fix recursión infinita RLS</td>
+          </tr>
+          <tr>
+            <td><code>POC_REAL/src/lib/database.types.ts</code></td>
+            <td>Tipos auto-generados desde Supabase local</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Modificados</h3>
+      <table>
+        <thead>
+          <tr><th>Archivo</th><th>Cambio</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POC_REAL/package.json</code></td>
+            <td>Script <code>db:types</code>: añadido <code>npx</code> prefix</td>
+          </tr>
+          <tr>
+            <td><code>PREREUNION_ANDREA/src/app/consentimiento/page.tsx</code></td>
+            <td>Eliminada variable <code>allChecked</code> no usada</td>
+          </tr>
+          <tr>
+            <td><code>.gitignore</code></td>
+            <td>Excluir media, screenshots, mp4</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="riesgos">Riesgos Residuales</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Riesgo</th><th>Severidad</th><th>Mitigación</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Firebase rules no deploradas en producción</td>
+            <td><span class="badge badge-warn">MEDIA</span></td>
+            <td><code>firebase deploy --only firestore:rules</code> con <code>.firebaserc</code></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>RLS no testada con JWT de usuario autenticado real</td>
+            <td><span class="badge badge-warn">MEDIA</span></td>
+            <td>Test e2e con login flow → verificar que user solo ve sus cápsulas</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Cron biométrico no ejecutable sin Firebase Admin real</td>
+            <td><span class="badge badge-info">BAJA</span></td>
+            <td>Solo verificable tras deploy a Firebase Cloud</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>5 lint warnings preexistentes en POC_REAL</td>
+            <td><span class="badge badge-info">BAJA</span></td>
+            <td>Cleanup cosmético — sin impacto funcional</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>DPAs con procesadores (ElevenLabs, Supabase) no firmados</td>
+            <td><span class="badge badge-warn">MEDIA</span></td>
+            <td>Acción de negocio, no de código — requerido antes de prod</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="next">Próximos Pasos</h2>
+      <div class="timeline">
+        <div class="timeline-item blocked">
+          <div class="timeline-time">PRIORIDAD 1</div>
+          <div class="timeline-desc">
+            <strong><code>git push</code> → Vercel</strong> — Deploy PREREUNION_ANDREA a producción.
+            Verificar que Firebase rules se desploran con <code>firebase deploy --only firestore:rules</code>.
+          </div>
+        </div>
+        <div class="timeline-item blocked">
+          <div class="timeline-time">PRIORIDAD 2</div>
+          <div class="timeline-desc">
+            <strong>Supabase Cloud</strong> — Crear proyecto en Supabase Cloud, migrar esquema con
+            <code>supabase db push</code>, verificar RLS con usuarios reales.
+          </div>
+        </div>
+        <div class="timeline-item blocked">
+          <div class="timeline-time">PRIORIDAD 3</div>
+          <div class="timeline-desc">
+            <strong>Test e2e beta flow</strong> — Usar Mailpit (localhost:54324) para capturar OTP emails
+            y completar el flujo invite → accept → OTP → complete → dashboard.
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Comandos de siguiente sesión</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content"># 1. Deploy Firebase rules
+cd PREREUNION_ANDREA
+npx firebase deploy --only firestore:rules
+
+# 2. Supabase Cloud migration
+cd POC_REAL
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase db push
+
+# 3. Beta flow e2e (requires local Supabase + dev server)
+npx supabase start
+npx supabase db reset && npx tsx scripts/seed.ts && npx tsx scripts/seed-beta.ts
+npm run dev
+# Open Mailpit: http://localhost:54324
+# Trigger invite: curl -X POST http://localhost:3002/api/beta/invite -H "x-admin-key: $ADMIN_API_SECRET" -H "Content-Type: application/json" -d '{"email":"test@example.com"}'</div>
+      </div>
+
+      <div class="footer">
+        NUCLEA — Cierre Técnico · Generado el 21 de febrero de 2026 · Claude Opus 4.6
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function copyPrompt(button) {
+      const content = button.closest('.prompt-block').querySelector('.prompt-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        const original = button.textContent;
+        button.textContent = 'COPIED!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    const sections = document.querySelectorAll('[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (scrollY >= section.offsetTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>
