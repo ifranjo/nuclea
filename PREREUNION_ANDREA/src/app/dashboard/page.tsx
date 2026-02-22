@@ -230,7 +230,9 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+              <label htmlFor="search-capsules" className="sr-only">Buscar cápsulas</label>
               <input
+                id="search-capsules"
                 type="text"
                 placeholder="Buscar capsulas..."
                 value={searchQuery}
@@ -242,12 +244,14 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setViewMode('grid')}
+                aria-label="Vista en cuadrícula"
                 className={`p-3 rounded-xl transition-colors ${viewMode === 'grid' ? 'bg-nuclea-gold/20 text-nuclea-gold' : 'text-white/40 hover:text-white'}`}
               >
                 <Grid size={20} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
+                aria-label="Vista en lista"
                 className={`p-3 rounded-xl transition-colors ${viewMode === 'list' ? 'bg-nuclea-gold/20 text-nuclea-gold' : 'text-white/40 hover:text-white'}`}
               >
                 <List size={20} />

@@ -72,6 +72,7 @@ export default function CapsuleCard({ capsule, onEdit, onDelete, onShare }: Caps
       <div className="absolute top-4 right-4">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menú de opciones"
           className="p-2 rounded-lg bg-black/30 text-white/70 hover:text-white hover:bg-black/50 transition-all"
         >
           <MoreVertical size={16} />

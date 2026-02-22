@@ -1,13 +1,7 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { AuthError, getAdminDb, verifyBearerToken } from '@/lib/firebase-admin'
-
-interface OptInBody {
-  capsuleId: string
-  contactId?: string
-  phone?: string
-  source?: string
-}
 
 interface TrustContact {
   id?: string
@@ -18,32 +12,28 @@ interface TrustContact {
   whatsappOptInSource?: string
 }
 
-function parseBody(payload: unknown): OptInBody {
-  if (typeof payload !== 'object' || payload === null) {
-    throw new Error('Payload invalido')
-  }
-
-  const body = payload as Record<string, unknown>
-  const capsuleId = typeof body.capsuleId === 'string' ? body.capsuleId.trim() : ''
-  const contactId = typeof body.contactId === 'string' ? body.contactId.trim() : undefined
-  const phone = typeof body.phone === 'string' ? body.phone.trim() : undefined
-  const source = typeof body.source === 'string' ? body.source.trim() : 'ui'
-
-  if (!capsuleId) {
-    throw new Error('capsuleId requerido')
-  }
-
-  if (!contactId && !phone) {
-    throw new Error('contactId o phone requerido')
-  }
-
-  return { capsuleId, contactId, phone, source }
-}
+const whatsappOptInSchema = z
+  .object({
+    capsuleId: z.string().trim().min(1, 'capsuleId requerido'),
+    contactId: z.string().trim().min(1).optional(),
+    phone: z.string().trim().min(1).optional(),
+    source: z.string().trim().min(1).default('ui'),
+  })
+  .refine((data) => data.contactId || data.phone, {
+    message: 'contactId o phone requerido',
+  })
 
 export async function POST(request: NextRequest) {
   try {
     const userId = await verifyBearerToken(request)
-    const body = parseBody(await request.json())
+    const parsed = whatsappOptInSchema.safeParse(await request.json())
+
+    if (!parsed.success) {
+      const firstIssue = parsed.error.issues[0]?.message ?? 'Payload invalido'
+      return NextResponse.json({ error: firstIssue }, { status: 400 })
+    }
+
+    const body = parsed.data
     const db = getAdminDb('whatsapp opt-in')
 
     const capsuleRef = db.collection('capsules').doc(body.capsuleId)
@@ -107,16 +97,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: error.status })
     }
 
-    if (error instanceof Error && (
-      error.message.includes('capsuleId requerido') ||
-      error.message.includes('contactId o phone requerido') ||
-      error.message.includes('Payload invalido')
-    )) {
-      return NextResponse.json({ error: error.message }, { status: 400 })
-    }
-
     console.error('WhatsApp opt-in error:', error)
     return NextResponse.json({ error: 'No se pudo registrar el opt-in' }, { status: 500 })
   }
 }
-
