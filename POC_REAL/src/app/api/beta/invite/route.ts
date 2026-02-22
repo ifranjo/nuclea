@@ -4,6 +4,8 @@ import { isValidAdminRequest } from '@/lib/admin-api-auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createInvitation } from '@/lib/beta'
 import { buildRateLimitHeaders, checkRateLimit, hashRateLimitKey } from '@/lib/rate-limit'
+import { getEmailService } from '@/lib/email'
+import { betaInvitationEmail } from '@/lib/email-templates'
 
 const inviteSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
@@ -59,6 +61,22 @@ export async function POST(request: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
   const inviteUrl = `${baseUrl}/beta/accept?t=${token}`
 
+  // Send invitation email (best-effort — failure does not block the invitation)
+  let emailSent = false
+  try {
+    const emailService = getEmailService()
+    const template = betaInvitationEmail(inviteUrl)
+    const result = await emailService.sendEmail({
+      to: email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    })
+    emailSent = result.success
+  } catch (emailError) {
+    console.error('[beta/invite] Email delivery failed:', emailError)
+  }
+
   return NextResponse.json({
     invitation: {
       id: invitation.id,
@@ -67,6 +85,7 @@ export async function POST(request: NextRequest) {
       expiresAt: invitation.expires_at,
     },
     inviteUrl,
+    emailSent,
   }, { headers })
 }
 
