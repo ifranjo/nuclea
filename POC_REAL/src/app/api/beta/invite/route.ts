@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
   let emailSent = false
   try {
     const emailService = getEmailService()
-    const template = betaInvitationEmail(inviteUrl)
+    const template = betaInvitationEmail(inviteUrl, { expiresInHours })
     const result = await emailService.sendEmail({
       to: email,
       subject: template.subject,

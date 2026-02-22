@@ -17,6 +17,7 @@ export type BetaEvent =
   | 'invited'
   | 'accepted'
   | 'revoked'
+  | 'resend'
   | 'login_failed'
   | 'access_granted'
   | 'access_revoked'

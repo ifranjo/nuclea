@@ -37,9 +37,14 @@ function wrapLayout(content: string): string {
           <!-- Footer -->
           <tr>
             <td style="padding:24px 32px; border-top:1px solid #e8e8e8; text-align:center;">
-              <p style="margin:0; font-size:12px; color:#999999; line-height:1.5;">
-                Este email ha sido enviado por NUCLEA.<br />
-                Si no esperabas este mensaje, puedes ignorarlo.
+              <p style="margin:0 0 8px 0; font-size:12px; color:#999999; line-height:1.5;">
+                NUCLEA &mdash; Tu legado digital
+              </p>
+              <p style="margin:0 0 8px 0; font-size:12px; color:#999999; line-height:1.5;">
+                Si no solicitaste este mensaje, puedes ignorarlo de forma segura.
+              </p>
+              <p style="margin:0; font-size:11px; color:#bbbbbb; line-height:1.5;">
+                &copy; 2026 NUCLEA. Barcelona, Espa&ntilde;a.
               </p>
             </td>
           </tr>
@@ -64,6 +69,20 @@ function ctaButton(href: string, label: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Shared text footer
+// ---------------------------------------------------------------------------
+
+function textFooter(): string {
+  return [
+    'Si no solicitaste este mensaje, puedes ignorarlo de forma segura.',
+    '',
+    '\u2014 Equipo NUCLEA',
+    'NUCLEA \u2014 Tu legado digital',
+    '\u00a9 2026 NUCLEA. Barcelona, Espa\u00f1a.',
+  ].join('\n')
+}
+
+// ---------------------------------------------------------------------------
 // Templates
 // ---------------------------------------------------------------------------
 
@@ -76,7 +95,8 @@ export interface BetaInvitationEmailResult {
 /**
  * Beta closed invitation email.
  */
-export function betaInvitationEmail(acceptUrl: string): BetaInvitationEmailResult {
+export function betaInvitationEmail(acceptUrl: string, options?: { expiresInHours?: number }): BetaInvitationEmailResult {
+  const expiryHours = options?.expiresInHours ?? 72
   const subject = 'Has sido invitado a la beta cerrada de NUCLEA'
 
   const html = wrapLayout(`
@@ -87,14 +107,17 @@ export function betaInvitationEmail(acceptUrl: string): BetaInvitationEmailResul
       Has sido seleccionado para participar en la beta cerrada de NUCLEA, la plataforma de legado digital emocional.
     </p>
     <p style="margin:0 0 8px 0; font-size:15px; color:#444444; line-height:1.6;">
-      Crea cápsulas de memoria, sube fotos, vídeos y notas, y designa personas de confianza que las recibirán en el momento adecuado.
+      Crea c&aacute;psulas de memoria, sube fotos, v&iacute;deos y notas, y designa personas de confianza que las recibir&aacute;n en el momento adecuado.
     </p>
     <p style="margin:0 0 0 0; font-size:15px; color:#444444; line-height:1.6;">
-      Pulsa el botón para aceptar tu invitación:
+      Pulsa el bot&oacute;n para aceptar tu invitaci&oacute;n:
     </p>
-    ${ctaButton(acceptUrl, 'Aceptar invitación')}
+    ${ctaButton(acceptUrl, 'Aceptar invitaci\u00f3n')}
+    <p style="margin:0 0 12px 0; font-size:13px; color:#d97706; line-height:1.5; font-weight:500;">
+      Este enlace expira en ${expiryHours} horas.
+    </p>
     <p style="margin:0; font-size:13px; color:#999999; line-height:1.5;">
-      Si el botón no funciona, copia y pega este enlace en tu navegador:<br />
+      Si tienes problemas con el bot&oacute;n, copia y pega esta URL en tu navegador:<br />
       <a href="${acceptUrl}" style="color:#666666; word-break:break-all;">${acceptUrl}</a>
     </p>
   `)
@@ -104,11 +127,13 @@ export function betaInvitationEmail(acceptUrl: string): BetaInvitationEmailResul
     '',
     'Has sido seleccionado para participar en la beta cerrada de NUCLEA, la plataforma de legado digital emocional.',
     '',
-    'Crea cápsulas de memoria, sube fotos, vídeos y notas, y designa personas de confianza que las recibirán en el momento adecuado.',
+    'Crea c\u00e1psulas de memoria, sube fotos, v\u00eddeos y notas, y designa personas de confianza que las recibir\u00e1n en el momento adecuado.',
     '',
-    `Acepta tu invitación aquí: ${acceptUrl}`,
+    `Acepta tu invitaci\u00f3n aqu\u00ed: ${acceptUrl}`,
     '',
-    '— Equipo NUCLEA',
+    `Este enlace expira en ${expiryHours} horas.`,
+    '',
+    textFooter(),
   ].join('\n')
 
   return { subject, html, text }
@@ -131,8 +156,8 @@ export function capsuleExpiryNotificationEmail(
 ): CapsuleExpiryEmailResult {
   const subject =
     daysRemaining <= 0
-      ? `Tu cápsula "${capsuleName}" ha expirado`
-      : `Tu cápsula "${capsuleName}" expira en ${daysRemaining} día${daysRemaining === 1 ? '' : 's'}`
+      ? `Tu c\u00e1psula "${capsuleName}" ha expirado`
+      : `Tu c\u00e1psula "${capsuleName}" expira en ${daysRemaining} d\u00eda${daysRemaining === 1 ? '' : 's'}`
 
   const urgencyColor = daysRemaining <= 3 ? '#dc2626' : '#d97706'
   const urgencyLabel =
@@ -144,15 +169,15 @@ export function capsuleExpiryNotificationEmail(
 
   const html = wrapLayout(`
     <h1 style="margin:0 0 16px 0; font-size:22px; font-weight:600; color:#1a1a1a; line-height:1.3;">
-      Aviso sobre tu cápsula
+      Aviso sobre tu c&aacute;psula
     </h1>
     <div style="display:inline-block; padding:4px 12px; border-radius:20px; background-color:${urgencyColor}; color:#ffffff; font-size:12px; font-weight:600; letter-spacing:0.5px; margin-bottom:16px;">
       ${urgencyLabel}
     </div>
     <p style="margin:16px 0 8px 0; font-size:15px; color:#444444; line-height:1.6;">
       ${daysRemaining <= 0
-        ? `La cápsula <strong>"${capsuleName}"</strong> ha expirado. Ya no es posible realizar acciones sobre ella.`
-        : `La cápsula <strong>"${capsuleName}"</strong> expira en <strong>${daysRemaining} día${daysRemaining === 1 ? '' : 's'}</strong>.`
+        ? `La c&aacute;psula <strong>&ldquo;${capsuleName}&rdquo;</strong> ha expirado. Ya no es posible realizar acciones sobre ella.`
+        : `La c&aacute;psula <strong>&ldquo;${capsuleName}&rdquo;</strong> expira en <strong>${daysRemaining} d&iacute;a${daysRemaining === 1 ? '' : 's'}</strong>.`
       }
     </p>
     ${daysRemaining > 0
@@ -164,17 +189,17 @@ export function capsuleExpiryNotificationEmail(
   `)
 
   const text = [
-    `Aviso sobre tu cápsula: ${capsuleName}`,
+    `Aviso sobre tu c\u00e1psula: ${capsuleName}`,
     '',
     daysRemaining <= 0
-      ? `La cápsula "${capsuleName}" ha expirado.`
-      : `La cápsula "${capsuleName}" expira en ${daysRemaining} día${daysRemaining === 1 ? '' : 's'}.`,
+      ? `La c\u00e1psula "${capsuleName}" ha expirado.`
+      : `La c\u00e1psula "${capsuleName}" expira en ${daysRemaining} d\u00eda${daysRemaining === 1 ? '' : 's'}.`,
     '',
     daysRemaining > 0
       ? 'Accede a NUCLEA para revisar su contenido y tomar las decisiones necesarias.'
       : '',
     '',
-    '— Equipo NUCLEA',
+    textFooter(),
   ].join('\n')
 
   return { subject, html, text }
@@ -203,17 +228,17 @@ export function trustContactNotificationEmail(
       Has sido nombrado persona de confianza
     </h1>
     <p style="margin:0 0 8px 0; font-size:15px; color:#444444; line-height:1.6;">
-      <strong>${senderName}</strong> te ha designado como persona de confianza para la cápsula <strong>"${capsuleName}"</strong> en NUCLEA.
+      La persona <strong>${senderName}</strong> te ha designado como persona de confianza para la c&aacute;psula <strong>&ldquo;${capsuleName}&rdquo;</strong> en NUCLEA.
     </p>
     <p style="margin:0 0 8px 0; font-size:15px; color:#444444; line-height:1.6;">
-      Esto significa que, llegado el momento, podrás tomar decisiones sobre la continuidad de esta cápsula de memoria.
+      Como persona de confianza, recibir&aacute;s acceso a los contenidos de esta c&aacute;psula cuando llegue el momento.
     </p>
     <p style="margin:0 0 0 0; font-size:15px; color:#444444; line-height:1.6;">
-      Puedes revisar los detalles y tomar tu decisión aquí:
+      Puedes revisar los detalles y tomar tu decisi&oacute;n aqu&iacute;:
     </p>
-    ${ctaButton(decisionUrl, 'Ver decisión')}
+    ${ctaButton(decisionUrl, 'Ver decisi\u00f3n')}
     <p style="margin:0; font-size:13px; color:#999999; line-height:1.5;">
-      Si el botón no funciona, copia y pega este enlace en tu navegador:<br />
+      Si el bot&oacute;n no funciona, copia y pega este enlace en tu navegador:<br />
       <a href="${decisionUrl}" style="color:#666666; word-break:break-all;">${decisionUrl}</a>
     </p>
   `)
@@ -221,13 +246,13 @@ export function trustContactNotificationEmail(
   const text = [
     'Has sido nombrado persona de confianza',
     '',
-    `${senderName} te ha designado como persona de confianza para la cápsula "${capsuleName}" en NUCLEA.`,
+    `${senderName} te ha designado como persona de confianza para la c\u00e1psula "${capsuleName}" en NUCLEA.`,
     '',
-    'Esto significa que, llegado el momento, podrás tomar decisiones sobre la continuidad de esta cápsula de memoria.',
+    'Como persona de confianza, recibir\u00e1s acceso a los contenidos de esta c\u00e1psula cuando llegue el momento.',
     '',
-    `Revisa los detalles aquí: ${decisionUrl}`,
+    `Revisa los detalles aqu\u00ed: ${decisionUrl}`,
     '',
-    '— Equipo NUCLEA',
+    textFooter(),
   ].join('\n')
 
   return { subject, html, text }
