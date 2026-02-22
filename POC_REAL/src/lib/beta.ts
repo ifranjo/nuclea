@@ -11,49 +11,6 @@ export function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex')
 }
 
-// --- Rate limiting ---
-
-const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000 // 15 minutes
-const RATE_LIMIT_MAX = 5 // max attempts per window per key
-
-export async function checkRateLimit(
-  supabase: SupabaseClient,
-  key: string
-): Promise<{ allowed: boolean; remaining: number }> {
-  const windowStart = new Date(
-    Math.floor(Date.now() / RATE_LIMIT_WINDOW_MS) * RATE_LIMIT_WINDOW_MS
-  ).toISOString()
-
-  // Try to increment existing counter
-  const { data: existing } = await supabase
-    .from('beta_rate_limits')
-    .select('count')
-    .eq('key', key)
-    .eq('window_start', windowStart)
-    .single()
-
-  if (existing) {
-    if (existing.count >= RATE_LIMIT_MAX) {
-      return { allowed: false, remaining: 0 }
-    }
-    await supabase
-      .from('beta_rate_limits')
-      .update({ count: existing.count + 1 })
-      .eq('key', key)
-      .eq('window_start', windowStart)
-    return { allowed: true, remaining: RATE_LIMIT_MAX - existing.count - 1 }
-  }
-
-  // Create new window
-  await supabase.from('beta_rate_limits').insert({
-    key,
-    window_start: windowStart,
-    count: 1,
-  })
-
-  return { allowed: true, remaining: RATE_LIMIT_MAX - 1 }
-}
-
 // --- Audit logging ---
 
 export type BetaEvent =

@@ -39,15 +39,18 @@ export async function checkRateLimit(config: RateLimitConfig): Promise<RateLimit
   const resetAt = new Date(windowStartMs + config.windowMs)
   const storedKey = `${config.namespace}:${config.key}`
 
-  const { data: existing, error: readError } = await supabase
-    .from('beta_rate_limits')
-    .select('count')
-    .eq('key', storedKey)
-    .eq('window_start', windowStartIso)
-    .maybeSingle()
+  // Atomic increment via raw SQL: INSERT … ON CONFLICT DO UPDATE SET count = count + 1
+  // This requires a UNIQUE constraint on (key, window_start) in beta_rate_limits.
+  // The RETURNING clause gives us the post-increment count in a single round-trip,
+  // eliminating the SELECT-then-UPDATE race condition.
+  const { data, error } = await supabase.rpc('upsert_rate_limit_count', {
+    p_key: storedKey,
+    p_window_start: windowStartIso,
+  })
 
-  if (readError) {
-    // Fail-open in case of infra issues; operational logs should catch this.
+  if (error || data === null || data === undefined) {
+    // Fail-open in case of infra issues (e.g. RPC not yet deployed);
+    // operational logs should catch this.
     return {
       allowed: true,
       remaining: config.limit - 1,
@@ -56,39 +59,12 @@ export async function checkRateLimit(config: RateLimitConfig): Promise<RateLimit
     }
   }
 
-  if (existing) {
-    if (existing.count >= config.limit) {
-      return {
-        allowed: false,
-        remaining: 0,
-        resetAt,
-        limit: config.limit,
-      }
-    }
-
-    await supabase
-      .from('beta_rate_limits')
-      .update({ count: existing.count + 1 })
-      .eq('key', storedKey)
-      .eq('window_start', windowStartIso)
-
-    return {
-      allowed: true,
-      remaining: config.limit - (existing.count + 1),
-      resetAt,
-      limit: config.limit,
-    }
-  }
-
-  await supabase.from('beta_rate_limits').insert({
-    key: storedKey,
-    window_start: windowStartIso,
-    count: 1,
-  })
+  // data is the scalar count returned by the RPC (RETURNS integer)
+  const currentCount = data as number
 
   return {
-    allowed: true,
-    remaining: config.limit - 1,
+    allowed: currentCount <= config.limit,
+    remaining: Math.max(0, config.limit - currentCount),
     resetAt,
     limit: config.limit,
   }
