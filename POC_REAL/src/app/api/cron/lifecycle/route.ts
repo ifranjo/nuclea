@@ -8,6 +8,7 @@ import {
   shouldGiveUpRetrying,
 } from '@/lib/lifecycle/video-purge-retry'
 import { computeTrustContactNotifyBeforeIso } from '@/lib/lifecycle/trust-contact-window'
+import { buildTrustDecisionUrl } from '@/lib/lifecycle/trust-contact-links'
 
 function isCronAuthorized(request: NextRequest): boolean {
   const secret = process.env.CRON_SECRET
@@ -58,6 +59,11 @@ async function runExpirySweep(nowIso: string): Promise<number> {
 
       for (const contact of contacts || []) {
         const contactName = contact.full_name || 'contacto'
+        const decisionUrl = buildTrustDecisionUrl(
+          process.env.NEXT_PUBLIC_APP_URL,
+          capsule.id,
+          contact.id
+        )
         if (contact.email) {
           await queueNotification(admin, {
             userId: capsule.owner_id,
@@ -65,7 +71,12 @@ async function runExpirySweep(nowIso: string): Promise<number> {
             channel: 'email',
             recipient: contact.email,
             template: 'trust-contact-expiry',
-            payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+            payload: {
+              capsuleTitle: capsule.title || 'Capsula',
+              contactName,
+              personId: contact.id,
+              decisionUrl,
+            },
           })
         }
 
@@ -76,7 +87,12 @@ async function runExpirySweep(nowIso: string): Promise<number> {
             channel: 'sms',
             recipient: contact.phone,
             template: 'trust-contact-expiry',
-            payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+            payload: {
+              capsuleTitle: capsule.title || 'Capsula',
+              contactName,
+              personId: contact.id,
+              decisionUrl,
+            },
           })
 
           if (contact.whatsapp_opt_in_at) {
@@ -86,7 +102,12 @@ async function runExpirySweep(nowIso: string): Promise<number> {
               channel: 'whatsapp',
               recipient: contact.phone,
               template: 'trust-contact-expiry',
-              payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+              payload: {
+                capsuleTitle: capsule.title || 'Capsula',
+                contactName,
+                personId: contact.id,
+                decisionUrl,
+              },
             })
           }
         }
@@ -218,6 +239,11 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
 
     for (const contact of contacts) {
       const contactName = contact.full_name || 'contacto'
+      const decisionUrl = buildTrustDecisionUrl(
+        process.env.NEXT_PUBLIC_APP_URL,
+        capsule.id,
+        contact.id
+      )
       if (contact.email) {
         await queueNotification(admin, {
           userId: capsule.owner_id,
@@ -230,6 +256,8 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
             contactName,
             expiresAt: capsule.gift_expires_at,
             lookaheadHours,
+            personId: contact.id,
+            decisionUrl,
           },
         })
       }
@@ -246,6 +274,8 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
             contactName,
             expiresAt: capsule.gift_expires_at,
             lookaheadHours,
+            personId: contact.id,
+            decisionUrl,
           },
         })
 
@@ -261,6 +291,8 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
               contactName,
               expiresAt: capsule.gift_expires_at,
               lookaheadHours,
+              personId: contact.id,
+              decisionUrl,
             },
           })
         }

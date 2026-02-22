@@ -11,7 +11,6 @@ import { CapsuleIcon } from '@/components/icons/CapsuleIcons'
 import { CapsuleCalendar } from '@/components/capsule/CapsuleCalendar'
 import { AddPersonModal } from '@/components/capsule/AddPersonModal'
 import { BottomNav } from '@/components/ui/BottomNav'
-import { ComingSoon } from '@/components/ui/ComingSoon'
 import { ExpiryUrgencyBanner } from '@/components/receiver/ExpiryUrgencyBanner'
 import { buildCapsuleEmailTemplates } from '@/lib/recipientExperience'
 import { ArrowLeft, Camera, Video, Mic, FileText, Share2, Users, Download, X } from 'lucide-react'
@@ -481,15 +480,18 @@ export default function CapsuleDetailPage() {
 
         {closeStatus && <p className='text-xs text-nuclea-text-muted text-center'>{closeStatus}</p>}
 
-        <div className='space-y-2'>
-          <div className='flex items-center gap-2 text-sm text-nuclea-text-muted'>
-            <ComingSoon /> Notificaciones por email
+        <div className='space-y-2 text-sm'>
+          <div className='flex items-center justify-between rounded-lg border border-nuclea-border bg-white px-3 py-2'>
+            <span className='text-nuclea-text'>Notificaciones por email</span>
+            <span className='text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700'>Activo en beta</span>
           </div>
-          <div className='flex items-center gap-2 text-sm text-nuclea-text-muted'>
-            <ComingSoon /> Avatar con IA
+          <div className='flex items-center justify-between rounded-lg border border-nuclea-border bg-white px-3 py-2'>
+            <span className='text-nuclea-text'>Avatar con IA</span>
+            <span className='text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700'>No activo en beta</span>
           </div>
-          <div className='flex items-center gap-2 text-sm text-nuclea-text-muted'>
-            <ComingSoon /> Mensajes futuros
+          <div className='flex items-center justify-between rounded-lg border border-nuclea-border bg-white px-3 py-2'>
+            <span className='text-nuclea-text'>Mensajes futuros</span>
+            <span className='text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700'>No activo en beta</span>
           </div>
         </div>
       </div>
@@ -498,7 +500,11 @@ export default function CapsuleDetailPage() {
         <AddPersonModal
           onClose={() => setShowPersonModal(false)}
           onSave={async data => {
-            await addPerson(profile.id, data)
+            const { error } = await addPerson(data)
+            if (error) {
+              alert(error.message || 'No se pudo añadir el contacto designado.')
+              return
+            }
             setShowPersonModal(false)
           }}
         />

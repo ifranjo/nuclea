@@ -2,8 +2,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/lib/database.types'
+import { canAssignDesignatedPerson } from '@/lib/trust/designated-person-identity'
 
 export type DesignatedPerson = Database['public']['Tables']['designated_persons']['Row']
+
+function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase()
+}
 
 export function useDesignatedPersons(capsuleId?: string, currentUserId?: string) {
   const [persons, setPersons] = useState<DesignatedPerson[]>([])
@@ -60,18 +65,40 @@ export function useDesignatedPersons(capsuleId?: string, currentUserId?: string)
 
   useEffect(() => { fetchPersons() }, [fetchPersons])
 
-  const addPerson = useCallback(async (userId: string, data: { full_name: string; email: string; relationship?: string }) => {
+  const addPerson = useCallback(async (data: { full_name: string; email: string; relationship?: string }) => {
     const ownerError = await assertCapsuleOwner()
     if (ownerError) return { error: ownerError }
     if (!capsuleId) return { error: new Error('No capsule ID') }
-    if (!currentUserId || userId !== currentUserId) {
-      return { error: new Error('User mismatch for designated person update') }
+    if (!currentUserId) {
+      return { error: new Error('Not authenticated') }
+    }
+
+    const normalizedEmail = normalizeEmail(data.email)
+    if (!normalizedEmail) {
+      return { error: new Error('Email requerido para contacto designado') }
+    }
+
+    const { data: designatedUser, error: designatedUserError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', normalizedEmail)
+      .maybeSingle()
+
+    if (designatedUserError) {
+      return { error: designatedUserError }
+    }
+
+    const identityValidation = canAssignDesignatedPerson(currentUserId, designatedUser?.id || null)
+    if (!identityValidation.ok) {
+      return { error: new Error(identityValidation.reason || 'Contacto de confianza invalido') }
     }
 
     const { error } = await supabase.from('designated_persons').insert({
       capsule_id: capsuleId,
-      user_id: userId,
-      ...data,
+      user_id: designatedUser.id,
+      full_name: data.full_name.trim(),
+      email: normalizedEmail,
+      relationship: data.relationship?.trim() || null,
     })
     if (!error) await fetchPersons()
     return { error }
