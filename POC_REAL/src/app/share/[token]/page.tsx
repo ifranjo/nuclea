@@ -6,9 +6,17 @@ import { normalizeCapsuleType, type CapsuleType } from '@/types'
 
 async function getCapsuleByToken(token: string) {
   const supabase = createAdminClient()
-  const { data: capsule } = await supabase.from('capsules').select('*').eq('share_token', token).single()
+  const { data: capsule } = await supabase
+    .from('capsules')
+    .select('id, title, description, type, status, share_token, owner_id, creator_id, created_at, gift_state, experience_expires_at')
+    .eq('share_token', token)
+    .single()
   if (!capsule) return null
-  const { data: contents } = await supabase.from('contents').select('*').eq('capsule_id', capsule.id).order('captured_at', { ascending: false })
+  const { data: contents } = await supabase
+    .from('contents')
+    .select('id, type, file_path, file_name, title, text_content, captured_at, created_at')
+    .eq('capsule_id', capsule.id)
+    .order('created_at', { ascending: false })
   const sharedByUserId = capsule.creator_id || capsule.owner_id
   const { data: owner } = await supabase.from('users').select('full_name').eq('id', sharedByUserId).single()
   return { capsule, contents: contents || [], owner }
