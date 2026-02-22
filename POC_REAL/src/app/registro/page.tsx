@@ -1,7 +1,7 @@
 'use client'
 import { useState, Suspense } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 function RegistroForm() {
@@ -15,7 +15,6 @@ function RegistroForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { signUp } = useAuth()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect')
 
@@ -40,7 +39,8 @@ function RegistroForm() {
       setError('Error al crear la cuenta. Inténtalo de nuevo.')
       setLoading(false)
     } else {
-      router.push(redirect || '/dashboard')
+      // Full page navigation so middleware reads the fresh auth cookies
+      window.location.href = redirect || '/dashboard'
     }
   }
 

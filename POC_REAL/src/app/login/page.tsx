@@ -1,7 +1,7 @@
 'use client'
 import { useState, Suspense } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 function LoginForm() {
@@ -10,7 +10,6 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { signIn } = useAuth()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect')
   const isDevelopment = process.env.NODE_ENV === 'development'
@@ -24,7 +23,8 @@ function LoginForm() {
       setError('Email o contraseña incorrectos')
       setLoading(false)
     } else {
-      router.push(redirect || '/dashboard')
+      // Full page navigation so middleware reads the fresh auth cookies
+      window.location.href = redirect || '/dashboard'
     }
   }
 
