@@ -11,15 +11,6 @@ import {
 import { decodeCapsulesCursor, encodeCapsulesCursor, sanitizeCapsulePageSize } from '@/lib/capsule-pagination'
 import { normalizeCapsuleType } from '@/types'
 
-class PlanLimitError extends Error {
-  status: number
-
-  constructor(message: string) {
-    super(message)
-    this.status = 403
-  }
-}
-
 function toIsoDate(value: unknown): string {
   if (value instanceof Date) {
     return value.toISOString()
@@ -138,24 +129,6 @@ export async function POST(request: NextRequest) {
 
     const db = getAdminDb('capsules POST')
 
-    const userDoc = await db.collection('users').doc(userId).get()
-    const userData = userDoc.data()
-
-    const planLimits: Record<string, number> = {
-      free: 1,
-      esencial: 2,
-      familiar: 10,
-      premium: 1,
-    }
-
-    const userPlan = typeof userData?.plan === 'string' ? userData.plan : 'free'
-    const currentCount = Number(userData?.capsuleCount ?? 0)
-    const maxAllowed = planLimits[userPlan] ?? planLimits.free
-
-    if (currentCount >= maxAllowed) {
-      throw new PlanLimitError('Has alcanzado el limite de capsulas de tu plan')
-    }
-
     const now = new Date()
     const capsuleData = {
       userId,
@@ -193,13 +166,6 @@ export async function POST(request: NextRequest) {
     if (error instanceof ApiValidationError) {
       return NextResponse.json(
         { error: error.message, details: error.issues },
-        { status: error.status }
-      )
-    }
-
-    if (error instanceof PlanLimitError) {
-      return NextResponse.json(
-        { error: error.message },
         { status: error.status }
       )
     }

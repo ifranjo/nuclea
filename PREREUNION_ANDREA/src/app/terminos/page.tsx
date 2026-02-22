@@ -31,7 +31,7 @@ export default function TerminosPage() {
             <li><a href="#aceptacion" className="hover:underline">Aceptaci&oacute;n de los t&eacute;rminos</a></li>
             <li><a href="#descripcion" className="hover:underline">Descripci&oacute;n del servicio</a></li>
             <li><a href="#registro" className="hover:underline">Registro y cuenta de usuario</a></li>
-            <li><a href="#planes" className="hover:underline">Planes y precios</a></li>
+            <li><a href="#planes" className="hover:underline">Modelo de pago</a></li>
             <li><a href="#contenido" className="hover:underline">Propiedad intelectual y contenido del usuario</a></li>
             <li><a href="#avatar" className="hover:underline">Avatar IA y datos biom&eacute;tricos</a></li>
             <li><a href="#cierre" className="hover:underline">Modelo de cierre de c&aacute;psula</a></li>
@@ -87,7 +87,7 @@ export default function TerminosPage() {
               <li>Creaci&oacute;n de c&aacute;psulas digitales con contenido multimedia (fotograf&iacute;as, v&iacute;deos, audio, texto y documentos).</li>
               <li>Seis tipos de c&aacute;psula: Legacy, Together, Social, Pet, Life Chapter y Origin, cada uno con finalidad y caracter&iacute;sticas diferenciadas.</li>
               <li>Programaci&oacute;n de mensajes futuros con cifrado de extremo a extremo.</li>
-              <li>Avatar IA (EverLife) para interacci&oacute;n post-mortem basada en clonaci&oacute;n de voz y personalidad (disponible en planes premium).</li>
+              <li>Avatar IA (EverLife) para interacci&oacute;n post-mortem basada en clonaci&oacute;n de voz y personalidad.</li>
               <li>Descarga local y eliminaci&oacute;n del contenido de nuestros servidores tras el cierre de la c&aacute;psula, garantizando cero coste de almacenamiento continuado.</li>
             </ul>
           </section>
@@ -106,58 +106,24 @@ export default function TerminosPage() {
             </ul>
           </section>
 
-          {/* 5. Planes y precios */}
+          {/* 5. Modelo de pago */}
           <section id="planes">
             <h2 className="text-white text-lg font-semibold mb-3">
-              5. Planes y precios
+              5. Modelo de pago
             </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="py-2 pr-4 text-left text-white/50 font-medium">Plan</th>
-                    <th className="py-2 pr-4 text-left text-white/50 font-medium">Precio</th>
-                    <th className="py-2 pr-4 text-left text-white/50 font-medium">C&aacute;psulas</th>
-                    <th className="py-2 pr-4 text-left text-white/50 font-medium">Almacenamiento</th>
-                    <th className="py-2 text-left text-white/50 font-medium">Avatar IA</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-white/[0.06]">
-                    <td className="py-2 pr-4 text-white/90">Gratuito</td>
-                    <td className="py-2 pr-4">0 &euro;</td>
-                    <td className="py-2 pr-4">1</td>
-                    <td className="py-2 pr-4">500 MB</td>
-                    <td className="py-2">No</td>
-                  </tr>
-                  <tr className="border-b border-white/[0.06]">
-                    <td className="py-2 pr-4 text-white/90">Esencial</td>
-                    <td className="py-2 pr-4">9,99 &euro;/mes</td>
-                    <td className="py-2 pr-4">2</td>
-                    <td className="py-2 pr-4">5 GB</td>
-                    <td className="py-2">No</td>
-                  </tr>
-                  <tr className="border-b border-white/[0.06]">
-                    <td className="py-2 pr-4 text-white/90">Familiar</td>
-                    <td className="py-2 pr-4">24,99 &euro;/mes</td>
-                    <td className="py-2 pr-4">10</td>
-                    <td className="py-2 pr-4">50 GB</td>
-                    <td className="py-2">S&iacute;</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 pr-4 text-white/90">EverLife Premium</td>
-                    <td className="py-2 pr-4">99 &euro; (&uacute;nico)</td>
-                    <td className="py-2 pr-4">1</td>
-                    <td className="py-2 pr-4">100 GB</td>
-                    <td className="py-2">S&iacute; + soporte dedicado</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-3">
-              Los precios pueden modificarse con un preaviso m&iacute;nimo de 30 d&iacute;as naturales. Las
-              suscripciones activas mantendr&aacute;n el precio vigente hasta su pr&oacute;xima fecha de
-              renovaci&oacute;n. Los precios incluyen IVA cuando sea aplicable.
+            <p className="mb-3">
+              NUCLEA opera bajo un modelo de <strong className="text-white/90">pago &uacute;nico</strong>.
+              No existen suscripciones mensuales ni anuales. La creaci&oacute;n de la cuenta y el uso
+              b&aacute;sico de la plataforma son gratuitos.
+            </p>
+            <p className="mb-3">
+              El &uacute;nico producto de pago es el <strong className="text-white/90">Video Regalo</strong>,
+              que se desbloquea mediante un pago puntual. Este pago da derecho a la generaci&oacute;n y
+              descarga del v&iacute;deo, sin renovaciones autom&aacute;ticas ni compromisos de permanencia.
+            </p>
+            <p>
+              Los precios pueden modificarse con un preaviso m&iacute;nimo de 30 d&iacute;as naturales.
+              Los precios incluyen IVA cuando sea aplicable.
             </p>
           </section>
 
@@ -247,7 +213,7 @@ export default function TerminosPage() {
               <li>Realizar spam, phishing o cualquier forma de comunicaci&oacute;n no solicitada.</li>
               <li>Intentar acceder a cuentas o datos de otros usuarios sin autorizaci&oacute;n.</li>
               <li>Utilizar el servicio para eludir leyes de exportaci&oacute;n, sanciones o regulaciones aplicables.</li>
-              <li>Superar los l&iacute;mites de almacenamiento o n&uacute;mero de c&aacute;psulas establecidos en su plan mediante medios fraudulentos.</li>
+              <li>Superar los l&iacute;mites de almacenamiento o n&uacute;mero de c&aacute;psulas establecidos mediante medios fraudulentos.</li>
               <li>Realizar ingenier&iacute;a inversa, descompilar o intentar extraer el c&oacute;digo fuente de la plataforma.</li>
             </ul>
             <p className="mt-3">
@@ -276,9 +242,10 @@ export default function TerminosPage() {
                 eliminaci&oacute;n inmediata de tus datos sin esperar al periodo de gracia.
               </li>
               <li>
-                Las suscripciones activas se cancelar&aacute;n autom&aacute;ticamente. No se realizar&aacute;n
-                reembolsos por el periodo no consumido del mes en curso, salvo que la legislaci&oacute;n
-                aplicable disponga lo contrario.
+                Al no existir suscripciones, la cancelaci&oacute;n de la cuenta no genera cargos
+                recurrentes pendientes. Los pagos &uacute;nicos realizados (Video Regalo) no son
+                reembolsables una vez entregado el producto, salvo que la legislaci&oacute;n aplicable
+                disponga lo contrario.
               </li>
             </ul>
           </section>

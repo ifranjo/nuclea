@@ -34,11 +34,11 @@ function normalizeState(state: unknown): GiftLifecycleState {
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const userId = await verifyBearerToken(request)
-    const capsuleId = context.params?.id
+    const { id: capsuleId } = await context.params
     if (!capsuleId) {
       return NextResponse.json({ error: 'Capsula invalida' }, { status: 400 })
     }
@@ -92,4 +92,3 @@ export async function POST(
     return NextResponse.json({ error: 'No se pudo reclamar la capsula' }, { status: 500 })
   }
 }
-

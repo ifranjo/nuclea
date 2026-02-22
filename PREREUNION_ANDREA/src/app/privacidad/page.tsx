@@ -105,8 +105,8 @@ export default function PrivacidadPage() {
                 expl&iacute;cito separado (v&eacute;ase <a href="#biometricos" className="text-nuclea-gold hover:underline">secci&oacute;n 5</a>).
               </li>
               <li>
-                <strong className="text-white/90">Datos operacionales:</strong> plan contratado, uso de almacenamiento,
-                fecha de registro, historial de consentimientos otorgados y versiones aceptadas.
+                <strong className="text-white/90">Datos operacionales:</strong> uso de almacenamiento,
+                fecha de registro, historial de consentimientos otorgados, versiones aceptadas y registros de pagos &uacute;nicos realizados (Video Regalo).
               </li>
               <li>
                 <strong className="text-white/90">Lista de espera:</strong> direcci&oacute;n de correo electr&oacute;nico
@@ -134,7 +134,7 @@ export default function PrivacidadPage() {
                 <strong className="text-white/90">Ejecuci&oacute;n contractual (Art. 6.1.b RGPD):</strong> para la
                 prestaci&oacute;n del servicio de c&aacute;psulas digitales, la gesti&oacute;n de la cuenta de
                 usuario, la facturaci&oacute;n y la ejecuci&oacute;n de las funcionalidades contratadas seg&uacute;n
-                el plan seleccionado.
+                el servicio contratado.
               </li>
               <li>
                 <strong className="text-white/90">Inter&eacute;s leg&iacute;timo (Art. 6.1.f RGPD):</strong> para la
@@ -161,7 +161,7 @@ export default function PrivacidadPage() {
               <li>Gesti&oacute;n de la cuenta de usuario: registro, autenticaci&oacute;n y mantenimiento del perfil.</li>
               <li>Creaci&oacute;n, almacenamiento y entrega de c&aacute;psulas digitales de memoria.</li>
               <li>Creaci&oacute;n y operaci&oacute;n del Avatar IA (EverLife): clonaci&oacute;n de voz, generaci&oacute;n de v&iacute;deo e interacci&oacute;n post-mortem.</li>
-              <li>Gesti&oacute;n de planes, facturaci&oacute;n y l&iacute;mites de almacenamiento.</li>
+              <li>Gesti&oacute;n de pagos (Video Regalo), facturaci&oacute;n y l&iacute;mites de almacenamiento.</li>
               <li>Env&iacute;o de comunicaciones sobre el servicio (transaccionales, no publicitarias).</li>
               <li>Comunicaciones comerciales y de novedades (solo con consentimiento previo del usuario).</li>
               <li>Mejora del servicio y an&aacute;lisis agregado de uso (anonimizado).</li>
@@ -178,7 +178,7 @@ export default function PrivacidadPage() {
               <p className="text-white/80 text-sm">
                 <strong className="text-nuclea-gold">Atenci&oacute;n:</strong> Esta secci&oacute;n se aplica
                 exclusivamente a los usuarios que activen el servicio Avatar IA, disponible en los
-                planes Familiar y EverLife Premium.
+                la funcionalidad Avatar IA de NUCLEA.
               </p>
             </div>
             <p className="mb-3">

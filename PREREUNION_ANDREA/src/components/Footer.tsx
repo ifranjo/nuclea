@@ -26,8 +26,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/planes" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Planes y Precios
+                <Link href="/#planes" className="text-white/50 hover:text-white text-sm transition-colors">
+                  Video Regalo
                 </Link>
               </li>
               <li>

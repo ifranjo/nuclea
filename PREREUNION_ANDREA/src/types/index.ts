@@ -27,7 +27,7 @@ export interface User {
   email: string
   displayName: string
   photoURL?: string
-  plan: 'free' | 'esencial' | 'familiar' | 'premium'
+  plan: 'free'
   createdAt: Date
   capsuleCount: number
   storageUsed: number // in bytes
@@ -165,6 +165,11 @@ export const CAPSULE_TYPES: Record<CapsuleType, { name: string; icon: string; de
   }
 }
 
+/**
+ * Modelo de negocio: pago unico por Video Regalo.
+ * No hay suscripciones mensuales ni anuales.
+ * La cuenta base es gratuita; el usuario paga solo al desbloquear el Video Regalo.
+ */
 export const PLANS = {
   free: {
     name: 'Gratuito',
@@ -173,31 +178,5 @@ export const PLANS = {
     storage: 500 * 1024 * 1024, // 500MB
     sharing: 3,
     aiAvatar: false
-  },
-  esencial: {
-    name: 'Esencial',
-    price: 9.99,
-    capsules: 2,
-    storage: 5 * 1024 * 1024 * 1024, // 5GB
-    sharing: 10,
-    aiAvatar: false
-  },
-  familiar: {
-    name: 'Familiar',
-    price: 24.99,
-    capsules: 10,
-    storage: 50 * 1024 * 1024 * 1024, // 50GB
-    sharing: -1, // unlimited
-    aiAvatar: true
-  },
-  premium: {
-    name: 'EverLife Premium',
-    price: 99,
-    priceType: 'one-time',
-    capsules: 1, // EverLife only
-    storage: 100 * 1024 * 1024 * 1024, // 100GB
-    sharing: -1,
-    aiAvatar: true,
-    dedicatedSupport: true
   }
 }

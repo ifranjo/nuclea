@@ -28,9 +28,6 @@ function Header() {
             <Link href="/capsulas" className="text-white/70 hover:text-white transition-colors">
               Capsulas
             </Link>
-            <Link href="/planes" className="text-white/70 hover:text-white transition-colors">
-              Planes
-            </Link>
             <Link href="/sobre-nosotros" className="text-white/70 hover:text-white transition-colors">
               Nosotros
             </Link>
@@ -96,9 +93,6 @@ function Header() {
             <div className="flex flex-col gap-4">
               <Link href="/capsulas" className="text-white/70 hover:text-white py-2">
                 Capsulas
-              </Link>
-              <Link href="/planes" className="text-white/70 hover:text-white py-2">
-                Planes
               </Link>
               <Link href="/sobre-nosotros" className="text-white/70 hover:text-white py-2">
                 Nosotros

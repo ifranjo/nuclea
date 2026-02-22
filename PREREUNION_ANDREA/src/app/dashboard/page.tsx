@@ -9,7 +9,7 @@ import CapsuleCard from '@/components/CapsuleCard'
 import ClientErrorBoundary from '@/components/error/ClientErrorBoundary'
 import { useAuth } from '@/hooks/useAuth'
 import { useCapsules } from '@/hooks/useCapsules'
-import { CAPSULE_TYPES, PLANS } from '@/types'
+import { CAPSULE_TYPES } from '@/types'
 import type { CapsuleType } from '@/types'
 import { useAppStore, useUIPreferences } from '@/lib/store'
 import toast from 'react-hot-toast'
@@ -80,8 +80,7 @@ export default function DashboardPage() {
 
   if (!user) return null
 
-  const plan = PLANS[user.plan]
-  const canCreateCapsule = plan.capsules === -1 || capsules.length < plan.capsules
+  const canCreateCapsule = true
 
   const handleCreateCapsule = async () => {
     if (!newCapsule.title.trim()) return
@@ -189,7 +188,7 @@ export default function DashboardPage() {
             <div>
               <h1 className="text-3xl font-display gradient-text font-semibold">Mis Capsulas</h1>
               <p className="text-white/60 mt-1">
-                {capsules.length} de {plan.capsules === -1 ? 'infinito' : plan.capsules} capsulas {' '}·{' '}Plan {plan.name}
+                {capsules.length} capsulas creadas · Modelo de pago unico (Video Regalo)
               </p>
             </div>
 
