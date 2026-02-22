@@ -14,7 +14,9 @@
     "smoke:routes:ci": "npm run build && npm run smoke:routes",
     "start": "next start",
     "lint": "eslint .",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
@@ -32,6 +34,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.1.6",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^22.10.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
