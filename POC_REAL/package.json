@@ -20,8 +20,9 @@
     "test:e2e:ui": "npx playwright test tests/e2e/ --ui",
     "test:install": "playwright install chromium",
     "test:health": "node tests/healthcheck.mjs",
-    "soak:dry-run": "powershell -ExecutionPolicy Bypass -File scripts/soak_10h_runner.ps1 -DurationHours 0.1 -SleepSeconds 30",
-    "soak:10h": "powershell -ExecutionPolicy Bypass -File scripts/soak_10h_runner.ps1 -DurationHours 10 -SleepSeconds 120"
+    "soak:dry-run": "powershell -ExecutionPolicy Bypass -File scripts/soak_10h_runner.ps1 -DurationHours 0.1 -SleepSeconds 30 -MaxTotalRetries 10",
+    "soak:10h": "powershell -ExecutionPolicy Bypass -File scripts/soak_10h_runner.ps1 -DurationHours 10 -SleepSeconds 120 -MaxTotalRetries 100",
+    "soak:20h": "powershell -ExecutionPolicy Bypass -File scripts/soak_10h_runner.ps1 -DurationHours 20 -SleepSeconds 120 -MaxTotalRetries 100"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.0",

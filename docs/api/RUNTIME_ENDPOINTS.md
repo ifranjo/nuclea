@@ -48,6 +48,35 @@ For the broader target API contract (future/expanded scope), see `ENDPOINTS.md`.
   - Auth: none
   - Behavior: unsubscribes a waitlist email/token
 
+### Cron Jobs
+
+- `POST /api/cron/lifecycle`
+  - Auth: `x-cron-secret` header or Bearer token
+  - Behavior: Runs expiry sweep, video purge queue, trust contact notifications
+  - Frequency: Hourly recommended
+- `POST /api/cron/biometric-cleanup`
+  - Auth: `x-cron-secret` header or Bearer token
+  - Behavior: Cleans up expired biometric consent records
+  - Frequency: Daily recommended
+
+### Consent
+
+- `POST /api/consent/biometric`
+  - Auth: required (Bearer token)
+  - Behavior: Signs biometric consent for AI avatar
+- `GET /api/consent/biometric`
+  - Auth: required (Bearer token)
+  - Behavior: Returns current consent status
+- `DELETE /api/consent/biometric`
+  - Auth: required (Bearer token)
+  - Behavior: Revokes biometric consent
+
+### Notifications
+
+- `POST /api/notifications/whatsapp/opt-in`
+  - Auth: required (Bearer token)
+  - Behavior: Enables WhatsApp notifications for user
+
 ## Runtime verification
 
 These checks mechanically validate route behavior:

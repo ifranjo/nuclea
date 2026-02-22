@@ -71,7 +71,7 @@ test('canSubmitTrustDecision allows email match when user_id is null', () => {
 test('canSubmitTrustDecision blocks mismatched capsule/person mapping', () => {
   const result = canSubmitTrustDecision(input({ capsuleId: 'cap-2' }), person(), identity())
   assert.equal(result.ok, false)
-  assert.match(result.reason || '', /capsula/i)
+  assert.match(result.reason || '', /cápsula|capsula/i)
 })
 
 test('canSubmitTrustDecision blocks unauthorized person', () => {

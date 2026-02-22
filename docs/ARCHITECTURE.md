@@ -59,6 +59,34 @@ Deployment and Quality Gates
 1. Legal/compliance closure requires external artifacts (Art. 28 DPA evidence and Art. 44 transfer safeguards).
 2. Supabase architecture docs previously represented target state; this file now separates current runtime from target architecture.
 
+## Environment Configuration
+
+### Required Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Yes | Firebase client SDK |
+| `FIREBASE_PROJECT_ID` | Yes | Firebase project identifier |
+| `FIREBASE_CLIENT_EMAIL` | Yes | Service account email |
+| `FIREBASE_PRIVATE_KEY` | Yes | PEM private key |
+| `CRON_SECRET` | Yes | Secret for cron job authentication |
+
+### Optional Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `TRUST_CONTACT_NOTIFY_BEFORE_HOURS` | 720 | Hours before expiry to notify trust contacts (canonical) |
+| `TRUST_CONTACT_INACTIVITY_DAYS` | 120 | Legacy fallback (days) — used only if hours var empty |
+| `RATE_LIMIT_REQUESTS` | 10 | Requests per window |
+| `RATE_LIMIT_WINDOW_MS` | 60000 | Window duration (ms) |
+
+### Cron Jobs
+
+| Endpoint | Schedule | Purpose |
+|----------|----------|---------|
+| `/api/cron/lifecycle` | Hourly | Expiry sweep, video purge, trust contact notifications |
+| `/api/cron/biometric-cleanup` | Daily | Cleanup expired biometric consent records |
+
 ## Trust-State Classification
 
 - Live and normative:
