@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUCLEA — Guia de Deploy a Beta Cerrada</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --accent: #8B7355;
+      --danger: #C0392B;
+      --success: #27AE60;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg-page); color: var(--text-primary); line-height: 1.7; font-size: 15px; }
+    .doc-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    .doc-sidebar { background: var(--bg-nav); border-right: 1px solid var(--border-light); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.5rem; }
+    .doc-sidebar h2 { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 1rem; font-weight: 600; }
+    .doc-sidebar .brand { font-size: 1.1rem; letter-spacing: 0.2em; font-weight: 300; color: var(--text-primary); margin-bottom: 0.3rem; }
+    .doc-sidebar .subtitle { font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 2rem; }
+    .nav-section { margin-bottom: 1.2rem; }
+    .nav-section-title { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; margin-bottom: 0.4rem; padding-left: 0.75rem; }
+    .nav-link { display: block; padding: 0.35rem 0; font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; border-left: 2px solid transparent; padding-left: 0.75rem; transition: all 0.15s; }
+    .nav-link:hover { color: var(--text-primary); }
+    .nav-link.active { color: var(--text-primary); border-left-color: var(--border-heavy); font-weight: 500; }
+    .doc-content { padding: 3rem 4rem; max-width: 900px; }
+    h1 { font-size: 1.8rem; font-weight: 300; letter-spacing: 0.05em; margin-bottom: 0.5rem; border-bottom: 2px solid var(--border-heavy); padding-bottom: 0.75rem; }
+    h2 { font-size: 1.3rem; font-weight: 400; margin-top: 3rem; margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    p { margin-bottom: 1rem; }
+    .meta { font-size: 0.8rem; color: var(--text-tertiary); margin-bottom: 2rem; }
+    .intro { font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.8; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+    th { background: var(--bg-note); text-align: left; padding: 0.6rem 0.8rem; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border-light); }
+    td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+    tr:hover td { background: #FAFAF7; }
+    .prompt-block { background: var(--bg-code); border: 1px solid var(--border-light); border-radius: 6px; margin: 1rem 0; overflow: hidden; }
+    .prompt-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.8rem; background: rgba(0,0,0,0.03); border-bottom: 1px solid var(--border-light); }
+    .prompt-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); }
+    .copy-btn { background: var(--copy-btn); color: white; border: none; padding: 0.25rem 0.6rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+    .copy-btn:hover { opacity: 0.85; }
+    .copy-btn.copied { background: var(--border-heavy); }
+    .prompt-content { padding: 0.8rem; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.82rem; white-space: pre-wrap; line-height: 1.6; color: var(--text-primary); }
+    .note-box { background: var(--bg-note); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+    .note-box strong { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.3rem; }
+    .danger-box { background: #FDF2F2; border-left: 3px solid var(--danger); padding: 1rem 1.2rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+    .danger-box strong { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--danger); margin-bottom: 0.3rem; }
+    .success-box { background: #F0FAF0; border-left: 3px solid var(--success); padding: 1rem 1.2rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+    .success-box strong { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--success); margin-bottom: 0.3rem; }
+    .step-number { display: inline-block; width: 28px; height: 28px; background: var(--border-heavy); color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; vertical-align: middle; }
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { padding: 0.4rem 0; padding-left: 1.5rem; position: relative; font-size: 0.9rem; }
+    .checklist li::before { content: '☐'; position: absolute; left: 0; color: var(--text-tertiary); }
+    .flow-diagram { background: var(--bg-code); border: 1px solid var(--border-light); border-radius: 6px; padding: 1.5rem; margin: 1.5rem 0; font-family: 'Consolas', monospace; font-size: 0.8rem; line-height: 1.8; white-space: pre; overflow-x: auto; }
+    ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    code { background: var(--bg-code); padding: 0.15rem 0.4rem; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 0.85em; }
+    .cost-table td:last-child { font-weight: 600; text-align: right; }
+    @media (max-width: 900px) {
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-sidebar { display: none; }
+      .doc-content { padding: 1.5rem; }
+    }
+    @media print {
+      .doc-sidebar { display: none; }
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-content { padding: 0; max-width: 100%; }
+      .copy-btn { display: none; }
+      h2 { page-break-before: always; }
+      h2:first-of-type { page-break-before: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <div class="brand">NUCLEA</div>
+      <div class="subtitle">Guia de Deploy a Beta Cerrada</div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Vision General</div>
+        <a href="#mapa" class="nav-link">Mapa del proyecto</a>
+        <a href="#arquitectura" class="nav-link">Arquitectura actual</a>
+        <a href="#coste" class="nav-link">Coste mensual</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Paso a Paso</div>
+        <a href="#paso1" class="nav-link">1. Supabase Cloud</a>
+        <a href="#paso2" class="nav-link">2. RLS y Storage</a>
+        <a href="#paso3" class="nav-link">3. Vercel Deploy</a>
+        <a href="#paso4" class="nav-link">4. Dominio y DNS</a>
+        <a href="#paso5" class="nav-link">5. Stripe Payments</a>
+        <a href="#paso6" class="nav-link">6. SendGrid Email</a>
+        <a href="#paso7" class="nav-link">7. Notification Drainer</a>
+        <a href="#paso8" class="nav-link">8. Vercel Cron</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Operaciones</div>
+        <a href="#env" class="nav-link">Variables de entorno</a>
+        <a href="#checklist" class="nav-link">Checklist pre-launch</a>
+        <a href="#decisiones" class="nav-link">Decisiones pendientes</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1>Guia de Deploy a Beta Cerrada</h1>
+      <p class="meta">NUCLEA POC_REAL &mdash; Febrero 2026 &mdash; Documento para nuevo lider de proyecto</p>
+
+      <p class="intro">
+        Este documento explica, paso a paso, como llevar NUCLEA desde tu maquina local (Docker + localhost:3002) hasta una beta cerrada funcional en internet. Si nunca has tocado este proyecto, empieza por la seccion "Mapa del proyecto".
+      </p>
+
+      <!-- ============================================================ -->
+      <h2 id="mapa">Mapa del proyecto</h2>
+
+      <p>NUCLEA tiene 3 aplicaciones. Solo una se despliega para la beta:</p>
+
+      <table>
+        <tr><th>App</th><th>Carpeta</th><th>Puerto local</th><th>Deploy?</th></tr>
+        <tr><td><strong>POC_REAL</strong></td><td><code>POC_REAL/</code></td><td>3002</td><td>Si &mdash; esta es la beta</td></tr>
+        <tr><td>PREREUNION_ANDREA</td><td><code>PREREUNION_ANDREA/</code></td><td>3000</td><td>Ya en Vercel (produccion Firebase)</td></tr>
+        <tr><td>POC_INTERNA</td><td><code>POC_INTERNA/app/</code></td><td>3001</td><td>No &mdash; solo UI demo</td></tr>
+      </table>
+
+      <p>POC_REAL es una app Next.js 15 con React 19 que usa Supabase como backend (auth, base de datos PostgreSQL, almacenamiento de archivos). Hoy corre sobre Docker en tu maquina. El objetivo es moverla a servicios cloud.</p>
+
+      <!-- ============================================================ -->
+      <h2 id="arquitectura">Arquitectura actual vs. produccion</h2>
+
+      <div class="flow-diagram">LOCAL (hoy)                         PRODUCCION (objetivo)
+─────────────                       ─────────────────────
+Browser                              Browser
+  │                                    │
+  ▼                                    ▼
+Next.js dev server                   Vercel (Next.js)
+localhost:3002                       nuclea.app
+  │                                    │
+  ├─► Supabase Docker                  ├─► Supabase Cloud (Pro $25/mo)
+  │   localhost:54321                  │   *.supabase.co
+  │   ├─ Auth                          │   ├─ Auth
+  │   ├─ PostgreSQL                    │   ├─ PostgreSQL
+  │   ├─ Storage                       │   ├─ Storage
+  │   └─ Studio :54323                 │   └─ Studio (dashboard web)
+  │                                    │
+  ├─► (no payments)                    ├─► Stripe Checkout
+  │                                    │   Pago unico Video Regalo
+  │                                    │
+  └─► (no emails)                      └─► SendGrid EU
+      notif queued, never sent             Invitaciones + expiry emails</div>
+
+      <!-- ============================================================ -->
+      <h2 id="coste">Coste mensual estimado</h2>
+
+      <table class="cost-table">
+        <tr><th>Servicio</th><th>Plan</th><th>Que incluye</th><th>Coste</th></tr>
+        <tr><td>Supabase Cloud</td><td>Pro</td><td>8GB DB, 100GB storage, 100K MAU, always-on</td><td>$25/mo</td></tr>
+        <tr><td>Vercel</td><td>Pro</td><td>Deploys ilimitados, cron jobs, 1TB bandwidth</td><td>$20/mo</td></tr>
+        <tr><td>SendGrid</td><td>Free</td><td>100 emails/dia (EU sending)</td><td>$0</td></tr>
+        <tr><td>Stripe</td><td>Pay-per-use</td><td>1.4% + 0.25&euro; por transaccion (EU cards)</td><td>Variable</td></tr>
+        <tr><td>Dominio</td><td>nuclea.app</td><td>.app domain (Google Domains / Cloudflare)</td><td>~$15/year</td></tr>
+        <tr><td colspan="3"><strong>Total fijo mensual</strong></td><td><strong>~$45/mo</strong></td></tr>
+      </table>
+
+      <div class="note-box">
+        <strong>Nota sobre el free tier de Supabase</strong>
+        El plan gratuito pausa el proyecto tras 1 semana de inactividad. Para una demo beta que debe estar siempre disponible, necesitas Pro ($25/mo). Si es solo para demos puntuales, el free tier funciona pero tendras que "despertar" el proyecto antes de cada demo.
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="paso1"><span class="step-number">1</span> Supabase Cloud</h2>
+
+      <p>Crear un proyecto en Supabase Cloud y subir el schema que tienes en local.</p>
+
+      <h3>1.1 Crear proyecto</h3>
+      <ol>
+        <li>Ve a <code>app.supabase.com</code> y crea una cuenta/org</li>
+        <li>Crea un nuevo proyecto. Region: <strong>eu-west-1 (Ireland)</strong> para GDPR</li>
+        <li>Apunta el <strong>Project Reference ID</strong> (aparece en la URL: <code>app.supabase.com/project/XXXXXX</code>)</li>
+        <li>Apunta la <strong>database password</strong> (la necesitaras para conexion directa)</li>
+      </ol>
+
+      <h3>1.2 Enlazar y subir migraciones</h3>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Enlazar proyecto remoto</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">cd POC_REAL
+npx supabase link --project-ref TU_PROJECT_REF</div>
+      </div>
+
+      <p>Te pedira la database password. Despues:</p>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Subir migraciones a Cloud</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">npx supabase db push</div>
+      </div>
+
+      <p>Esto aplica las 10 migraciones (<code>00001</code> a <code>00010</code>) en orden. Pero <strong>antes</strong> de hacer esto, necesitas el paso 2.</p>
+
+      <!-- ============================================================ -->
+      <h2 id="paso2"><span class="step-number">2</span> RLS y Storage (CRITICO)</h2>
+
+      <div class="danger-box">
+        <strong>No despliegues sin RLS</strong>
+        Ahora mismo la migracion <code>00002_disable_rls.sql</code> desactiva Row Level Security en todas las tablas. Esto significa que cualquier usuario autenticado puede leer y escribir TODOS los datos. En produccion esto es inaceptable.
+      </div>
+
+      <h3>2.1 Crear migracion RLS</h3>
+      <p>Necesitas una nueva migracion (<code>00011_enable_rls_production.sql</code>) que:</p>
+      <ul>
+        <li>Re-habilite RLS en todas las tablas: <code>ALTER TABLE users ENABLE ROW LEVEL SECURITY;</code></li>
+        <li>Cree politicas para cada tabla (usuarios solo ven sus propios datos, capsulas accesibles por owner_id o receiver_id, etc.)</li>
+        <li>Las tablas <code>video_purge_jobs</code>, <code>notification_outbox</code> solo deben ser accesibles por service_role</li>
+      </ul>
+
+      <h3>2.2 Storage bucket privado</h3>
+      <p>Ahora mismo el bucket <code>capsule-contents</code> es publico. Necesitas:</p>
+      <ul>
+        <li>Cambiar a <code>public = false</code></li>
+        <li>Crear politicas de Storage que solo permitan al owner del capsule subir/leer</li>
+        <li>Usar signed URLs (con expiracion) en vez de <code>getPublicUrl</code></li>
+      </ul>
+
+      <div class="note-box">
+        <strong>Esto es trabajo de codigo</strong>
+        Este paso requiere escribir SQL para las politicas RLS y modificar <code>useCapsuleContents.ts</code> para usar signed URLs. Es el bloque de trabajo mas grande antes del deploy. Estima 1-2 dias de desarrollo.
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="paso3"><span class="step-number">3</span> Vercel Deploy</h2>
+
+      <h3>3.1 Conectar repositorio</h3>
+      <ol>
+        <li>Ve a <code>vercel.com</code> y crea una cuenta</li>
+        <li>Importa el repo <code>github.com/ifranjo/nuclea</code></li>
+        <li>Configura:
+          <ul>
+            <li><strong>Root Directory</strong>: <code>POC_REAL</code></li>
+            <li><strong>Framework</strong>: Next.js (auto-detectado)</li>
+            <li><strong>Build Command</strong>: <code>next build</code> (default)</li>
+            <li><strong>Install Command</strong>: <code>npm install</code> (default)</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h3>3.2 Instalar integracion Supabase</h3>
+      <ol>
+        <li>En Vercel, ve a Marketplace &rarr; busca "Supabase"</li>
+        <li>Instala la integracion y conecta tu proyecto Supabase Cloud</li>
+        <li>Esto auto-sincroniza: <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code></li>
+      </ol>
+
+      <h3>3.3 Variables de entorno manuales</h3>
+      <p>Ademas de las que sincroniza Supabase, necesitas anadir manualmente en Vercel &rarr; Settings &rarr; Environment Variables:</p>
+
+      <table>
+        <tr><th>Variable</th><th>Valor</th><th>Para que</th></tr>
+        <tr><td><code>ADMIN_API_SECRET</code></td><td>Un string largo aleatorio</td><td>Auth para endpoints admin (beta invite/revoke)</td></tr>
+        <tr><td><code>CRON_SECRET</code></td><td>Otro string largo aleatorio</td><td>Auth para el cron de lifecycle</td></tr>
+        <tr><td><code>NEXT_PUBLIC_APP_URL</code></td><td><code>https://nuclea.app</code></td><td>URLs en emails de invitacion</td></tr>
+        <tr><td><code>BETA_GATE_ENABLED</code></td><td><code>true</code></td><td>Activar gate de beta (solo invitados)</td></tr>
+        <tr><td><code>STRIPE_SECRET_KEY</code></td><td>De tu dashboard Stripe</td><td>Crear Checkout Sessions</td></tr>
+        <tr><td><code>STRIPE_WEBHOOK_SECRET</code></td><td>De tu webhook en Stripe</td><td>Verificar firma de webhooks</td></tr>
+        <tr><td><code>SENDGRID_API_KEY</code></td><td>De tu cuenta SendGrid</td><td>Enviar emails transaccionales</td></tr>
+      </table>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Generar secrets aleatorios</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</div>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="paso4"><span class="step-number">4</span> Dominio y DNS</h2>
+
+      <h3>4.1 Registrar dominio</h3>
+      <p>Si aun no tienes <code>nuclea.app</code>, registralo en Cloudflare ($15/year) o Google Domains.</p>
+
+      <h3>4.2 Configurar en Vercel</h3>
+      <ol>
+        <li>Vercel &rarr; tu proyecto &rarr; Settings &rarr; Domains</li>
+        <li>Anade <code>nuclea.app</code> y <code>www.nuclea.app</code></li>
+        <li>Vercel te dara registros DNS (CNAME). Configuralos en tu registrador.</li>
+        <li>SSL se activa automaticamente (Let's Encrypt).</li>
+      </ol>
+
+      <h3>4.3 DNS para email (SPF/DKIM)</h3>
+      <p>SendGrid requiere verificar tu dominio para enviar emails desde <code>noreply@nuclea.app</code>:</p>
+      <ul>
+        <li>SendGrid &rarr; Settings &rarr; Sender Authentication &rarr; Domain Authentication</li>
+        <li>Te dara 3-5 registros CNAME para anadir en tu DNS</li>
+        <li>Tambien necesitas un registro SPF (TXT) y DKIM</li>
+      </ul>
+
+      <!-- ============================================================ -->
+      <h2 id="paso5"><span class="step-number">5</span> Stripe Payments</h2>
+
+      <p>NUCLEA solo tiene un producto de pago: <strong>Video Regalo</strong> (pago unico). No hay suscripciones.</p>
+
+      <h3>5.1 Configurar Stripe</h3>
+      <ol>
+        <li>Crea cuenta en <code>dashboard.stripe.com</code></li>
+        <li>Crea un Producto: "Video Regalo NUCLEA" con un precio unico (ej: 29.99&euro;)</li>
+        <li>Apunta el <strong>Price ID</strong> (empieza por <code>price_</code>)</li>
+        <li>Crea un Webhook endpoint: <code>https://nuclea.app/api/webhooks/stripe</code></li>
+        <li>Suscribete al evento: <code>checkout.session.completed</code></li>
+        <li>Apunta el <strong>Webhook Signing Secret</strong> (<code>whsec_...</code>)</li>
+      </ol>
+
+      <h3>5.2 Flujo de pago</h3>
+
+      <div class="flow-diagram">Receptor ve "Pagar Video Regalo"
+  │
+  ▼
+POST /api/checkout/create-session
+  │  crea Stripe Checkout Session con:
+  │  - price: price_XXXXXX
+  │  - mode: 'payment' (unico, no subscription)
+  │  - metadata: { capsuleId }
+  │  - success_url: /share/{token}?payment=success
+  │  - cancel_url: /share/{token}?payment=cancel
+  │
+  ▼
+Stripe hosted checkout page (redirect)
+  │  usuario paga con tarjeta
+  │
+  ▼
+Stripe webhook → POST /api/webhooks/stripe
+  │  event: checkout.session.completed
+  │  leer metadata.capsuleId
+  │
+  ▼
+UPDATE capsules SET video_regalo_status = 'purchased',
+                    video_regalo_paid_at = NOW()
+WHERE id = capsuleId</div>
+
+      <h3>5.3 Codigo necesario (2 archivos nuevos)</h3>
+
+      <table>
+        <tr><th>Archivo</th><th>Que hace</th></tr>
+        <tr><td><code>src/app/api/checkout/create-session/route.ts</code></td><td>Crea Stripe Checkout Session. Auth requerida. Valida que la capsula esta en estado <code>claimed</code>.</td></tr>
+        <tr><td><code>src/app/api/webhooks/stripe/route.ts</code></td><td>Recibe webhook de Stripe. Verifica firma con <code>STRIPE_WEBHOOK_SECRET</code>. Actualiza <code>video_regalo_status</code> en Supabase.</td></tr>
+      </table>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Instalar Stripe SDK</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">cd POC_REAL && npm install stripe</div>
+      </div>
+
+      <div class="note-box">
+        <strong>Stripe en Espana</strong>
+        Para tarjetas europeas la comision es 1.4% + 0.25&euro; (no 2.9%). Stripe requiere activar tu cuenta con datos de empresa (NIF, direccion, cuenta bancaria IBAN). Esto tarda 1-2 dias en verificarse.
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="paso6"><span class="step-number">6</span> SendGrid Email (EU)</h2>
+
+      <p>NUCLEA tiene una tabla <code>notification_outbox</code> donde se encolan emails pero nunca se envian. SendGrid los envia.</p>
+
+      <h3>6.1 Configurar SendGrid</h3>
+      <ol>
+        <li>Crea cuenta en <code>sendgrid.com</code></li>
+        <li>Elige <strong>EU Sending</strong> al configurar (emails salen desde servidores en la UE)</li>
+        <li>Firma el <strong>DPA</strong> (Data Processing Addendum) &mdash; obligatorio para GDPR</li>
+        <li>Crea una API Key con permisos de "Mail Send"</li>
+        <li>Verifica tu dominio sender (ver seccion DNS arriba)</li>
+      </ol>
+
+      <h3>6.2 Templates necesarios</h3>
+
+      <table>
+        <tr><th>Template</th><th>Cuando se envia</th><th>Variables</th></tr>
+        <tr><td><code>capsule-invitation</code></td><td>Creator envia capsula</td><td>capsuleTitle, senderEmail, invitationUrl</td></tr>
+        <tr><td><code>expiry-warning</code></td><td>7 dias antes de expirar</td><td>capsuleTitle, daysRemaining, actionUrl</td></tr>
+        <tr><td><code>trust-contact-notify</code></td><td>Antes de expirar capsula</td><td>capsuleTitle, decisionUrl, contactName</td></tr>
+      </table>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Instalar SendGrid SDK</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">cd POC_REAL && npm install @sendgrid/mail</div>
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="paso7"><span class="step-number">7</span> Notification Drainer</h2>
+
+      <p>El "drainer" es una API route que lee la cola de notificaciones y las envia. No necesitas Redis ni colas externas &mdash; la tabla <code>notification_outbox</code> en Supabase ES la cola.</p>
+
+      <h3>Patron</h3>
+
+      <div class="flow-diagram">Vercel Cron (cada 5 minutos)
+  │
+  ▼
+GET /api/cron/notifications
+  │  Header: Authorization: Bearer CRON_SECRET
+  │
+  ▼
+SELECT * FROM notification_outbox
+  WHERE sent_at IS NULL
+  ORDER BY queued_at ASC
+  LIMIT 10
+  │
+  ▼
+Para cada notificacion:
+  ├─ channel = 'email' → SendGrid API
+  ├─ channel = 'whatsapp' → (futuro)
+  └─ channel = 'push' → (futuro)
+  │
+  ▼
+UPDATE notification_outbox
+  SET sent_at = NOW(), delivery_status = 'sent'
+  WHERE id = notificacion.id
+  │
+  Si falla:
+  SET delivery_status = 'failed', retry_count = retry_count + 1</div>
+
+      <h3>Archivo necesario</h3>
+      <p><code>src/app/api/cron/notifications/route.ts</code> &mdash; unica ruta nueva. Lee outbox, envia via SendGrid, marca como enviado. El cron existente (<code>/api/cron/lifecycle</code>) se encarga de encolar; este nuevo se encarga de drenar.</p>
+
+      <!-- ============================================================ -->
+      <h2 id="paso8"><span class="step-number">8</span> Vercel Cron Jobs</h2>
+
+      <p>Vercel ejecuta cron jobs llamando a tus API routes en schedule. Se configura con un archivo en la raiz del proyecto.</p>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">POC_REAL/vercel.json</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">COPY</button>
+        </div>
+        <div class="prompt-content">{
+  "crons": [
+    {
+      "path": "/api/cron/lifecycle",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/notifications",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}</div>
+      </div>
+
+      <table>
+        <tr><th>Cron</th><th>Frecuencia</th><th>Que hace</th></tr>
+        <tr><td><code>/api/cron/lifecycle</code></td><td>Cada 6 horas</td><td>Notifica trust contacts, expira capsulas, purga videos</td></tr>
+        <tr><td><code>/api/cron/notifications</code></td><td>Cada 5 minutos</td><td>Drena outbox y envia emails pendientes</td></tr>
+      </table>
+
+      <div class="note-box">
+        <strong>Seguridad de los cron</strong>
+        Ambas rutas validan el header <code>Authorization: Bearer CRON_SECRET</code>. Vercel envia este header automaticamente si configuras <code>CRON_SECRET</code> en tus env vars.
+      </div>
+
+      <!-- ============================================================ -->
+      <h2 id="env">Todas las variables de entorno</h2>
+
+      <table>
+        <tr><th>Variable</th><th>Origen</th><th>Donde</th></tr>
+        <tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td><td>Auto (integracion Vercel-Supabase)</td><td>Vercel</td></tr>
+        <tr><td><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></td><td>Auto</td><td>Vercel</td></tr>
+        <tr><td><code>SUPABASE_SERVICE_ROLE_KEY</code></td><td>Auto</td><td>Vercel</td></tr>
+        <tr><td><code>ADMIN_API_SECRET</code></td><td>Generar manualmente (crypto random 32 bytes hex)</td><td>Vercel</td></tr>
+        <tr><td><code>CRON_SECRET</code></td><td>Generar manualmente</td><td>Vercel</td></tr>
+        <tr><td><code>NEXT_PUBLIC_APP_URL</code></td><td><code>https://nuclea.app</code></td><td>Vercel</td></tr>
+        <tr><td><code>BETA_GATE_ENABLED</code></td><td><code>true</code></td><td>Vercel</td></tr>
+        <tr><td><code>STRIPE_SECRET_KEY</code></td><td>Stripe Dashboard &rarr; API Keys</td><td>Vercel</td></tr>
+        <tr><td><code>STRIPE_WEBHOOK_SECRET</code></td><td>Stripe Dashboard &rarr; Webhooks</td><td>Vercel</td></tr>
+        <tr><td><code>SENDGRID_API_KEY</code></td><td>SendGrid &rarr; Settings &rarr; API Keys</td><td>Vercel</td></tr>
+        <tr><td><code>TRUST_CONTACT_NOTIFY_BEFORE_HOURS</code></td><td><code>72</code> (default)</td><td>Vercel (opcional)</td></tr>
+      </table>
+
+      <!-- ============================================================ -->
+      <h2 id="checklist">Checklist pre-launch</h2>
+
+      <h3>Codigo (desarrollo)</h3>
+      <ul class="checklist">
+        <li>Escribir migracion 00011: RLS policies para todas las tablas</li>
+        <li>Cambiar storage bucket a privado + signed URLs</li>
+        <li>Crear <code>/api/checkout/create-session</code> (Stripe)</li>
+        <li>Crear <code>/api/webhooks/stripe</code> (Stripe webhook)</li>
+        <li>Crear <code>/api/cron/notifications</code> (email drainer)</li>
+        <li>Integrar <code>@sendgrid/mail</code> en el drainer</li>
+        <li>Crear <code>vercel.json</code> con cron schedules</li>
+        <li>Actualizar ReceiverActionOptions para usar Stripe Checkout real</li>
+        <li>Seed de usuarios beta iniciales en Supabase Cloud</li>
+      </ul>
+
+      <h3>Infraestructura (config)</h3>
+      <ul class="checklist">
+        <li>Crear proyecto en Supabase Cloud (region: eu-west-1)</li>
+        <li>Crear cuenta Stripe + verificar empresa</li>
+        <li>Crear cuenta SendGrid + verificar dominio + firmar DPA</li>
+        <li>Registrar dominio nuclea.app (si no existe)</li>
+        <li>Conectar repo a Vercel con root = POC_REAL</li>
+        <li>Instalar integracion Supabase en Vercel</li>
+        <li>Configurar todas las env vars en Vercel</li>
+        <li>Configurar DNS (Vercel + SendGrid)</li>
+        <li><code>supabase link</code> + <code>supabase db push</code></li>
+      </ul>
+
+      <h3>Validacion (testing)</h3>
+      <ul class="checklist">
+        <li>Login/registro funciona en produccion</li>
+        <li>Crear capsula + subir foto</li>
+        <li>Enviar capsula a email de prueba</li>
+        <li>Recibir email de invitacion</li>
+        <li>Reclamar capsula como receptor</li>
+        <li>Pagar Video Regalo (modo test de Stripe)</li>
+        <li>Verificar que trust contact recibe notificacion</li>
+        <li>Verificar que capsula expira tras 30 dias (simular con fecha)</li>
+      </ul>
+
+      <!-- ============================================================ -->
+      <h2 id="decisiones">Decisiones pendientes (negocio)</h2>
+
+      <p>Estas decisiones NO son tecnicas &mdash; requieren input de Andrea/negocio:</p>
+
+      <table>
+        <tr><th>#</th><th>Decision</th><th>Opciones</th><th>Impacto</th></tr>
+        <tr><td>1</td><td>Precio Video Regalo</td><td>19.99&euro;? 29.99&euro;? 49.99&euro;?</td><td>Se configura en Stripe Dashboard</td></tr>
+        <tr><td>2</td><td>Dominio definitivo</td><td>nuclea.app? nuclea.es? nuclea.io?</td><td>Afecta DNS, emails, branding</td></tr>
+        <tr><td>3</td><td>Numero de beta testers</td><td>10? 50? 100?</td><td>Determina si free tier SendGrid basta</td></tr>
+        <tr><td>4</td><td>Idioma de emails</td><td>Solo espanol? Bilingue?</td><td>Templates a crear</td></tr>
+        <tr><td>5</td><td>Politica de reembolso Video Regalo</td><td>No reembolsable? 14 dias?</td><td>Textos legales + logica Stripe</td></tr>
+        <tr><td>6</td><td>Contenido del mini-trailer</td><td>Video real? Animacion placeholder?</td><td>Requiere motor de video o mock</td></tr>
+      </table>
+
+      <div class="success-box">
+        <strong>Orden recomendado para empezar</strong>
+        1) Supabase Cloud + RLS (bloquea todo lo demas) &rarr; 2) Vercel deploy basico &rarr; 3) Stripe en modo test &rarr; 4) SendGrid + drainer &rarr; 5) DNS + dominio &rarr; 6) Invitar primeros beta testers
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function copyPrompt(button) {
+      const content = button.closest('.prompt-block').querySelector('.prompt-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        const original = button.textContent;
+        button.textContent = 'COPIED!';
+        button.classList.add('copied');
+        setTimeout(() => { button.textContent = original; button.classList.remove('copied'); }, 2000);
+      });
+    }
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    const sections = document.querySelectorAll('[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (scrollY >= section.offsetTop - 100) current = section.getAttribute('id');
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>
