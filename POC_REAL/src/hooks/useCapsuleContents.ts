@@ -161,9 +161,10 @@ export function useCapsuleContents(capsuleId?: string, currentUserId?: string) {
     return { error }
   }, [assertCapsuleOwner, capsuleId, fetchContents, supabase])
 
-  const getFileUrl = useCallback((filePath: string) => {
-    const { data } = supabase.storage.from('capsule-contents').getPublicUrl(filePath)
-    return data.publicUrl
+  const getFileUrl = useCallback(async (filePath: string): Promise<string> => {
+    const { data, error } = await supabase.storage.from('capsule-contents').createSignedUrl(filePath, 3600)
+    if (error || !data?.signedUrl) return ''
+    return data.signedUrl
   }, [supabase])
 
   return { contents, loading, error, fetchContents, uploadFile, addNote, deleteContent, getFileUrl }

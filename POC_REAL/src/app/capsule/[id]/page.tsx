@@ -109,15 +109,25 @@ export default function CapsuleDetailPage() {
     void fetchCreatorName()
   }, [capsule?.creator_id, isReceiverMode, supabase])
 
-  const mediaItems: MediaItem[] = useMemo(() => {
-    return contents.map(c => ({
-      id: c.id,
-      type: c.type as MediaItem['type'],
-      name: c.file_name || c.title || 'Item',
-      url: c.file_path ? getFileUrl(c.file_path) : undefined,
-      text: c.text_content || undefined,
-      createdAt: new Date(resolveCapturedAt(c.captured_at, c.created_at)),
-    }))
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    async function resolve() {
+      const items: MediaItem[] = await Promise.all(
+        contents.map(async c => ({
+          id: c.id,
+          type: c.type as MediaItem['type'],
+          name: c.file_name || c.title || 'Item',
+          url: c.file_path ? await getFileUrl(c.file_path) : undefined,
+          text: c.text_content || undefined,
+          createdAt: new Date(resolveCapturedAt(c.captured_at, c.created_at)),
+        }))
+      )
+      if (!cancelled) setMediaItems(items)
+    }
+    void resolve()
+    return () => { cancelled = true }
   }, [contents, getFileUrl])
 
   const emailTemplates = useMemo(() => {
@@ -125,7 +135,7 @@ export default function CapsuleDetailPage() {
     return buildCapsuleEmailTemplates({
       recipientName: profile?.full_name || 'Receptor',
       capsuleTitle: capsule.title || 'Tu cápsula NUCLEA',
-      actionUrl: typeof window !== 'undefined' ? window.location.href : 'https://nuclea.app',
+      actionUrl: typeof window !== 'undefined' ? window.location.href : (process.env.NEXT_PUBLIC_APP_URL || 'https://nuclea.app'),
       daysRemaining: 10,
     })
   }, [capsule, profile?.full_name])
@@ -190,7 +200,7 @@ export default function CapsuleDetailPage() {
       for (const [index, content] of fileContents.entries()) {
         setCloseStatus(`Descargando archivo ${index + 1}/${fileContents.length}...`)
         try {
-          const fileUrl = getFileUrl(content.file_path as string)
+          const fileUrl = await getFileUrl(content.file_path as string)
           const response = await fetch(fileUrl)
           if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
