@@ -120,7 +120,7 @@ export function VideoUpload({ isOpen, onClose, videos, onAddVideo }: VideoUpload
           <button
             type="button"
             onClick={handleAdd}
-            className="w-full rounded-lg bg-[#1A1A1A] py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#333]"
+            className="w-full py-2.5 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
           >
             Añadir a la cápsula
           </button>

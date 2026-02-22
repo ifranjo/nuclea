@@ -24,13 +24,13 @@ export default function OnboardingError({ error, reset }: OnboardingErrorProps) 
           <button
             type="button"
             onClick={() => reset()}
-            className="px-4 py-2 rounded-full bg-nuclea-text text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            className="px-4 py-2 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
           >
             Reintentar
           </button>
           <Link
             href="/onboarding?step=1"
-            className="px-4 py-2 rounded-full border border-nuclea-border text-sm text-nuclea-text-secondary hover:text-nuclea-text transition-colors"
+            className="px-4 py-2 bg-transparent border border-nuclea-border rounded-lg text-sm text-nuclea-text-secondary hover:text-nuclea-text transition-colors"
           >
             Volver al paso 1
           </Link>
