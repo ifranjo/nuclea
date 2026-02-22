@@ -1,4 +1,4 @@
-const PUBLIC_PATHS = ['/', '/login', '/registro', '/share', '/onboarding', '/demo', '/legal', '/beta/accept', '/beta/waitlist', '/trust']
+const PUBLIC_PATHS = ['/', '/login', '/registro', '/share', '/onboarding', '/demo', '/legal', '/beta/accept', '/beta/waitlist', '/trust', '/admin']
 const BETA_GATED_PATHS = ['/dashboard', '/capsule', '/settings']
 
 function isPathInList(pathname: string, paths: string[]): boolean {
