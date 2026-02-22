@@ -6,7 +6,7 @@ test.describe('Share page (public)', () => {
     // First, login to get a share token
     await loginAs(page, TEST_USERS.homer.email, TEST_USERS.homer.password)
 
-    // Navigate to Homer's first capsule
+    // Navigate to Homer's first capsule — use "Momentos en Springfield" which has notes
     const capsuleLink = page.getByText('Momentos en Springfield')
     await expect(capsuleLink).toBeVisible({ timeout: 10000 })
     await capsuleLink.click()
@@ -27,7 +27,7 @@ test.describe('Share page (public)', () => {
     const url = new URL(shareUrl)
     const sharePath = url.pathname
 
-    // Open an incognito-like context (new page, no cookies)
+    // Open a new context (no cookies = unauthenticated)
     const newContext = await page.context().browser()!.newContext({
       reducedMotion: 'reduce',
     })
@@ -42,15 +42,16 @@ test.describe('Share page (public)', () => {
     // Should see NUCLEA branding
     await expect(publicPage.getByText('NUCLEA')).toBeVisible()
 
-    // Should see "Compartida por" or similar attribution
-    await expect(publicPage.getByText(/compartida por|regalo de/i)).toBeVisible()
+    // Should see "Compartida por" attribution (active capsules show this)
+    await expect(publicPage.getByText(/Compartida por/i)).toBeVisible()
 
-    // Should see either notes or "no tiene contenido" message
+    // Should see notes section (Homer's capsule has 4 text notes from seed)
+    // or photos — at least some content should be visible
     const hasNotes = await publicPage.getByText('Notas').isVisible().catch(() => false)
-    const hasEmpty = await publicPage.getByText('no tiene contenido').isVisible().catch(() => false)
     const hasPhotos = await publicPage.locator('img[alt]').first().isVisible().catch(() => false)
+    const hasEmpty = await publicPage.getByText(/no tiene contenido/i).isVisible().catch(() => false)
 
-    expect(hasNotes || hasEmpty || hasPhotos).toBeTruthy()
+    expect(hasNotes || hasPhotos || hasEmpty).toBeTruthy()
 
     await newContext.close()
   })
@@ -59,15 +60,17 @@ test.describe('Share page (public)', () => {
     // Visit a non-existent share token
     await page.goto('/share/invalid-token-12345')
 
-    // Should show error message
-    await expect(page.getByText(/no existe|enlace ha expirado/i)).toBeVisible({ timeout: 15000 })
+    // Should show error message — page text: "Esta cápsula no existe o el enlace ha expirado"
+    await expect(
+      page.getByText(/no existe|enlace ha expirado/i)
+    ).toBeVisible({ timeout: 15000 })
 
     // NUCLEA branding should still be visible
     await expect(page.getByText('NUCLEA')).toBeVisible()
   })
 
   test('share page shows notes content when capsule has text notes', async ({ page }) => {
-    // Login to get share token for Homer's capsule (which has notes)
+    // Login to get share token for Homer's capsule (which has 4 notes)
     await loginAs(page, TEST_USERS.homer.email, TEST_USERS.homer.password)
 
     const capsuleLink = page.getByText('Momentos en Springfield')
@@ -90,7 +93,7 @@ test.describe('Share page (public)', () => {
     // Wait for page to load
     await expect(publicPage.getByText('Momentos en Springfield')).toBeVisible({ timeout: 15000 })
 
-    // Homer's capsule has text notes from seed — check for "Notas" heading
+    // Homer's capsule has 4 text notes from seed — check for "Notas" heading
     await expect(publicPage.getByText('Notas')).toBeVisible({ timeout: 10000 })
 
     await newContext.close()

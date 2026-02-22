@@ -2,14 +2,20 @@ import { type Page } from '@playwright/test'
 
 /**
  * Reusable login helper for E2E tests.
- * Fills the login form and waits for redirect to /dashboard.
+ * Uses form-based login which properly sets Supabase SSR cookies.
  */
 export async function loginAs(page: Page, email: string, password: string) {
   await page.goto('/login')
+  await page.waitForLoadState('networkidle')
+
   await page.getByLabel('Email').fill(email)
   await page.getByLabel('Contraseña').fill(password)
   await page.getByRole('button', { name: /entrar/i }).click()
+
+  // Login uses window.location.href redirect — wait for dashboard URL
   await page.waitForURL('**/dashboard', { timeout: 15000 })
+  // Wait for capsule data to load (dashboard shows loading skeleton first)
+  await page.waitForLoadState('networkidle')
 }
 
 /** Test user credentials (from seed.ts) */

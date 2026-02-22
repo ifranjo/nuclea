@@ -6,22 +6,26 @@ test.describe('Capsule detail page', () => {
     test('capsule detail loads with header, calendar, and content grid', async ({ page }) => {
       await loginAs(page, TEST_USERS.homer.email, TEST_USERS.homer.password)
 
-      // Navigate to first capsule
+      // Navigate to first capsule from dashboard
       const firstCard = page.locator('a[href^="/capsule/"]').first()
       await expect(firstCard).toBeVisible({ timeout: 10000 })
       await firstCard.click()
       await expect(page).toHaveURL(/\/capsule\/[a-f0-9-]+/, { timeout: 10000 })
 
-      // Header shows capsule title
+      // Header shows capsule title (h1 inside header)
       await expect(page.locator('header h1')).toBeVisible({ timeout: 10000 })
 
-      // Type label visible in header
-      await expect(page.locator('header').getByText(/Legacy|Together|Social|Mascota|Origen/)).toBeVisible()
+      // Type label visible in header (Legacy, Together, Social, Mascota, or Origen)
+      await expect(
+        page.locator('header').getByText(/Legacy|Together|Social|Mascota|Origen/)
+      ).toBeVisible()
 
-      // Calendar section should be present
-      await expect(page.getByText(/enero|febrero|Enero|Febrero|lun|mar/i).first()).toBeVisible({ timeout: 10000 })
+      // Calendar section should be present (month names or day abbreviations)
+      await expect(
+        page.getByText(/enero|febrero|marzo|Enero|Febrero|Marzo|lun|mar|mié/i).first()
+      ).toBeVisible({ timeout: 10000 })
 
-      // Upload action buttons (Foto, Video, Audio, Nota)
+      // Upload action buttons (Foto, Nota)
       await expect(page.getByText('Foto')).toBeVisible()
       await expect(page.getByText('Nota')).toBeVisible()
     })
@@ -36,7 +40,8 @@ test.describe('Capsule detail page', () => {
 
       await expect(page).toHaveURL(/\/capsule\/[a-f0-9-]+/, { timeout: 10000 })
 
-      // Content section should show count
+      // Content section should show count — seed adds 4 text notes + images
+      // Format: "Contenido (N)" where N >= 4
       await expect(page.getByText(/Contenido \(\d+\)/)).toBeVisible({ timeout: 10000 })
     })
 
@@ -49,7 +54,7 @@ test.describe('Capsule detail page', () => {
 
       await expect(page).toHaveURL(/\/capsule\/[a-f0-9-]+/, { timeout: 10000 })
 
-      // Designated persons section
+      // Designated persons section heading
       await expect(page.getByText('Personas designadas')).toBeVisible({ timeout: 10000 })
 
       // "Maggie Simpson" was added as designated person in seed
@@ -175,9 +180,10 @@ test.describe('Capsule detail page', () => {
       await page.getByText('+ Añadir persona').click()
       await expect(page.getByText('Añadir persona designada')).toBeVisible()
 
-      // Close modal using the X button (located in the modal header)
-      const closeButton = page.locator('.fixed button').first()
-      await closeButton.click()
+      // Close modal using the X button in the modal header
+      // The X button is the only button in the modal header div (flex justify-between)
+      const modalHeader = page.locator('.fixed .flex.items-center.justify-between')
+      await modalHeader.locator('button').click()
 
       await expect(page.getByText('Añadir persona designada')).not.toBeVisible({ timeout: 3000 })
     })
@@ -192,7 +198,7 @@ test.describe('Capsule detail page', () => {
       await firstCard.click()
       await expect(page).toHaveURL(/\/capsule\/[a-f0-9-]+/, { timeout: 10000 })
 
-      // Click share button
+      // Click share button — text is "Compartir"
       const shareButton = page.getByRole('button', { name: /compartir/i })
       await expect(shareButton).toBeVisible()
       await shareButton.click()
@@ -206,16 +212,17 @@ test.describe('Capsule detail page', () => {
   })
 
   test.describe('Capsule status badge', () => {
-    test('active capsule shows "Activa" status in header', async ({ page }) => {
+    test('active capsule shows "Vista creador" indicator', async ({ page }) => {
       await loginAs(page, TEST_USERS.homer.email, TEST_USERS.homer.password)
 
+      // Navigate to an active capsule (not the sent one)
       const capsuleLink = page.getByText('Momentos en Springfield')
       await expect(capsuleLink).toBeVisible({ timeout: 10000 })
       await capsuleLink.click()
 
       await expect(page).toHaveURL(/\/capsule\/[a-f0-9-]+/, { timeout: 10000 })
 
-      // Check for view mode text (indicates the page loaded correctly)
+      // The capsule detail shows "Vista creador" for owned capsules
       await expect(page.getByText('Vista creador')).toBeVisible({ timeout: 10000 })
     })
   })
@@ -224,9 +231,10 @@ test.describe('Capsule detail page', () => {
     test('"Cerrar y descargar" button opens inline confirmation dialog', async ({ page }) => {
       await loginAs(page, TEST_USERS.homer.email, TEST_USERS.homer.password)
 
-      const firstCard = page.locator('a[href^="/capsule/"]').first()
-      await expect(firstCard).toBeVisible({ timeout: 10000 })
-      await firstCard.click()
+      // Navigate to an active capsule (not the sent one which is immutable)
+      const capsuleLink = page.getByText('Momentos en Springfield')
+      await expect(capsuleLink).toBeVisible({ timeout: 10000 })
+      await capsuleLink.click()
       await expect(page).toHaveURL(/\/capsule\/[a-f0-9-]+/, { timeout: 10000 })
 
       // Click "Cerrar y descargar"
