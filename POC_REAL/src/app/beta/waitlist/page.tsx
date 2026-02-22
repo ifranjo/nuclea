@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function BetaWaitlistPage() {
@@ -17,24 +18,36 @@ export default function BetaWaitlistPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-lg font-medium text-nuclea-text mb-2">Estás en lista de espera</h2>
+          <h2 className="text-lg font-medium text-nuclea-text mb-2">Est&aacute;s en lista de espera</h2>
+          <p className="text-sm text-nuclea-text-muted mb-4">
+            Tu cuenta est&aacute; creada pero a&uacute;n no tienes acceso a la beta.
+            Te notificaremos por email cuando sea tu turno.
+          </p>
           <p className="text-sm text-nuclea-text-muted">
-            Tu cuenta está creada pero aún no tienes acceso a la beta.
-            Te notificaremos cuando sea tu turno.
+            Si has recibido un c&oacute;digo de invitaci&oacute;n, revisa tu bandeja de entrada
+            y haz clic en el enlace del email para activar tu acceso.
           </p>
           {profile?.email && (
-            <p className="text-xs text-nuclea-text-muted mt-4">
+            <p className="text-xs text-nuclea-text-muted mt-4 pt-4 border-t border-gray-100">
               Cuenta: {profile.email}
             </p>
           )}
         </div>
 
-        <button
-          onClick={signOut}
-          className="text-sm text-nuclea-text-muted hover:text-nuclea-text transition-colors"
-        >
-          Cerrar sesión
-        </button>
+        <div className="flex flex-col gap-3 items-center">
+          <Link
+            href="/"
+            className="text-sm font-medium text-nuclea-text hover:text-nuclea-text-secondary transition-colors underline underline-offset-2"
+          >
+            Volver al inicio
+          </Link>
+          <button
+            onClick={signOut}
+            className="text-sm text-nuclea-text-muted hover:text-nuclea-text transition-colors"
+          >
+            Cerrar sesi&oacute;n
+          </button>
+        </div>
       </div>
     </div>
   )

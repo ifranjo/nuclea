@@ -1,18 +1,27 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+
+const TIMEOUT_MS = 15_000
+const REDIRECT_DELAY_MS = 3_000
 
 function CompleteContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { user, profile } = useAuth()
   const invitationId = searchParams.get('invitation')
-  const [status, setStatus] = useState<'processing' | 'done' | 'error'>('processing')
+  const [status, setStatus] = useState<'processing' | 'done' | 'error' | 'timeout'>('processing')
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (!user || !invitationId) return
+
+    // Start timeout timer
+    timeoutRef.current = setTimeout(() => {
+      setStatus(prev => (prev === 'processing' ? 'timeout' : prev))
+    }, TIMEOUT_MS)
 
     // Complete the beta acceptance server-side
     fetch('/api/beta/complete', {
@@ -25,15 +34,25 @@ function CompleteContent() {
         return r.json()
       })
       .then(data => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
         if (data.success) {
           setStatus('done')
-          setTimeout(() => router.push('/dashboard'), 2000)
+          setTimeout(() => router.push('/dashboard'), REDIRECT_DELAY_MS)
         } else {
           setStatus('error')
         }
       })
-      .catch(() => setStatus('error'))
+      .catch(() => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        setStatus('error')
+      })
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
   }, [user, invitationId, router])
+
+  const goToDashboard = () => router.push('/dashboard')
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
@@ -60,20 +79,68 @@ function CompleteContent() {
               {profile?.full_name ? `Hola ${profile.full_name}, ` : ''}
               Tu acceso ha sido activado. Redirigiendo al dashboard...
             </p>
+            <button
+              onClick={goToDashboard}
+              className="mt-2 px-6 py-3 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
+            >
+              Ir al dashboard
+            </button>
+          </div>
+        )}
+
+        {status === 'timeout' && (
+          <div className="mt-8 space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-amber-50 flex items-center justify-center">
+              <span className="text-2xl" role="img" aria-hidden="true">{'\u23F3'}</span>
+            </div>
+            <h2 className="text-lg font-medium text-nuclea-text">
+              Algo est\u00e1 tardando m\u00e1s de lo esperado
+            </h2>
+            <p className="text-sm text-nuclea-text-muted">
+              Intenta recargar la p\u00e1gina. Si el problema persiste, contacta con soporte.
+            </p>
+            <div className="flex flex-col gap-3 items-center">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
+              >
+                Recargar p\u00e1gina
+              </button>
+              <button
+                onClick={goToDashboard}
+                className="text-sm text-nuclea-text-muted hover:text-nuclea-text transition-colors underline"
+              >
+                Ir al dashboard
+              </button>
+            </div>
           </div>
         )}
 
         {status === 'error' && (
           <div className="mt-8 space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-red-50 flex items-center justify-center">
+              <span className="text-2xl" role="img" aria-hidden="true">{'\u26A0\uFE0F'}</span>
+            </div>
+            <h2 className="text-lg font-medium text-nuclea-text">
+              Error al activar tu acceso
+            </h2>
             <p className="text-sm text-nuclea-text-muted">
               Ha ocurrido un error al activar tu acceso. Por favor, contacta con soporte.
             </p>
-            <button
-              onClick={() => router.push('/login')}
-              className="px-4 py-2 rounded-lg border border-nuclea-border text-sm text-nuclea-text hover:bg-nuclea-secondary"
-            >
-              Ir al login
-            </button>
+            <div className="flex flex-col gap-3 items-center">
+              <button
+                onClick={() => router.push('/login')}
+                className="px-6 py-3 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
+              >
+                Ir al login
+              </button>
+              <a
+                href="mailto:soporte@nuclea.app"
+                className="text-sm text-nuclea-text-muted hover:text-nuclea-text transition-colors underline"
+              >
+                soporte@nuclea.app
+              </a>
+            </div>
           </div>
         )}
       </div>
