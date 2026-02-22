@@ -8,35 +8,6 @@ interface P3Props {
   onNext: () => void
 }
 
-/* ------------------------------------------------------------------ */
-/*  Floating pills — metallic capsule shapes scattered around the     */
-/*  hero area. More than before for richer presence.                  */
-/* ------------------------------------------------------------------ */
-const floatingPills = [
-  { w: 110, h: 54, x: '-34%', y: '18%', rotate: -22, delay: 0.15 },
-  { w: 84,  h: 42, x: '-14%', y: '2%',  rotate: 16,  delay: 0.3  },
-  { w: 95,  h: 46, x: '74%',  y: '12%', rotate: 18,  delay: 0.24 },
-  { w: 120, h: 58, x: '78%',  y: '42%', rotate: -16, delay: 0.36 },
-  { w: 76,  h: 38, x: '64%',  y: '68%', rotate: 20,  delay: 0.48 },
-  { w: 88,  h: 44, x: '6%',   y: '72%', rotate: -14, delay: 0.54 },
-  // Additional pills for richer presence
-  { w: 66,  h: 32, x: '90%',  y: '26%', rotate: 12,  delay: 0.42 },
-  { w: 72,  h: 36, x: '-8%',  y: '44%', rotate: -28, delay: 0.6  },
-  { w: 58,  h: 28, x: '48%',  y: '78%', rotate: -10, delay: 0.66 },
-]
-
-/* ------------------------------------------------------------------ */
-/*  Scattered mini-polaroids — tiny real photos peeking around the    */
-/*  layout to reinforce the memories-emerging metaphor.               */
-/* ------------------------------------------------------------------ */
-const scatteredPolaroids = [
-  { size: 52, x: '-4%',  y: '8%',  rotate: -18, delay: 0.5,  src: '/images/polaroids/dinner.jpg'    },
-  { size: 44, x: '82%',  y: '6%',  rotate: 14,  delay: 0.62, src: '/images/polaroids/beach.jpg'     },
-  { size: 48, x: '88%',  y: '58%', rotate: -10, delay: 0.72, src: '/images/polaroids/friends.jpg'   },
-  { size: 40, x: '2%',   y: '62%', rotate: 22,  delay: 0.58, src: '/images/polaroids/adventure.jpg' },
-  { size: 36, x: '42%',  y: '2%',  rotate: 8,   delay: 0.68, src: '/images/polaroids/terrace2.jpg'  },
-]
-
 export function P3Manifesto({ onNext }: P3Props) {
   return (
     <div className="h-[100dvh] flex flex-col safe-top bg-[radial-gradient(circle_at_50%_28%,rgba(212,175,55,0.14),rgba(212,175,55,0.02)_38%,transparent_68%),linear-gradient(180deg,#FCFCFD_0%,#F1F2F6_100%)] overflow-y-auto">

@@ -16,9 +16,9 @@ export default function OnboardingError({ error, reset }: OnboardingErrorProps) 
   return (
     <main className="min-h-[100dvh] bg-nuclea-bg flex items-center justify-center px-6">
       <div className="max-w-md w-full rounded-2xl border border-nuclea-border bg-white p-6 shadow-[0_20px_40px_rgba(15,15,20,0.08)]">
-        <h1 className="font-display text-3xl text-nuclea-text mb-3">Se interrumpio la animacion</h1>
+        <h1 className="font-display text-3xl text-nuclea-text mb-3">Se interrumpió la animación</h1>
         <p className="text-nuclea-text-secondary text-sm leading-relaxed mb-6">
-          Ocurrio un error durante el flujo de onboarding. Puedes reintentar el paso actual o volver al inicio.
+          Ocurrió un error durante el flujo de onboarding. Puedes reintentar el paso actual o volver al inicio.
         </p>
         <div className="flex items-center gap-3">
           <button
