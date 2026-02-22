@@ -207,13 +207,18 @@ export async function revokeBetaAccess(
   userId: string,
   reason?: string
 ) {
-  await supabase
+  const { error: updateError } = await supabase
     .from('beta_access')
     .update({ enabled: false, revoked_at: new Date().toISOString() })
     .eq('user_id', userId)
+  if (updateError) {
+    return { error: updateError }
+  }
 
   await logBetaEvent(supabase, 'access_revoked', {
     userId,
     metadata: { reason },
   })
+
+  return { error: null }
 }

@@ -13,6 +13,7 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect')
+  const isDevelopment = process.env.NODE_ENV === 'development'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,7 +42,7 @@ function LoginForm() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-lg border border-nuclea-border bg-white text-nuclea-text focus:outline-none focus:ring-2 focus:ring-nuclea-gold/50"
-              placeholder="homer@nuclea.test"
+              placeholder="tu@email.com"
               required
             />
           </div>
@@ -73,21 +74,23 @@ function LoginForm() {
           <Link href={redirect ? `/registro?redirect=${encodeURIComponent(redirect)}` : '/registro'} className="text-nuclea-gold hover:underline">Regístrate</Link>
         </p>
 
-        <div className="mt-10 pt-6 border-t border-nuclea-border">
-          <p className="text-center text-xs text-nuclea-text-muted">Usuarios de prueba</p>
-          <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-nuclea-text-secondary">
-            {['Homer', 'Marge', 'Bart', 'Lisa', 'Maggie'].map(name => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => { setEmail(`${name.toLowerCase()}@nuclea.test`); setPassword('nuclea123') }}
-                className="py-2 px-3 rounded border border-nuclea-border hover:bg-nuclea-secondary transition-colors"
-              >
-                {name}
-              </button>
-            ))}
+        {isDevelopment && (
+          <div className="mt-10 pt-6 border-t border-nuclea-border">
+            <p className="text-center text-xs text-nuclea-text-muted">Usuarios de prueba</p>
+            <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-nuclea-text-secondary">
+              {['Homer', 'Marge', 'Bart', 'Lisa', 'Maggie'].map(name => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => { setEmail(`${name.toLowerCase()}@nuclea.test`); setPassword('nuclea123') }}
+                  className="py-2 px-3 rounded border border-nuclea-border hover:bg-nuclea-secondary transition-colors"
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

@@ -60,6 +60,9 @@ export async function POST(
     if (!capsule?.id) {
       return NextResponse.json({ error: 'Capsula no encontrada' }, { status: 404 })
     }
+    if (!capsule.share_token) {
+      return NextResponse.json({ error: 'La capsula necesita un token de compartir' }, { status: 409 })
+    }
 
     const snapshot: SendableCapsuleSnapshot = {
       ownerId: capsule.owner_id,
@@ -92,7 +95,7 @@ export async function POST(
 
     // Queue invitation email
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
-    const invitationUrl = `${baseUrl}/share/${capsule.share_token || ''}?invite=${invitationToken}`
+    const invitationUrl = `${baseUrl}/share/${capsule.share_token}?invite=${invitationToken}`
 
     await queueNotification(admin, {
       userId: currentUser.profileId,
@@ -112,7 +115,6 @@ export async function POST(
       state: update.gift_state,
       sentAt: update.sent_at,
       receiverEmail: update.receiver_email,
-      invitationToken,
       invitationUrl,
     })
   } catch (error) {

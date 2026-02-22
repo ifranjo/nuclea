@@ -25,7 +25,10 @@ export async function POST(request: NextRequest) {
 
   const { userId, reason } = parseResult.data
   const supabase = createAdminClient()
-  await revokeBetaAccess(supabase, userId, reason)
+  const result = await revokeBetaAccess(supabase, userId, reason)
+  if (result.error) {
+    return NextResponse.json({ error: 'No se pudo revocar acceso beta' }, { status: 500 })
+  }
 
   return NextResponse.json({ success: true })
 }

@@ -2,10 +2,18 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
+function sanitizeNextPath(next: string | null): string {
+  if (!next) return '/dashboard'
+  if (!next.startsWith('/')) return '/dashboard'
+  if (next.includes('//')) return '/dashboard'
+  if (next.startsWith('/\\')) return '/dashboard'
+  return next
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  const next = sanitizeNextPath(searchParams.get('next'))
 
   if (code) {
     const cookieStore = await cookies()
@@ -21,7 +29,10 @@ export async function GET(request: Request) {
         },
       }
     )
-    await supabase.auth.exchangeCodeForSession(code)
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (error) {
+      return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+    }
   }
 
   return NextResponse.redirect(`${origin}${next}`)

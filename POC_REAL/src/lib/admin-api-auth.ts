@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto'
 import type { NextRequest } from 'next/server'
 
 export function isValidAdminRequest(request: NextRequest): boolean {
@@ -8,7 +9,17 @@ export function isValidAdminRequest(request: NextRequest): boolean {
     return false
   }
 
-  return !!providedKey && providedKey === expectedKey
+  if (!providedKey) {
+    return false
+  }
+
+  const providedBuffer = Buffer.from(providedKey)
+  const expectedBuffer = Buffer.from(expectedKey)
+  if (providedBuffer.length !== expectedBuffer.length) {
+    return false
+  }
+
+  return timingSafeEqual(providedBuffer, expectedBuffer)
 }
 
 export function resolveRequestIp(request: NextRequest): string {

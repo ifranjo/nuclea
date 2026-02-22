@@ -58,7 +58,7 @@ function RegistroForm() {
               value={fullName}
               onChange={e => setFullName(e.target.value)}
               className="w-full px-4 py-3 rounded-lg border border-nuclea-border bg-white text-nuclea-text focus:outline-none focus:ring-2 focus:ring-nuclea-gold/50"
-              placeholder="Homer Simpson"
+              placeholder="Tu nombre completo"
               required
             />
           </div>
