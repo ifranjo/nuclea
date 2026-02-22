@@ -123,7 +123,7 @@ export function P4CapsuleSelection() {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto overscroll-none relative">
-        <div className="px-5 pb-10">
+        <div className="px-6 pb-10">
           {/* Title card with capsule accent */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}

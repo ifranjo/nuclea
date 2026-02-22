@@ -367,7 +367,7 @@ export function P2CapsuleOpening({ onNext }: P2Props) {
       {/* ============================================================ */}
       {/*  Progress bar — same style as original, reliable timing      */}
       {/* ============================================================ */}
-      <div className="absolute bottom-0 left-0 right-0 safe-bottom px-8 pb-4 z-40 space-y-2">
+      <div className="absolute bottom-0 left-0 right-0 safe-bottom px-6 pb-4 z-40 space-y-2">
         <div className="flex items-center justify-between">
           <button
             type="button"

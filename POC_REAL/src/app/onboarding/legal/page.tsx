@@ -21,12 +21,12 @@ export default function LegalPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] nuclea-bg overflow-y-auto">
+    <div className="min-h-[100dvh] bg-nuclea-bg overflow-y-auto">
       <div className="max-w-md mx-auto px-6 pt-12 pb-8">
         {/* Back navigation */}
         <Link
           href="/onboarding?step=3"
-          className="inline-flex items-center gap-2 nuclea-text-secondary hover:nuclea-text transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-nuclea-text-secondary hover:text-nuclea-text transition-colors mb-8"
         >
           <ChevronLeft size={20} />
           <span className="text-sm">Volver</span>
@@ -44,11 +44,11 @@ export default function LegalPage() {
             />
           </div>
 
-          <h1 className="text-[28px] font-semibold nuclea-text text-center leading-tight mb-3">
+          <h1 className="text-[28px] font-semibold text-nuclea-text text-center leading-tight mb-3">
             Tu historia es tuya. Y solo tuya.
           </h1>
 
-          <p className="text-base nuclea-text-secondary text-center leading-relaxed">
+          <p className="text-base text-nuclea-text-secondary text-center leading-relaxed">
             Antes de empezar, es importante que sepas cómo protegemos lo que más te importa.
           </p>
         </div>
@@ -56,18 +56,18 @@ export default function LegalPage() {
         {/* 4 Sections */}
         <div className="space-y-3 mb-8">
           {/* Privacidad */}
-          <div className="nuclea-bg-secondary rounded-xl p-4">
+          <div className="bg-nuclea-secondary rounded-xl p-4">
             <div className="flex gap-3">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full nuclea-bg flex items-center justify-center">
-                  <Shield size={20} className="nuclea-text-secondary" />
+                <div className="w-10 h-10 rounded-full bg-nuclea-bg flex items-center justify-center">
+                  <Shield size={20} className="text-nuclea-text-secondary" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-medium nuclea-text mb-1">
+                <h3 className="text-lg font-medium text-nuclea-text mb-1">
                   Privacidad
                 </h3>
-                <p className="text-sm nuclea-text-secondary leading-relaxed">
+                <p className="text-sm text-nuclea-text-secondary leading-relaxed">
                   Tus recuerdos son privados por defecto. Nadie accede a tu contenido sin tu permiso explícito.
                 </p>
               </div>
@@ -75,18 +75,18 @@ export default function LegalPage() {
           </div>
 
           {/* Personas designadas */}
-          <div className="nuclea-bg-secondary rounded-xl p-4">
+          <div className="bg-nuclea-secondary rounded-xl p-4">
             <div className="flex gap-3">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full nuclea-bg flex items-center justify-center">
-                  <Users size={20} className="nuclea-text-secondary" />
+                <div className="w-10 h-10 rounded-full bg-nuclea-bg flex items-center justify-center">
+                  <Users size={20} className="text-nuclea-text-secondary" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-medium nuclea-text mb-1">
+                <h3 className="text-lg font-medium text-nuclea-text mb-1">
                   Personas designadas
                 </h3>
-                <p className="text-sm nuclea-text-secondary leading-relaxed">
+                <p className="text-sm text-nuclea-text-secondary leading-relaxed">
                   Tú decides quién puede recibir tus cápsulas. Solo las personas que elijas tendrán acceso.
                 </p>
               </div>
@@ -94,18 +94,18 @@ export default function LegalPage() {
           </div>
 
           {/* Entrega automática */}
-          <div className="nuclea-bg-secondary rounded-xl p-4">
+          <div className="bg-nuclea-secondary rounded-xl p-4">
             <div className="flex gap-3">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full nuclea-bg flex items-center justify-center">
-                  <Clock size={20} className="nuclea-text-secondary" />
+                <div className="w-10 h-10 rounded-full bg-nuclea-bg flex items-center justify-center">
+                  <Clock size={20} className="text-nuclea-text-secondary" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-medium nuclea-text mb-1">
+                <h3 className="text-lg font-medium text-nuclea-text mb-1">
                   Entrega automática
                 </h3>
-                <p className="text-sm nuclea-text-secondary leading-relaxed">
+                <p className="text-sm text-nuclea-text-secondary leading-relaxed">
                   Los mensajes futuros se entregan en la fecha que programes. Hasta entonces, permanecen cifrados.
                 </p>
               </div>
@@ -113,18 +113,18 @@ export default function LegalPage() {
           </div>
 
           {/* Responsabilidad */}
-          <div className="nuclea-bg-secondary rounded-xl p-4">
+          <div className="bg-nuclea-secondary rounded-xl p-4">
             <div className="flex gap-3">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full nuclea-bg flex items-center justify-center">
-                  <Heart size={20} className="nuclea-text-secondary" />
+                <div className="w-10 h-10 rounded-full bg-nuclea-bg flex items-center justify-center">
+                  <Heart size={20} className="text-nuclea-text-secondary" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-medium nuclea-text mb-1">
+                <h3 className="text-lg font-medium text-nuclea-text mb-1">
                   Responsabilidad
                 </h3>
-                <p className="text-sm nuclea-text-secondary leading-relaxed">
+                <p className="text-sm text-nuclea-text-secondary leading-relaxed">
                   Nos comprometemos a tratar tu legado digital con el máximo respeto y cuidado.
                 </p>
               </div>
@@ -148,7 +148,7 @@ export default function LegalPage() {
               </div>
             </div>
             <div className="flex-1">
-              <p className="text-sm nuclea-text leading-relaxed">
+              <p className="text-sm text-nuclea-text leading-relaxed">
                 He leído y acepto la{' '}
                 <Link
                   href="/onboarding/legal/privacy"
@@ -181,7 +181,7 @@ export default function LegalPage() {
               </div>
             </div>
             <div className="flex-1">
-              <p className="text-sm nuclea-text leading-relaxed">
+              <p className="text-sm text-nuclea-text leading-relaxed">
                 He leído y acepto los{' '}
                 <Link
                   href="/onboarding/legal/terms"
@@ -214,7 +214,7 @@ export default function LegalPage() {
               </div>
             </div>
             <div className="flex-1">
-              <p className="text-sm nuclea-text leading-relaxed">
+              <p className="text-sm text-nuclea-text leading-relaxed">
                 Entiendo que esta es una versión beta y que algunas funcionalidades pueden cambiar
               </p>
             </div>
@@ -231,7 +231,7 @@ export default function LegalPage() {
         <button
           onClick={handleContinue}
           disabled={!allAccepted}
-          className={`w-full max-w-xs mx-auto block bg-transparent border-[1.5px] border-[#1A1A1A] rounded-lg py-4 px-8 text-base font-medium nuclea-text transition-all ${
+          className={`w-full max-w-xs mx-auto block bg-transparent border-[1.5px] border-[#1A1A1A] rounded-lg py-4 px-8 text-base font-medium text-nuclea-text transition-all ${
             allAccepted
               ? 'hover:bg-[#1A1A1A] hover:text-white'
               : 'opacity-40 cursor-not-allowed'
