@@ -1,6 +1,7 @@
 # Quality Gates CI
 
 This repository runs `quality-gates` on `push` (`master`/`main`) and `pull_request`.
+It also supports manual execution via `workflow_dispatch`.
 
 ## What It Checks
 
@@ -23,6 +24,23 @@ This repository runs `quality-gates` on `push` (`master`/`main`) and `pull_reque
 - `npx tsc --noEmit`
 - `npm run build`
 
+3. `POC_REAL` (quality)
+- `npm ci`
+- `npm run lint`
+- `npx tsc --noEmit`
+- `npx tsx --test src/lib/**/*.test.ts src/lib/lifecycle/*.test.ts src/lib/trust/*.test.ts`
+- `npx next build`
+
+4. `POC_REAL` (smoke stack)
+- `npx supabase start`
+- `npx supabase db reset --local`
+- `npx tsx scripts/seed.ts`
+- `npx tsx scripts/seed-beta.ts`
+- `npm run dev` (background, waits for `/login`)
+- `node tests/smoke_send_claim.mjs`
+- Upload diagnostics (`/tmp/poc-real-dev.log`, screenshots)
+- `npx supabase stop --no-backup`
+
 ## Local Rerun Commands
 
 ```bash
@@ -43,4 +61,10 @@ cd ../POC_INTERNA/app
 npm run lint
 npx tsc --noEmit
 npm run build
+
+cd ../../POC_REAL
+npm run lint
+npx tsc --noEmit
+npx tsx --test src/lib/**/*.test.ts src/lib/lifecycle/*.test.ts src/lib/trust/*.test.ts
+npx next build
 ```

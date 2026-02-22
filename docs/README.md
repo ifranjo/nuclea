@@ -17,6 +17,8 @@ Technical source of truth for architecture, data model, API shape, user flows, a
 | Target API contract | `api/ENDPOINTS.md` |
 | Capsule behavior | `capsules/INDEX.md` |
 | End-to-end flows | `flows/INDEX.md` |
+| Operations runbook | `OPERATIONS_RUNBOOK.md` |
+| Backend decision | `DECISION_BACKEND_ARCHITECTURE.md` |
 
 ## Documentation map
 

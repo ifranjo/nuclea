@@ -6,6 +6,8 @@
  * Requires: Supabase running, dev server on :3002, seed data applied.
  */
 
+import { requireInfrastructure } from './healthcheck.mjs'
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || 'http://127.0.0.1:54321'
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || ''
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || ''
@@ -79,10 +81,13 @@ async function apiCall(method, path, body, token) {
 async function main() {
   console.log('\n🧪 NUCLEA v4 Send → Claim Smoke Test\n')
 
+  // Check infrastructure first - fail fast with clear message
+  await requireInfrastructure(['supabase'])
+
   if (!ANON_KEY || !SERVICE_KEY) {
     fail(
       'Env setup',
-      'Missing NEXT_PUBLIC_SUPABASE_ANON_KEY and/or SUPABASE_SERVICE_ROLE_KEY'
+      'Missing NEXT_PUBLIC_SUPABASE_ANON_KEY and/or SUPABASE_SERVICE_ROLE_KEY in .env.local'
     )
     process.exit(1)
   }

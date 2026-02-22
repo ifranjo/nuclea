@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import path from 'path';
 import fs from 'fs';
+import { requireInfrastructure } from './healthcheck.mjs';
 
 const SCREENSHOTS_DIR = 'screenshots/upload_qa';
 const BASE_URL = 'http://localhost:3002';
@@ -52,6 +53,9 @@ async function main() {
   console.log('='.repeat(60));
   console.log(`\nBase URL: ${BASE_URL}`);
   console.log(`Test User: ${TEST_USER.email}`);
+
+  // Check infrastructure first - fail fast with clear message
+  await requireInfrastructure(['app', 'supabase'])
 
   try {
     // Launch browser

@@ -1,6 +1,7 @@
 import { chromium } from 'playwright'
 import path from 'path'
 import fs from 'fs'
+import { requireInfrastructure } from './healthcheck.mjs'
 
 const SCREENSHOT_DIR = 'C:/Users/Kaos/scripts/nuclea/POC_REAL/screenshots/beta_qa'
 const BASE_URL = 'http://localhost:3002'
@@ -28,6 +29,9 @@ function assert(condition, msg) {
 }
 
 ;(async () => {
+  // Check infrastructure first - fail fast with clear message
+  await requireInfrastructure(['app'])
+
   const browser = await chromium.launch({ headless: true })
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
