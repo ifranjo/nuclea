@@ -7,6 +7,7 @@ const SRC_DIR = path.join(ROOT, 'src')
 const CODE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.css'])
 const EVERLIFE_ALLOWED = new Set([
   'src/types/index.ts',
+  'src/types/api.ts',
   'src/app/globals.css'
 ])
 
