@@ -2,7 +2,7 @@
 import { useAuth } from '@/hooks/useAuth'
 import { BottomNav } from '@/components/ui/BottomNav'
 import { ComingSoon } from '@/components/ui/ComingSoon'
-import { User, Bell, CreditCard, Shield, HelpCircle, LogOut } from 'lucide-react'
+import { User, Bell, Gift, Shield, HelpCircle, LogOut } from 'lucide-react'
 
 export default function SettingsPage() {
   const { profile, signOut, loading } = useAuth()
@@ -18,7 +18,7 @@ export default function SettingsPage() {
   const sections = [
     { icon: User, label: 'Perfil', desc: profile?.full_name || 'Sin nombre', action: null },
     { icon: Bell, label: 'Notificaciones', desc: null, action: <ComingSoon /> },
-    { icon: CreditCard, label: 'Suscripción', desc: 'Plan Free', action: <ComingSoon /> },
+    { icon: Gift, label: 'Video Regalo', desc: 'Pago único disponible', action: <ComingSoon /> },
     { icon: Shield, label: 'Privacidad', desc: null, action: <ComingSoon /> },
     { icon: HelpCircle, label: 'Ayuda', desc: null, action: <ComingSoon /> },
   ]

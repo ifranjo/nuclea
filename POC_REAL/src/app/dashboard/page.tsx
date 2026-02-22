@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useCapsules } from '@/hooks/useCapsules'
 import { CapsuleIcon } from '@/components/icons/CapsuleIcons'
 import { BottomNav } from '@/components/ui/BottomNav'
-import { Plus, LogOut } from 'lucide-react'
+import { Plus, LogOut, Gift } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { CapsuleType } from '@/types'
@@ -98,6 +98,12 @@ export default function DashboardPage() {
                 href={`/capsule/${capsule.id}`}
                 className="bg-white rounded-xl border border-nuclea-border p-5 hover:shadow-md transition-shadow"
               >
+                {capsule.creator_id && capsule.creator_id !== capsule.owner_id && (
+                  <span className="inline-flex items-center gap-1 mb-2 text-xs px-2 py-0.5 rounded-full bg-violet-50 text-violet-700">
+                    <Gift size={12} />
+                    Regalo recibido
+                  </span>
+                )}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-nuclea-secondary flex items-center justify-center">

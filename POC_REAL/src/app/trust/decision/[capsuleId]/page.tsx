@@ -2,15 +2,60 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ShieldCheck, Hourglass, CheckCircle2 } from 'lucide-react'
 
 type Decision = 'continue' | 'allow-expiration' | null
 
 export default function TrustDecisionPage() {
   const { capsuleId } = useParams<{ capsuleId: string }>()
+  const searchParams = useSearchParams()
+  const personId = searchParams.get('personId') || ''
+
   const [decision, setDecision] = useState<Decision>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [confirmed, setConfirmed] = useState(false)
+
+  const canConfirm = Boolean(decision && personId && !submitting)
+
+  const handleConfirm = async () => {
+    if (!decision) return
+    if (!personId) {
+      setError('Falta personId en el enlace de decision.')
+      return
+    }
+
+    setError(null)
+    setSubmitting(true)
+    try {
+      const response = await fetch('/api/trust/decision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          capsuleId,
+          personId,
+          decision,
+        }),
+      })
+      const payload = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        throw new Error(
+          typeof payload?.error === 'string'
+            ? payload.error
+            : 'No se pudo registrar la decision.'
+        )
+      }
+
+      setConfirmed(true)
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Error inesperado.')
+      setConfirmed(false)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <main className='min-h-screen bg-nuclea-secondary px-6 py-8'>
@@ -29,8 +74,11 @@ export default function TrustDecisionPage() {
           <p className='text-sm text-nuclea-text-secondary mt-2'>
             Capsula: <span className='font-mono text-xs'>{capsuleId}</span>
           </p>
+          <p className='text-sm text-nuclea-text-secondary mt-1'>
+            Contacto: <span className='font-mono text-xs'>{personId || 'sin personId'}</span>
+          </p>
           <p className='text-sm text-nuclea-text-secondary mt-3'>
-            Esta pantalla <strong>no ejecuta acciones automaticas</strong>. Un contacto de confianza debe confirmar la decision de forma explicita.
+            Un contacto de confianza confirma manualmente la decision y queda persistida para auditoria.
           </p>
         </section>
 
@@ -79,12 +127,18 @@ export default function TrustDecisionPage() {
         <section className='bg-white border border-nuclea-border rounded-xl p-4'>
           <button
             type='button'
-            disabled={!decision}
-            onClick={() => setConfirmed(true)}
+            disabled={!canConfirm}
+            onClick={handleConfirm}
             className='w-full rounded-lg bg-nuclea-text text-white py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            Confirmar decision manual
+            {submitting ? 'Guardando decision...' : 'Confirmar decision manual'}
           </button>
+
+          {error && (
+            <p className='mt-3 text-sm text-red-600'>
+              {error}
+            </p>
+          )}
 
           {confirmed && decision && (
             <p className='mt-3 text-sm text-emerald-700 inline-flex items-center gap-2'>

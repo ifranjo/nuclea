@@ -11,6 +11,7 @@ import { CapsuleCalendar } from '@/components/capsule/CapsuleCalendar'
 import { AddPersonModal } from '@/components/capsule/AddPersonModal'
 import { BottomNav } from '@/components/ui/BottomNav'
 import { ComingSoon } from '@/components/ui/ComingSoon'
+import { ExpiryUrgencyBanner } from '@/components/receiver/ExpiryUrgencyBanner'
 import { buildCapsuleEmailTemplates } from '@/lib/recipientExperience'
 import { ArrowLeft, Camera, Video, Mic, FileText, Share2, Users, Download, X } from 'lucide-react'
 import type { CapsuleType } from '@/types'
@@ -48,6 +49,13 @@ export default function CapsuleDetailPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null)
 
   const capsule = capsules.find(c => c.id === id)
+  const isReceiverMode = Boolean(
+    profile?.id &&
+    capsule &&
+    profile.id === capsule.owner_id &&
+    capsule.creator_id &&
+    capsule.creator_id !== capsule.owner_id
+  )
 
   const mediaItems: MediaItem[] = useMemo(() => {
     return contents.map(c => ({
@@ -247,7 +255,14 @@ export default function CapsuleDetailPage() {
           </button>
           <div className='flex items-center gap-2'>
             <CapsuleIcon type={capsule.type.replace('_', '-') as CapsuleType} size={20} />
-            <h1 className='text-lg font-medium text-nuclea-text'>{capsule.title || 'Sin título'}</h1>
+            <div>
+              <h1 className='text-lg font-medium text-nuclea-text'>{capsule.title || 'Sin título'}</h1>
+              {isReceiverMode && (
+                <p className='text-xs text-nuclea-text-muted mt-0.5'>
+                  Regalo de {capsule.creator_id}
+                </p>
+              )}
+            </div>
           </div>
           <span className='text-xs px-2 py-0.5 rounded-full bg-nuclea-secondary text-nuclea-text-secondary ml-auto'>
             {typeLabel(capsule.type)}
@@ -256,10 +271,18 @@ export default function CapsuleDetailPage() {
       </header>
 
       <div className='px-6 py-6 space-y-6'>
+        {isReceiverMode && capsule.experience_expires_at && (
+          <ExpiryUrgencyBanner expiresAt={capsule.experience_expires_at} />
+        )}
+
         <div className='rounded-xl border border-nuclea-border bg-white p-4'>
-          <p className='text-xs uppercase tracking-wide text-nuclea-text-muted'>Vista creador</p>
+          <p className='text-xs uppercase tracking-wide text-nuclea-text-muted'>
+            {isReceiverMode ? 'Vista receptor' : 'Vista creador'}
+          </p>
           <p className='mt-2 text-sm text-nuclea-text-secondary'>
-            Las acciones del receptor (reclamar, mini-trailer, pago y descarga) viven en el enlace compartido.
+            {isReceiverMode
+              ? 'Capsula recibida como regalo. Puedes anadir contenido y gestionar su continuidad.'
+              : 'Las acciones del receptor (reclamar, mini-trailer, pago y descarga) viven en el enlace compartido.'}
           </p>
         </div>
 
@@ -355,6 +378,12 @@ export default function CapsuleDetailPage() {
                   <div>
                     <p className='text-sm text-nuclea-text'>{p.full_name}</p>
                     <p className='text-xs text-nuclea-text-muted'>{p.email} - {p.relationship}</p>
+                    <a
+                      href={`/trust/decision/${capsule.id}?personId=${encodeURIComponent(p.id)}`}
+                      className='text-xs text-nuclea-text-secondary underline'
+                    >
+                      Link decision {p.full_name}
+                    </a>
                   </div>
                   <button onClick={() => removePerson(p.id)} className='text-nuclea-text-muted hover:text-red-500'>
                     <X size={14} />
@@ -408,23 +437,25 @@ export default function CapsuleDetailPage() {
           </div>
         )}
 
-        <div className='flex gap-3'>
-          <button
-            onClick={handleShare}
-            className='flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-nuclea-border text-sm text-nuclea-text hover:bg-white transition-colors'
-          >
-            <Share2 size={16} />
-            {showShare ? 'Link copiado' : 'Compartir'}
-          </button>
-          <button
-            onClick={handleClose}
-            disabled={closing}
-            className='flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-nuclea-text text-white text-sm hover:bg-nuclea-text/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed'
-          >
-            <Download size={16} />
-            {closing ? 'Procesando...' : 'Cerrar y descargar'}
-          </button>
-        </div>
+        {!isReceiverMode && (
+          <div className='flex gap-3'>
+            <button
+              onClick={handleShare}
+              className='flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-nuclea-border text-sm text-nuclea-text hover:bg-white transition-colors'
+            >
+              <Share2 size={16} />
+              {showShare ? 'Link copiado' : 'Compartir'}
+            </button>
+            <button
+              onClick={handleClose}
+              disabled={closing}
+              className='flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-nuclea-text text-white text-sm hover:bg-nuclea-text/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed'
+            >
+              <Download size={16} />
+              {closing ? 'Procesando...' : 'Cerrar y descargar'}
+            </button>
+          </div>
+        )}
 
         {closeStatus && <p className='text-xs text-nuclea-text-muted text-center'>{closeStatus}</p>}
 
