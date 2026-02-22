@@ -80,6 +80,20 @@ function readIsoDate(value: unknown): Date | null {
   return parsed
 }
 
+function resolveTrustContactWindowDays(): number {
+  const lookaheadHours = Number(process.env.TRUST_CONTACT_NOTIFY_BEFORE_HOURS)
+  if (Number.isFinite(lookaheadHours) && lookaheadHours > 0) {
+    return lookaheadHours / 24
+  }
+
+  const inactivityDays = Number(process.env.TRUST_CONTACT_INACTIVITY_DAYS || 120)
+  if (Number.isFinite(inactivityDays) && inactivityDays > 0) {
+    return inactivityDays
+  }
+
+  return 120
+}
+
 async function runExpirySweep(now: Date): Promise<number> {
   const db = getAdminDb('lifecycle cron expiry')
   const snapshot = await db
@@ -212,8 +226,8 @@ async function runVideoPurgeQueue(now: Date): Promise<number> {
 
 async function runTrustContactsSweep(now: Date): Promise<number> {
   const db = getAdminDb('lifecycle cron trust contacts')
-  const inactivityDays = Number(process.env.TRUST_CONTACT_INACTIVITY_DAYS || 120)
-  const threshold = new Date(now.getTime() - inactivityDays * 24 * 60 * 60 * 1000)
+  const windowDays = resolveTrustContactWindowDays()
+  const threshold = new Date(now.getTime() - windowDays * 24 * 60 * 60 * 1000)
   const snapshot = await db
     .collection('capsules')
     .where('giftLifecycle.lastActivityAt', '<=', threshold.toISOString())
@@ -307,4 +321,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Cron execution failed' }, { status: 500 })
   }
 }
-

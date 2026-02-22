@@ -6,10 +6,9 @@
  * Requires: Supabase running, dev server on :3002, seed data applied.
  */
 
-const SUPABASE_URL = 'http://127.0.0.1:54321'
-const APP_URL = 'http://localhost:3002'
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || 'http://127.0.0.1:54321'
+const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || ''
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || ''
 
 const HOMER = { email: 'homer@nuclea.test', password: 'nuclea123' }
 const BART = { email: 'bart@nuclea.test', password: 'nuclea123' }
@@ -79,6 +78,14 @@ async function apiCall(method, path, body, token) {
 
 async function main() {
   console.log('\n🧪 NUCLEA v4 Send → Claim Smoke Test\n')
+
+  if (!ANON_KEY || !SERVICE_KEY) {
+    fail(
+      'Env setup',
+      'Missing NEXT_PUBLIC_SUPABASE_ANON_KEY and/or SUPABASE_SERVICE_ROLE_KEY'
+    )
+    process.exit(1)
+  }
 
   // Step 1: Login as Homer (creator)
   console.log('1. Authenticating...')
