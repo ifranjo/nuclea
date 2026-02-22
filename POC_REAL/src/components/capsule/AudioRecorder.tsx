@@ -211,7 +211,7 @@ export function AudioRecorder({ isOpen, onClose, recordings, onAddRecording }: A
               <button
                 type="button"
                 onClick={saveRecording}
-                className="flex-1 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm font-medium hover:bg-[#333] transition-colors"
+                className="flex-1 py-2.5 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
               >
                 Guardar grabación
               </button>

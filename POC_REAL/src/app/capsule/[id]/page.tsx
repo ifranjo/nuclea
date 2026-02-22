@@ -430,7 +430,7 @@ export default function CapsuleDetailPage() {
                 onClick={() => {
                   navigator.clipboard.writeText(shareUrl).catch(() => {})
                 }}
-                className='px-3 py-2 rounded-lg bg-nuclea-text text-white text-xs'
+                className='px-4 py-2 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all'
               >
                 Copiar
               </button>
@@ -462,7 +462,7 @@ export default function CapsuleDetailPage() {
           <div className='flex gap-3'>
             <button
               onClick={handleShare}
-              className='flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-nuclea-border text-sm text-nuclea-text hover:bg-white transition-colors'
+              className='flex-1 flex items-center justify-center gap-2 py-3 bg-transparent border border-nuclea-border rounded-lg text-sm text-nuclea-text hover:bg-white transition-colors'
             >
               <Share2 size={16} />
               {showShare ? 'Link copiado' : 'Compartir'}
@@ -470,7 +470,7 @@ export default function CapsuleDetailPage() {
             <button
               onClick={handleClose}
               disabled={closing}
-              className='flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-nuclea-text text-white text-sm hover:bg-nuclea-text/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed'
+              className='flex-1 flex items-center justify-center gap-2 py-3 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed'
             >
               <Download size={16} />
               {closing ? 'Procesando...' : 'Cerrar y descargar'}

@@ -64,7 +64,7 @@ export function AddPersonModal({ onClose, onSave }: AddPersonModalProps) {
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-3 rounded-lg bg-nuclea-text text-white font-medium hover:bg-nuclea-text/90 transition-colors disabled:opacity-50"
+            className="w-full py-4 px-8 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-base font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all disabled:opacity-50"
           >
             {saving ? 'Guardando...' : 'Guardar'}
           </button>

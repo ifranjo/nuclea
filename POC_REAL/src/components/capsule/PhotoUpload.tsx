@@ -87,7 +87,7 @@ export function PhotoUpload({ isOpen, onClose, photos, onAddPhotos }: PhotoUploa
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="mt-1 inline-flex items-center gap-2 rounded-lg border border-[#1A1A1A] px-4 py-2 text-sm font-medium text-[#1A1A1A] transition-colors hover:bg-[#1A1A1A] hover:text-white"
+          className="mt-1 inline-flex items-center gap-2 bg-transparent border-[1.5px] border-nuclea-text rounded-lg px-4 py-2 text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
         >
           <ImagePlus size={16} />
           Añadir fotos

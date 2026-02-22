@@ -15,7 +15,7 @@ export default function Error({
         </p>
         <button
           onClick={reset}
-          className='px-4 py-2 rounded-lg bg-nuclea-text text-white text-sm hover:bg-nuclea-text/90'
+          className='px-4 py-2 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all'
         >
           Reintentar
         </button>

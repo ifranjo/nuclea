@@ -85,7 +85,7 @@ export default function DashboardPage() {
             <p className="text-nuclea-text-muted text-sm mb-6">Crea tu primera cápsula para empezar a guardar recuerdos</p>
             <button
               onClick={() => router.push('/onboarding')}
-              className="px-6 py-3 rounded-lg bg-nuclea-text text-white font-medium hover:bg-nuclea-text/90 transition-colors"
+              className="px-8 py-4 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-base font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
             >
               Crear mi primera cápsula
             </button>

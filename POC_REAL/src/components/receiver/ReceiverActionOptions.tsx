@@ -185,7 +185,7 @@ export function ReceiverActionOptions({ capsuleId, giftState, invitationToken }:
                       <button
                         type='button'
                         onClick={() => setPaymentUnlocked(true)}
-                        className='inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-nuclea-text text-white text-xs hover:bg-nuclea-text/90'
+                        className='inline-flex items-center gap-2 px-4 py-2 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all'
                       >
                         <CreditCard size={14} />
                         Pagar Video Regalo

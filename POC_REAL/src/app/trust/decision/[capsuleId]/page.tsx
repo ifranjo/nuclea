@@ -129,7 +129,7 @@ export default function TrustDecisionPage() {
             type='button'
             disabled={!canConfirm}
             onClick={handleConfirm}
-            className='w-full rounded-lg bg-nuclea-text text-white py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full py-4 px-8 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-base font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed'
           >
             {submitting ? 'Guardando decision...' : 'Confirmar decision manual'}
           </button>
