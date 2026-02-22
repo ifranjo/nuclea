@@ -9,9 +9,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Run production app | `cd PREREUNION_ANDREA && npm run dev` (port 3000) |
 | Run POC UI | `cd POC_INTERNA/app && npm run dev` (port 3001) |
 | Run POC Real | `cd POC_REAL && npx supabase start && npm run dev` (port 3002) |
-| Run tests | `npm run test:unit` (PREREUNION_ANDREA) |
+| Run unit tests | `npm run test:unit` (PREREUNION_ANDREA) |
+| Run E2E tests | `npm run test:e2e` (POC_REAL, needs dev server) |
 | Lint all | `npm run lint` (per app) |
 | Typecheck | `npx tsc --noEmit` (per app) |
+| Build verify | `npx next build` (all 3 apps build clean, zero warnings) |
 
 ## Project Overview
 
@@ -87,6 +89,8 @@ npm run test:ceo               # CEO bug verification tests
 npm run test:beta              # Beta QA tests
 npm run test:upload            # Upload flow e2e tests
 npm run test:playwright        # Full Playwright test suite
+npm run test:e2e               # Playwright E2E suite (35 tests, 5 specs)
+npm run test:e2e:headed        # E2E with visible browser
 npm run test:install           # Install Playwright Chromium
 ```
 
@@ -218,14 +222,38 @@ The repo is being reorganized. See `docs/plans/2026-02-15-repo-reorganization-pl
 
 - **Windows `nul` file**: Remove with `bash -c "rm -f nul"`
 - **Firebase SDK bundle**: 489KB vendor (tree-shaking limited)
-- **POC_REAL RLS**: Disabled for dev — must re-enable before deploy
 - **No Jest/Vitest**: Unit tests use `node:test` runner via `tsx --test`
-- **Deployment**: Manual `npm run deploy` (Vercel) in PREREUNION_ANDREA
 
-## Current Status (Feb 2026)
+## Production Readiness (22 Feb 2026)
 
-- **Latest commit**: `cbe5fc4` — feat(poc-real): data integrity, error boundaries, type normalization
-- **Unit tests**: 14/14 passing
-- **Smoke tests**: 9/9 passing
-- **POC Real QA**: 11/11 tests passing
-- **Security**: Recent hardening for open redirect, timing attack, test credentials
+### All 3 Apps — Build Clean
+- `PREREUNION_ANDREA`: 19 routes, `npx next build` zero warnings, tsc clean
+- `POC_INTERNA`: 10 routes, `npx next build` zero warnings, tsc clean
+- `POC_REAL`: 30 routes, `npx next build` zero warnings, tsc clean
+
+### Test Coverage
+- **Unit tests**: 14/14 passing (PREREUNION_ANDREA)
+- **Smoke tests**: 9/9 passing (PREREUNION_ANDREA)
+- **E2E tests**: 35 Playwright tests (POC_REAL — auth, dashboard, capsule, share, onboarding)
+
+### Security Hardening (this session)
+- RLS migration 00012 ready for production (POC_REAL)
+- Atomic rate limiter (no race condition)
+- Share page column whitelist (no secret exposure)
+- All API routes use Zod validation (including WhatsApp opt-in)
+- Error boundaries on all routes across all 3 apps
+- Loading skeletons on key routes across all 3 apps
+
+### Accessibility (this session)
+- htmlFor/id pairs on all forms
+- aria-labels on all icon-only buttons
+- role=dialog on modals, role=progressbar on progress bars
+- Viewport zoom enabled (WCAG 1.4.4)
+- MotionConfig reducedMotion support
+
+### Remaining for Deploy
+- Supabase Cloud setup (migrate from local Docker)
+- Vercel deployment for POC_REAL
+- Apply RLS migration 00012 in production
+- Email delivery service for transactional emails
+- ZIP export feature (implemented, needs live testing)
