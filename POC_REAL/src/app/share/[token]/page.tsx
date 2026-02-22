@@ -1,4 +1,13 @@
+import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Cápsula compartida',
+    description: 'Alguien ha compartido una cápsula de memoria contigo.',
+    robots: { index: false, follow: false },
+  }
+}
 import { CapsuleIcon } from '@/components/icons/CapsuleIcons'
 import { ExpiryUrgencyBanner } from '@/components/receiver/ExpiryUrgencyBanner'
 import { ReceiverActionOptions } from '@/components/receiver/ReceiverActionOptions'

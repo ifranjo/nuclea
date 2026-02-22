@@ -25,8 +25,19 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'NUCLEA - POC Real',
-  description: 'Somos las historias que recordamos. Haz que las tuyas permanezcan.',
+  title: {
+    default: 'NUCLEA — Tu legado digital',
+    template: '%s | NUCLEA',
+  },
+  description: 'Crea cápsulas de memoria para preservar tu legado emocional.',
+  robots: { index: false, follow: false },
+  openGraph: {
+    title: 'NUCLEA — Tu legado digital',
+    description: 'Crea cápsulas de memoria para preservar tu legado emocional.',
+    siteName: 'NUCLEA',
+    locale: 'es_ES',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({

@@ -26,8 +26,12 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'NUCLEA - POC Interna',
+  title: {
+    default: 'NUCLEA — Onboarding',
+    template: '%s | NUCLEA',
+  },
   description: 'Somos las historias que recordamos. Haz que las tuyas permanezcan.',
+  robots: { index: false, follow: false },
 }
 
 export default function RootLayout({
