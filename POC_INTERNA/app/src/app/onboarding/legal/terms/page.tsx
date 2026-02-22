@@ -140,7 +140,7 @@ export default function TermsPage() {
             8. Limitación de responsabilidad
           </h3>
           <p className="text-sm text-[#6B6B6B] leading-relaxed">
-            NUCLEA se proporciona "tal cual". No garantizamos disponibilidad ininterrumpida del servicio. Nuestra responsabilidad máxima se limita al importe pagado en los últimos 12 meses.
+            NUCLEA se proporciona {'"'}tal cual{'"'}. No garantizamos disponibilidad ininterrumpida del servicio. Nuestra responsabilidad máxima se limita al importe pagado en los últimos 12 meses.
           </p>
         </section>
 

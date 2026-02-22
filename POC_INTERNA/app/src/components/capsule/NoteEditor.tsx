@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Trash2 } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { MediaModal } from '@/components/capsule/MediaModal'
 import type { MediaItem } from '@/types/media'
 

@@ -50,7 +50,9 @@ export default function OnboardingPage() {
     }
 
     window.dispatchEvent(new CustomEvent('nuclea:onboarding-step', { detail }))
-    console.info('[onboarding-step]', detail)
+    if (process.env.NODE_ENV === 'development') {
+      console.info('[onboarding-step]', detail)
+    }
   }, [step])
 
   return (

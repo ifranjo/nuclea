@@ -28,7 +28,7 @@ export function PolaroidPlaceholder({
 
   return (
     <div
-      className={`bg-white shadow-[0_4px_12px_rgba(0,0,0,0.08)] rounded-[2px] ${interactive ? 'cursor-pointer' : ''} ${className}`}
+      className={`bg-nuclea-bg shadow-[0_4px_12px_rgba(0,0,0,0.08)] rounded-[2px] ${interactive ? 'cursor-pointer' : ''} ${className}`}
       style={{
         width: size,
         padding: `${borderSide}px ${borderSide}px ${borderBottom}px ${borderSide}px`,

@@ -41,7 +41,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${inter.variable} ${cormorant.variable}`}>
-      <body className="font-sans antialiased bg-white text-nuclea-text">
+      <body className="font-sans antialiased bg-nuclea-bg text-nuclea-text">
         <MotionConfig reducedMotion="user">
           {children}
         </MotionConfig>

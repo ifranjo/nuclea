@@ -113,6 +113,7 @@ export function PhotoUpload({ isOpen, onClose, photos, onAddPhotos }: PhotoUploa
               transition={{ duration: 0.25, delay: i * 0.04 }}
               className="relative aspect-square overflow-hidden rounded-lg"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={photo.url}
                 alt={photo.name}
