@@ -33,6 +33,6 @@ test('buildCapsuleEmailTemplates returns expected subject lines', () => {
   })
 
   assert.match(templates.received.subject, /has recibido/i)
-  assert.match(templates.reminder.subject, /faltan 2 dias/i)
+  assert.match(templates.reminder.subject, /faltan 2 días/i)
   assert.match(templates.expirationWarning.subject, /expira/i)
 })
