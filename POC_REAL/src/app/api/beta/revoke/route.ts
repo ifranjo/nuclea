@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   const parseResult = revokeSchema.safeParse(await request.json())
   if (!parseResult.success) {
     return NextResponse.json(
-      { error: 'Payload invalido', details: parseResult.error.flatten() },
+      { error: 'Payload inválido', details: parseResult.error.flatten() },
       { status: 400 }
     )
   }

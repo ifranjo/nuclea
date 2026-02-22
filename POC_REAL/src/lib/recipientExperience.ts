@@ -54,19 +54,19 @@ export function buildCapsuleEmailTemplates(input: BuildTemplateInput): CapsuleEm
 
   return {
     received: {
-      subject: `Has recibido una capsula en NUCLEA: ${capsuleTitle}`,
-      preview: 'Tu regalo ya esta disponible',
-      body: `Hola ${recipientName}, has recibido la capsula "${capsuleTitle}". Puedes reclamarla y vivir la experiencia aqui: ${actionUrl}`,
+      subject: `Has recibido una cápsula en NUCLEA: ${capsuleTitle}`,
+      preview: 'Tu regalo ya está disponible',
+      body: `Hola ${recipientName}, has recibido la cápsula "${capsuleTitle}". Puedes reclamarla y vivir la experiencia aquí: ${actionUrl}`,
     },
     reminder: {
-      subject: `Recordatorio NUCLEA: faltan ${daysRemaining} dias para decidir`,
-      preview: 'Tu capsula sigue activa',
-      body: `Tu capsula "${capsuleTitle}" sigue activa. Te quedan ${daysRemaining} dias para continuar la herencia emocional, ver el mini-trailer o descargar el video regalo: ${actionUrl}`,
+      subject: `Recordatorio NUCLEA: faltan ${daysRemaining} días para decidir`,
+      preview: 'Tu cápsula sigue activa',
+      body: `Tu cápsula "${capsuleTitle}" sigue activa. Te quedan ${daysRemaining} días para continuar la herencia emocional, ver el mini-trailer o descargar el video regalo: ${actionUrl}`,
     },
     expirationWarning: {
-      subject: `Aviso final: tu capsula expira pronto`,
-      preview: 'Ultimo aviso de expiracion',
-      body: `Ultimo aviso para "${capsuleTitle}". Si no realizas ninguna accion, la capsula expirara al finalizar el periodo. Revisa tus opciones aqui: ${actionUrl}`,
+      subject: `Aviso final: tu cápsula expira pronto`,
+      preview: 'Último aviso de expiración',
+      body: `Último aviso para "${capsuleTitle}". Si no realizas ninguna acción, la cápsula expirará al finalizar el periodo. Revisa tus opciones aquí: ${actionUrl}`,
     },
   }
 }

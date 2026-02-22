@@ -38,7 +38,7 @@ export async function POST(
 
     const { id: capsuleId } = await context.params
     if (!capsuleId) {
-      return NextResponse.json({ error: 'Capsula invalida' }, { status: 400 })
+      return NextResponse.json({ error: 'Cápsula inválida' }, { status: 400 })
     }
 
     // Parse body
@@ -46,7 +46,7 @@ export async function POST(
     const receiverEmail = typeof body?.receiver_email === 'string' ? body.receiver_email.trim() : ''
 
     if (!receiverEmail || !isValidReceiverEmail(receiverEmail)) {
-      return NextResponse.json({ error: 'Email del receptor invalido' }, { status: 400 })
+      return NextResponse.json({ error: 'Email del receptor inválido' }, { status: 400 })
     }
 
     // Fetch capsule
@@ -58,10 +58,10 @@ export async function POST(
       .maybeSingle()
 
     if (!capsule?.id) {
-      return NextResponse.json({ error: 'Capsula no encontrada' }, { status: 404 })
+      return NextResponse.json({ error: 'Cápsula no encontrada' }, { status: 404 })
     }
     if (!capsule.share_token) {
-      return NextResponse.json({ error: 'La capsula necesita un token de compartir' }, { status: 409 })
+      return NextResponse.json({ error: 'La cápsula necesita un token de compartir' }, { status: 409 })
     }
 
     const snapshot: SendableCapsuleSnapshot = {
@@ -104,7 +104,7 @@ export async function POST(
       recipient: update.receiver_email,
       template: 'capsule-invitation',
       payload: {
-        capsuleTitle: capsule.title || 'Capsula',
+        capsuleTitle: capsule.title || 'Cápsula',
         senderEmail: currentUser.email,
         invitationUrl,
       },
@@ -119,6 +119,6 @@ export async function POST(
     })
   } catch (error) {
     console.error('Capsule send error:', error)
-    return NextResponse.json({ error: 'No se pudo enviar la capsula' }, { status: 500 })
+    return NextResponse.json({ error: 'No se pudo enviar la cápsula' }, { status: 500 })
   }
 }

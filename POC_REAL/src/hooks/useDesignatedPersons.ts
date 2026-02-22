@@ -91,10 +91,10 @@ export function useDesignatedPersons(capsuleId?: string, currentUserId?: string)
     const designatedUserId = designatedUser?.id || null
     const identityValidation = canAssignDesignatedPerson(currentUserId, designatedUserId)
     if (!identityValidation.ok) {
-      return { error: new Error(identityValidation.reason || 'Contacto de confianza invalido') }
+      return { error: new Error(identityValidation.reason || 'Contacto de confianza inválido') }
     }
     if (!designatedUserId) {
-      return { error: new Error('Contacto de confianza invalido') }
+      return { error: new Error('Contacto de confianza inválido') }
     }
 
     const { error } = await supabase.from('designated_persons').insert({

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useCapsuleContents } from '@/hooks/useCapsuleContents'
@@ -33,6 +33,16 @@ function resolveCapturedAt(value: string | null, fallback: string | null): strin
   return value ?? fallback ?? new Date().toISOString()
 }
 
+type StatusMessage = {
+  text: string
+  type: 'success' | 'error'
+}
+
+type NoteFormState = {
+  title: string
+  content: string
+}
+
 export default function CapsuleDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
@@ -48,6 +58,15 @@ export default function CapsuleDetailPage() {
   const [showShare, setShowShare] = useState(false)
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [creatorName, setCreatorName] = useState<string | null>(null)
+
+  // Inline UI state — replaces all native browser dialogs
+  const [showConfirmClose, setShowConfirmClose] = useState(false)
+  const [showNoteForm, setShowNoteForm] = useState(false)
+  const [noteForm, setNoteForm] = useState<NoteFormState>({ title: '', content: '' })
+  const [noteSubmitting, setNoteSubmitting] = useState(false)
+  const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
+  const statusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const supabaseRef = useRef(createClient())
   const supabase = supabaseRef.current
 
@@ -59,6 +78,18 @@ export default function CapsuleDetailPage() {
     capsule.creator_id &&
     capsule.creator_id !== capsule.owner_id
   )
+
+  const showStatus = useCallback((text: string, type: 'success' | 'error') => {
+    if (statusTimerRef.current) clearTimeout(statusTimerRef.current)
+    setStatusMessage({ text, type })
+    statusTimerRef.current = setTimeout(() => setStatusMessage(null), 3000)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (statusTimerRef.current) clearTimeout(statusTimerRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchCreatorName = async () => {
@@ -93,7 +124,7 @@ export default function CapsuleDetailPage() {
     if (!capsule) return null
     return buildCapsuleEmailTemplates({
       recipientName: profile?.full_name || 'Receptor',
-      capsuleTitle: capsule.title || 'Tu capsula NUCLEA',
+      capsuleTitle: capsule.title || 'Tu cápsula NUCLEA',
       actionUrl: typeof window !== 'undefined' ? window.location.href : 'https://nuclea.app',
       daysRemaining: 10,
     })
@@ -113,7 +144,7 @@ export default function CapsuleDetailPage() {
     if (!capsule) return
     const { shareToken, error } = await ensureShareToken(capsule.id, capsule.share_token)
     if (!shareToken || error) {
-      alert('No se pudo generar el enlace para compartir.')
+      showStatus('No se pudo generar el enlace para compartir.', 'error')
       return
     }
 
@@ -128,12 +159,23 @@ export default function CapsuleDetailPage() {
     }
   }
 
-  const handleClose = async () => {
+  const handleNoteSubmit = async () => {
+    if (!noteForm.title.trim() || !noteForm.content.trim() || !profile) return
+    setNoteSubmitting(true)
+    await addNote(profile.id, noteForm.title.trim(), noteForm.content.trim())
+    setNoteSubmitting(false)
+    setNoteForm({ title: '', content: '' })
+    setShowNoteForm(false)
+  }
+
+  const handleNoteCancel = () => {
+    setNoteForm({ title: '', content: '' })
+    setShowNoteForm(false)
+  }
+
+  const handleCloseConfirmed = async () => {
     if (!capsule || closing) return
-
-    const accepted = confirm('¿Cerrar esta cápsula? Se descargará un ZIP con todo el contenido. ¿Continuar?')
-    if (!accepted) return
-
+    setShowConfirmClose(false)
     setClosing(true)
     setCloseStatus('Preparando exportación...')
 
@@ -212,7 +254,9 @@ export default function CapsuleDetailPage() {
       )
 
       if (exportErrors.length > 0) {
-        alert(`No se pudo exportar todo el contenido. Archivos con error: ${exportErrors.join(', ')}`)
+        showStatus(`No se pudo exportar todo el contenido. Archivos con error: ${exportErrors.join(', ')}`, 'error')
+        setClosing(false)
+        setCloseStatus(null)
         return
       }
 
@@ -231,14 +275,16 @@ export default function CapsuleDetailPage() {
       setCloseStatus('Cerrando cápsula...')
       const { error } = await closeCapsule(capsule.id)
       if (error) {
-        alert('El ZIP se descargó, pero no se pudo marcar la cápsula como cerrada.')
+        showStatus('El ZIP se descargó, pero no se pudo marcar la cápsula como cerrada.', 'error')
+        setClosing(false)
+        setCloseStatus(null)
         return
       }
 
-      alert('Cápsula cerrada y descargada correctamente.')
-      router.push('/dashboard')
+      showStatus('Cápsula cerrada y descargada correctamente.', 'success')
+      setTimeout(() => router.push('/dashboard'), 1500)
     } catch {
-      alert('No se pudo generar el ZIP de exportación. Inténtalo de nuevo.')
+      showStatus('No se pudo generar el ZIP de exportación. Inténtalo de nuevo.', 'error')
     } finally {
       setClosing(false)
       setCloseStatus(null)
@@ -296,13 +342,34 @@ export default function CapsuleDetailPage() {
           <ExpiryUrgencyBanner expiresAt={capsule.experience_expires_at} />
         )}
 
+        {/* Inline status banner — replaces alert() calls */}
+        {statusMessage && (
+          <div
+            className={[
+              'rounded-xl border px-4 py-3 text-sm font-medium flex items-center justify-between',
+              statusMessage.type === 'success'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                : 'bg-red-50 border-red-200 text-red-800',
+            ].join(' ')}
+          >
+            <span>{statusMessage.text}</span>
+            <button
+              onClick={() => setStatusMessage(null)}
+              className='ml-3 text-current opacity-60 hover:opacity-100 transition-opacity'
+              aria-label='Cerrar mensaje'
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
         <div className='rounded-xl border border-nuclea-border bg-white p-4'>
           <p className='text-xs uppercase tracking-wide text-nuclea-text-muted'>
             {isReceiverMode ? 'Vista receptor' : 'Vista creador'}
           </p>
           <p className='mt-2 text-sm text-nuclea-text-secondary'>
             {isReceiverMode
-              ? 'Capsula recibida como regalo. Puedes anadir contenido y gestionar su continuidad.'
+              ? 'Cápsula recibida como regalo. Puedes añadir contenido y gestionar su continuidad.'
               : 'Las acciones del receptor (reclamar, mini-trailer, pago y descarga) viven en el enlace compartido.'}
           </p>
         </div>
@@ -328,17 +395,57 @@ export default function CapsuleDetailPage() {
             <input type='file' accept='audio/*' className='hidden' onChange={e => handleFileUpload(e, 'audio')} />
           </label>
           <button
-            onClick={async () => {
-              const title = prompt('Título de la nota:')
-              const text = prompt('Contenido:')
-              if (title && text && profile) await addNote(profile.id, title, text)
-            }}
+            onClick={() => setShowNoteForm(true)}
             className='flex flex-col items-center gap-1 py-4 bg-white rounded-xl border border-nuclea-border hover:shadow-sm transition-shadow'
           >
             <FileText size={22} className='text-nuclea-text-secondary' />
             <span className='text-xs text-nuclea-text-muted'>Nota</span>
           </button>
         </div>
+
+        {/* Inline note form — replaces two prompt() calls */}
+        {showNoteForm && (
+          <div className='bg-white rounded-xl border border-nuclea-border p-4 space-y-3'>
+            <h3 className='text-sm font-medium text-nuclea-text'>Nueva nota</h3>
+            <div>
+              <label className='text-xs text-nuclea-text-muted block mb-1'>Título</label>
+              <input
+                type='text'
+                value={noteForm.title}
+                onChange={e => setNoteForm(f => ({ ...f, title: e.target.value }))}
+                placeholder='Título de la nota'
+                className='w-full text-sm text-nuclea-text bg-nuclea-secondary px-3 py-2 rounded-lg border border-nuclea-border focus:outline-none focus:border-nuclea-text transition-colors'
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className='text-xs text-nuclea-text-muted block mb-1'>Contenido</label>
+              <textarea
+                value={noteForm.content}
+                onChange={e => setNoteForm(f => ({ ...f, content: e.target.value }))}
+                placeholder='Escribe tu nota aquí...'
+                rows={4}
+                className='w-full text-sm text-nuclea-text bg-nuclea-secondary px-3 py-2 rounded-lg border border-nuclea-border focus:outline-none focus:border-nuclea-text transition-colors resize-none'
+              />
+            </div>
+            <div className='flex gap-2 justify-end'>
+              <button
+                onClick={handleNoteCancel}
+                disabled={noteSubmitting}
+                className='px-4 py-2 rounded-lg border-[1.5px] border-nuclea-border text-sm text-nuclea-text-secondary hover:bg-nuclea-secondary transition-colors disabled:opacity-50'
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleNoteSubmit}
+                disabled={noteSubmitting || !noteForm.title.trim() || !noteForm.content.trim()}
+                className='px-4 py-2 rounded-lg border-[1.5px] border-nuclea-text text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+              >
+                {noteSubmitting ? 'Guardando...' : 'Guardar'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {uploading && <div className='text-center text-sm text-nuclea-gold'>Subiendo archivo...</div>}
 
@@ -384,9 +491,9 @@ export default function CapsuleDetailPage() {
           </div>
           {capsule.type !== 'social' && (
             <p className='text-xs text-nuclea-text-muted mb-3'>
-              Para capsulas no Social, los contactos pueden decidir continuidad desde{' '}
+              Para cápsulas no Social, los contactos pueden decidir continuidad desde{' '}
               <a href={`/trust/decision/${capsule.id}`} className='underline'>
-                pagina de decision manual
+                página de decisión manual
               </a>.
             </p>
           )}
@@ -459,22 +566,48 @@ export default function CapsuleDetailPage() {
         )}
 
         {!isReceiverMode && (
-          <div className='flex gap-3'>
-            <button
-              onClick={handleShare}
-              className='flex-1 flex items-center justify-center gap-2 py-3 bg-transparent border border-nuclea-border rounded-lg text-sm text-nuclea-text hover:bg-white transition-colors'
-            >
-              <Share2 size={16} />
-              {showShare ? 'Link copiado' : 'Compartir'}
-            </button>
-            <button
-              onClick={handleClose}
-              disabled={closing}
-              className='flex-1 flex items-center justify-center gap-2 py-3 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed'
-            >
-              <Download size={16} />
-              {closing ? 'Procesando...' : 'Cerrar y descargar'}
-            </button>
+          <div className='space-y-3'>
+            <div className='flex gap-3'>
+              <button
+                onClick={handleShare}
+                className='flex-1 flex items-center justify-center gap-2 py-3 bg-transparent border border-nuclea-border rounded-lg text-sm text-nuclea-text hover:bg-white transition-colors'
+              >
+                <Share2 size={16} />
+                {showShare ? 'Link copiado' : 'Compartir'}
+              </button>
+              <button
+                onClick={() => setShowConfirmClose(true)}
+                disabled={closing || showConfirmClose}
+                className='flex-1 flex items-center justify-center gap-2 py-3 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed'
+              >
+                <Download size={16} />
+                {closing ? 'Procesando...' : 'Cerrar y descargar'}
+              </button>
+            </div>
+
+            {/* Inline close confirmation — replaces confirm() dialog */}
+            {showConfirmClose && !closing && (
+              <div className='rounded-xl border-[1.5px] border-nuclea-text bg-white p-4'>
+                <p className='text-sm font-medium text-nuclea-text mb-1'>Cerrar esta cápsula</p>
+                <p className='text-xs text-nuclea-text-muted mb-4'>
+                  Se generará un ZIP con todo el contenido y la cápsula quedará cerrada. Esta acción no se puede deshacer. ¿Continuar?
+                </p>
+                <div className='flex gap-2 justify-end'>
+                  <button
+                    onClick={() => setShowConfirmClose(false)}
+                    className='px-4 py-2 rounded-lg border-[1.5px] border-nuclea-border text-sm text-nuclea-text-secondary hover:bg-nuclea-secondary transition-colors'
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleCloseConfirmed}
+                    className='px-4 py-2 rounded-lg border-[1.5px] border-nuclea-text text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all'
+                  >
+                    Confirmar cierre
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -502,7 +635,7 @@ export default function CapsuleDetailPage() {
           onSave={async data => {
             const { error } = await addPerson(data)
             if (error) {
-              alert(error.message || 'No se pudo añadir el contacto designado.')
+              showStatus(error.message || 'No se pudo añadir el contacto designado.', 'error')
               return
             }
             setShowPersonModal(false)

@@ -17,7 +17,7 @@ interface RequestBody {
 
 function parseBody(payload: unknown): TrustDecisionInput {
   if (typeof payload !== 'object' || payload === null) {
-    throw new Error('Payload invalido')
+    throw new Error('Payload inválido')
   }
 
   const body = payload as Partial<RequestBody>
@@ -27,7 +27,7 @@ function parseBody(payload: unknown): TrustDecisionInput {
   const decision = normalizeTrustDecision(decisionRaw)
 
   if (!capsuleId || !personId || !decision) {
-    throw new Error('Datos de decision invalidos')
+    throw new Error('Datos de decisión inválidos')
   }
 
   return { capsuleId, personId, decision }
@@ -107,13 +107,13 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof Error && (
-      error.message.includes('Payload invalido')
-      || error.message.includes('Datos de decision invalidos')
+      error.message.includes('Payload inválido')
+      || error.message.includes('Datos de decisión inválidos')
     )) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
     console.error('Trust decision error:', error)
-    return NextResponse.json({ error: 'No se pudo registrar la decision' }, { status: 500 })
+    return NextResponse.json({ error: 'No se pudo registrar la decisión' }, { status: 500 })
   }
 }

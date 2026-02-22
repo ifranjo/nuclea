@@ -72,7 +72,7 @@ async function runExpirySweep(nowIso: string): Promise<number> {
             recipient: contact.email,
             template: 'trust-contact-expiry',
             payload: {
-              capsuleTitle: capsule.title || 'Capsula',
+              capsuleTitle: capsule.title || 'Cápsula',
               contactName,
               personId: contact.id,
               decisionUrl,
@@ -88,7 +88,7 @@ async function runExpirySweep(nowIso: string): Promise<number> {
             recipient: contact.phone,
             template: 'trust-contact-expiry',
             payload: {
-              capsuleTitle: capsule.title || 'Capsula',
+              capsuleTitle: capsule.title || 'Cápsula',
               contactName,
               personId: contact.id,
               decisionUrl,
@@ -103,7 +103,7 @@ async function runExpirySweep(nowIso: string): Promise<number> {
               recipient: contact.phone,
               template: 'trust-contact-expiry',
               payload: {
-                capsuleTitle: capsule.title || 'Capsula',
+                capsuleTitle: capsule.title || 'Cápsula',
                 contactName,
                 personId: contact.id,
                 decisionUrl,
@@ -252,7 +252,7 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
           recipient: contact.email,
           template: 'trust-contact-expiry-warning',
           payload: {
-            capsuleTitle: capsule.title || 'Capsula',
+            capsuleTitle: capsule.title || 'Cápsula',
             contactName,
             expiresAt: capsule.gift_expires_at,
             lookaheadHours,
@@ -270,7 +270,7 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
           recipient: contact.phone,
           template: 'trust-contact-expiry-warning',
           payload: {
-            capsuleTitle: capsule.title || 'Capsula',
+            capsuleTitle: capsule.title || 'Cápsula',
             contactName,
             expiresAt: capsule.gift_expires_at,
             lookaheadHours,
@@ -287,7 +287,7 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
             recipient: contact.phone,
             template: 'trust-contact-expiry-warning',
             payload: {
-              capsuleTitle: capsule.title || 'Capsula',
+              capsuleTitle: capsule.title || 'Cápsula',
               contactName,
               expiresAt: capsule.gift_expires_at,
               lookaheadHours,

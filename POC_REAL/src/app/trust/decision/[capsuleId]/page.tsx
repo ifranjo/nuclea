@@ -22,7 +22,7 @@ export default function TrustDecisionPage() {
   const handleConfirm = async () => {
     if (!decision) return
     if (!personId) {
-      setError('Falta personId en el enlace de decision.')
+      setError('Falta personId en el enlace de decisión.')
       return
     }
 
@@ -44,7 +44,7 @@ export default function TrustDecisionPage() {
         throw new Error(
           typeof payload?.error === 'string'
             ? payload.error
-            : 'No se pudo registrar la decision.'
+            : 'No se pudo registrar la decisión.'
         )
       }
 
@@ -70,15 +70,15 @@ export default function TrustDecisionPage() {
 
         <section className='bg-white border border-nuclea-border rounded-xl p-5'>
           <p className='text-xs uppercase tracking-wide text-nuclea-text-muted'>Trust contacts</p>
-          <h1 className='text-lg text-nuclea-text font-medium mt-1'>Decision de continuidad</h1>
+          <h1 className='text-lg text-nuclea-text font-medium mt-1'>Decisión de continuidad</h1>
           <p className='text-sm text-nuclea-text-secondary mt-2'>
-            Capsula: <span className='font-mono text-xs'>{capsuleId}</span>
+            Cápsula: <span className='font-mono text-xs'>{capsuleId}</span>
           </p>
           <p className='text-sm text-nuclea-text-secondary mt-1'>
             Contacto: <span className='font-mono text-xs'>{personId || 'sin personId'}</span>
           </p>
           <p className='text-sm text-nuclea-text-secondary mt-3'>
-            Un contacto de confianza confirma manualmente la decision y queda persistida para auditoria.
+            Un contacto de confianza confirma manualmente la decisión y queda persistida para auditoría.
           </p>
         </section>
 
@@ -97,7 +97,7 @@ export default function TrustDecisionPage() {
               <div>
                 <p className='text-sm font-medium text-nuclea-text'>Continuar historia</p>
                 <p className='text-xs text-nuclea-text-muted mt-1'>
-                  Mantener la capsula activa para que el receptor continue la herencia emocional.
+                  Mantener la cápsula activa para que el receptor continúe la herencia emocional.
                 </p>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function TrustDecisionPage() {
             <div className='flex items-start gap-3'>
               <Hourglass className='text-amber-600 mt-0.5' size={18} />
               <div>
-                <p className='text-sm font-medium text-nuclea-text'>Permitir expiracion natural</p>
+                <p className='text-sm font-medium text-nuclea-text'>Permitir expiración natural</p>
                 <p className='text-xs text-nuclea-text-muted mt-1'>
                   Cerrar el ciclo sin ampliar disponibilidad y proceder con eliminacion limpia al finalizar plazos.
                 </p>
@@ -131,7 +131,7 @@ export default function TrustDecisionPage() {
             onClick={handleConfirm}
             className='w-full py-4 px-8 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-base font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            {submitting ? 'Guardando decision...' : 'Confirmar decision manual'}
+            {submitting ? 'Guardando decisión...' : 'Confirmar decisión manual'}
           </button>
 
           {error && (
@@ -143,7 +143,7 @@ export default function TrustDecisionPage() {
           {confirmed && decision && (
             <p className='mt-3 text-sm text-emerald-700 inline-flex items-center gap-2'>
               <CheckCircle2 size={16} />
-              Decision registrada: {decision === 'continue' ? 'continuar historia' : 'permitir expiracion'}.
+              Decisión registrada: {decision === 'continue' ? 'continuar historia' : 'permitir expiración'}.
             </p>
           )}
         </section>

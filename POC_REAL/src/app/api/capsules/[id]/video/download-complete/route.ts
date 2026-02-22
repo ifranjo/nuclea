@@ -19,7 +19,7 @@ interface DownloadCompleteBody {
 
 function parseBody(payload: unknown): DownloadCompleteBody {
   if (typeof payload !== 'object' || payload === null) {
-    throw new Error('Payload invalido')
+    throw new Error('Payload inválido')
   }
 
   const body = payload as Record<string, unknown>
@@ -27,7 +27,7 @@ function parseBody(payload: unknown): DownloadCompleteBody {
   const storagePath = typeof body.storagePath === 'string' ? body.storagePath.trim() : undefined
 
   if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 120) {
-    throw new Error('idempotencyKey invalido')
+    throw new Error('idempotencyKey inválido')
   }
 
   return { idempotencyKey, storagePath }
@@ -103,7 +103,7 @@ export async function POST(
 
     const { id: capsuleId } = await context.params
     if (!capsuleId) {
-      return NextResponse.json({ error: 'Capsula invalida' }, { status: 400 })
+      return NextResponse.json({ error: 'Cápsula inválida' }, { status: 400 })
     }
 
     const body = parseBody(await request.json())
@@ -116,7 +116,7 @@ export async function POST(
       .maybeSingle()
 
     if (!capsule?.id) {
-      return NextResponse.json({ error: 'Capsula no encontrada' }, { status: 404 })
+      return NextResponse.json({ error: 'Cápsula no encontrada' }, { status: 404 })
     }
 
     if (capsule.owner_id !== identity.profileId && capsule.receiver_id !== identity.profileId) {
@@ -214,7 +214,7 @@ export async function POST(
       noRetentionConfirmed: purgeStatus === 'deleted',
     })
   } catch (error) {
-    if (error instanceof Error && error.message.includes('idempotencyKey invalido')) {
+    if (error instanceof Error && error.message.includes('idempotencyKey inválido')) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 

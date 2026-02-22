@@ -9,7 +9,7 @@ function toUserFacingErrorMessage(error: unknown, fallback: string): string {
   if (!error || typeof error !== 'object') return fallback
   const message = 'message' in error && typeof error.message === 'string' ? error.message.toLowerCase() : ''
   if (message.includes('row-level security') || message.includes('permission denied')) {
-    return 'No tienes permisos para modificar esta capsula.'
+    return 'No tienes permisos para modificar esta cápsula.'
   }
   return fallback
 }

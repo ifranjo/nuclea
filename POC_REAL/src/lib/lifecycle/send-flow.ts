@@ -79,25 +79,25 @@ export function canUserSendCapsule(
   receiverEmail?: string | null,
 ): SendValidationResult {
   if (capsule.ownerId !== profileId) {
-    return { ok: false, reason: 'Solo el propietario puede enviar la capsula' }
+    return { ok: false, reason: 'Solo el propietario puede enviar la cápsula' }
   }
   if (capsule.receiverId) {
-    return { ok: false, reason: 'La capsula ya tiene receptor asignado' }
+    return { ok: false, reason: 'La cápsula ya tiene receptor asignado' }
   }
 
   const state = normalizeGiftState(capsule.giftState)
   if (!['draft', 'sent'].includes(state)) {
-    return { ok: false, reason: `La capsula no se puede enviar (estado: ${state})` }
+    return { ok: false, reason: `La cápsula no se puede enviar (estado: ${state})` }
   }
 
   const status = typeof capsule.status === 'string' ? capsule.status : 'active'
   if (!['active', 'sent'].includes(status)) {
-    return { ok: false, reason: `La capsula debe estar activa para enviar (actual: ${status})` }
+    return { ok: false, reason: `La cápsula debe estar activa para enviar (actual: ${status})` }
   }
 
   // Cannot send to yourself
   if (senderEmail && receiverEmail && normalizeEmail(senderEmail) === normalizeEmail(receiverEmail)) {
-    return { ok: false, reason: 'No puedes enviarte una capsula a ti mismo' }
+    return { ok: false, reason: 'No puedes enviarte una cápsula a ti mismo' }
   }
 
   return { ok: true }

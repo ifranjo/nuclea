@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   const parsed = completeSchema.safeParse(await request.json())
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'Payload invalido', details: parsed.error.flatten() },
+      { error: 'Payload inválido', details: parsed.error.flatten() },
       { status: 400 }
     )
   }

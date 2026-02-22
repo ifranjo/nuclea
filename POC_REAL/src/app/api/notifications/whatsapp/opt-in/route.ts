@@ -11,7 +11,7 @@ interface OptInBody {
 
 function parseBody(payload: unknown): OptInBody {
   if (typeof payload !== 'object' || payload === null) {
-    throw new Error('Payload invalido')
+    throw new Error('Payload inválido')
   }
 
   const body = payload as Record<string, unknown>
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (!capsule?.id) {
-      return NextResponse.json({ error: 'Capsula no encontrada' }, { status: 404 })
+      return NextResponse.json({ error: 'Cápsula no encontrada' }, { status: 404 })
     }
 
     if (capsule.owner_id !== profileId) {
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof Error && (
-      error.message.includes('Payload invalido') ||
+      error.message.includes('Payload inválido') ||
       error.message.includes('capsuleId requerido') ||
       error.message.includes('contactId requerido')
     )) {

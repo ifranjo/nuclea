@@ -42,11 +42,11 @@ export function canSubmitTrustDecision(
   identity: TrustDecisionIdentity
 ): TrustDecisionValidation {
   if (person.id !== input.personId) {
-    return { ok: false, reason: 'El contacto no coincide con la decision enviada.' }
+    return { ok: false, reason: 'El contacto no coincide con la decisión enviada.' }
   }
 
   if (person.capsuleId !== input.capsuleId) {
-    return { ok: false, reason: 'El contacto no pertenece a esta capsula.' }
+    return { ok: false, reason: 'El contacto no pertenece a esta cápsula.' }
   }
 
   const sameUser = !!person.userId && person.userId === identity.profileId

@@ -49,11 +49,11 @@ export function ExpiryUrgencyBanner({ expiresAt }: ExpiryUrgencyBannerProps) {
       <p className={`text-sm font-semibold ${style.title}`}>Estado del regalo</p>
       {level === 'expired' ? (
         <p className={`mt-1 text-sm ${style.copy}`}>
-          El periodo de 30 dias ha finalizado. Esta capsula ya no esta disponible.
+          El periodo de 30 días ha finalizado. Esta cápsula ya no está disponible.
         </p>
       ) : (
         <p className={`mt-1 text-sm ${style.copy}`}>
-          Te quedan <strong>{daysRemaining} dias</strong> dentro del periodo de 30 dias para decidir.
+          Te quedan <strong>{daysRemaining} días</strong> dentro del periodo de 30 días para decidir.
         </p>
       )}
     </div>

@@ -45,7 +45,7 @@ export async function POST(
 
     const { id: capsuleId } = await context.params
     if (!capsuleId) {
-      return NextResponse.json({ error: 'Capsula invalida' }, { status: 400 })
+      return NextResponse.json({ error: 'Cápsula inválida' }, { status: 400 })
     }
 
     let body: ClaimBody = {}
@@ -63,7 +63,7 @@ export async function POST(
       .maybeSingle()
 
     if (!capsule?.id) {
-      return NextResponse.json({ error: 'Capsula no encontrada' }, { status: 404 })
+      return NextResponse.json({ error: 'Cápsula no encontrada' }, { status: 404 })
     }
 
     const snapshot: ClaimableCapsuleSnapshot = {
@@ -77,11 +77,11 @@ export async function POST(
     }
 
     if (!canUserClaimCapsule(snapshot, identity)) {
-      return NextResponse.json({ error: 'No autorizado para reclamar esta capsula' }, { status: 403 })
+      return NextResponse.json({ error: 'No autorizado para reclamar esta cápsula' }, { status: 403 })
     }
 
     if (!isInvitationTokenMatch((body.invitation_token || '').trim(), capsule.invitation_token_hash)) {
-      return NextResponse.json({ error: 'Invitacion invalida o expirada' }, { status: 403 })
+      return NextResponse.json({ error: 'Invitación inválida o expirada' }, { status: 403 })
     }
 
     const now = new Date()
@@ -110,6 +110,6 @@ export async function POST(
     })
   } catch (error) {
     console.error('Supabase capsule claim error:', error)
-    return NextResponse.json({ error: 'No se pudo reclamar la capsula' }, { status: 500 })
+    return NextResponse.json({ error: 'No se pudo reclamar la cápsula' }, { status: 500 })
   }
 }
