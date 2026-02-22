@@ -12,12 +12,25 @@ export function AddPersonModal({ onClose, onSave }: AddPersonModalProps) {
   const [email, setEmail] = useState('')
   const [relationship, setRelationship] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+
+    if (!email.includes('@') || !email.includes('.')) {
+      setError('Introduce un email válido.')
+      return
+    }
+
     setSaving(true)
-    await onSave({ full_name: fullName, email, relationship })
-    setSaving(false)
+    try {
+      await onSave({ full_name: fullName, email, relationship })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al guardar. Inténtalo de nuevo.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -71,6 +84,9 @@ export function AddPersonModal({ onClose, onSave }: AddPersonModalProps) {
           >
             {saving ? 'Guardando...' : 'Guardar'}
           </button>
+          {error && (
+            <p className="text-sm text-red-500 text-center mt-2">{error}</p>
+          )}
         </form>
       </div>
     </div>

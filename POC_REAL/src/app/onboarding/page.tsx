@@ -50,7 +50,6 @@ function OnboardingContent() {
     }
 
     window.dispatchEvent(new CustomEvent('nuclea:onboarding-step', { detail }))
-    console.info('[onboarding-step]', detail)
   }, [step])
 
   return (

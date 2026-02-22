@@ -20,7 +20,10 @@ function AcceptContent() {
 
     // Validate token
     fetch(`/api/beta/accept?t=${token}`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(r.statusText)
+        return r.json()
+      })
       .then(data => {
         if (data.valid) {
           setStatus('valid')
@@ -46,6 +49,7 @@ function AcceptContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token }),
       })
+      if (!res.ok) throw new Error(res.statusText)
       const data = await res.json()
 
       if (data.success) {
