@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Quick Reference
+
+| Task | Command |
+|------|---------|
+| Run production app | `cd PREREUNION_ANDREA && npm run dev` (port 3000) |
+| Run POC UI | `cd POC_INTERNA/app && npm run dev` (port 3001) |
+| Run POC Real | `cd POC_REAL && npx supabase start && npm run dev` (port 3002) |
+| Run tests | `npm run test:unit` (PREREUNION_ANDREA) |
+| Lint all | `npm run lint` (per app) |
+| Typecheck | `npx tsc --noEmit` (per app) |
+
 ## Project Overview
 
 **NUCLEA** is a Spanish digital legacy platform for creating memory capsules with optional AI avatars. The capsule is a **physical emotional object** that opens and releases memories (floating polaroids) — this is a digital ritual, NOT a file-management app. After capsule closure: download locally, delete from server, zero ongoing storage cost.
@@ -115,6 +126,20 @@ Shared across all apps. Single source of truth for:
 
 PREREUNION_ANDREA uses Zod schemas (`src/lib/api-validation.ts`) on all API routes. Rate limiting via Firestore fixed-window (`src/lib/rate-limit.ts`). Capsule pagination is cursor-based (`src/lib/capsule-pagination.ts`).
 
+### Key API Routes (PREREUNION_ANDREA)
+
+| Route | Method | Auth | Purpose |
+|-------|--------|------|---------|
+| `/api/consent/biometric` | POST | Bearer | Sign biometric consent |
+| `/api/consent/biometric` | GET | Bearer | Get consent status |
+| `/api/consent/biometric` | DELETE | Bearer | Revoke consent |
+| `/api/capsules` | GET/POST | Bearer | List/create capsules |
+| `/api/waitlist` | GET/POST | No | Waitlist management |
+
+### Legal Pages
+
+PREREUNION_ANDREA: `/privacidad`, `/terminos`, `/consentimiento`, `/contacto` (server components)
+
 ### Backend Stack Transition
 
 - **Current:** Firebase SDK (Auth, Firestore, Storage) in PREREUNION_ANDREA
@@ -196,3 +221,11 @@ The repo is being reorganized. See `docs/plans/2026-02-15-repo-reorganization-pl
 - **POC_REAL RLS**: Disabled for dev — must re-enable before deploy
 - **No Jest/Vitest**: Unit tests use `node:test` runner via `tsx --test`
 - **Deployment**: Manual `npm run deploy` (Vercel) in PREREUNION_ANDREA
+
+## Current Status (Feb 2026)
+
+- **Latest commit**: `cbe5fc4` — feat(poc-real): data integrity, error boundaries, type normalization
+- **Unit tests**: 14/14 passing
+- **Smoke tests**: 9/9 passing
+- **POC Real QA**: 11/11 tests passing
+- **Security**: Recent hardening for open redirect, timing attack, test credentials

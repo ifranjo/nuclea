@@ -88,14 +88,18 @@ export function useDesignatedPersons(capsuleId?: string, currentUserId?: string)
       return { error: designatedUserError }
     }
 
-    const identityValidation = canAssignDesignatedPerson(currentUserId, designatedUser?.id || null)
+    const designatedUserId = designatedUser?.id || null
+    const identityValidation = canAssignDesignatedPerson(currentUserId, designatedUserId)
     if (!identityValidation.ok) {
       return { error: new Error(identityValidation.reason || 'Contacto de confianza invalido') }
+    }
+    if (!designatedUserId) {
+      return { error: new Error('Contacto de confianza invalido') }
     }
 
     const { error } = await supabase.from('designated_persons').insert({
       capsule_id: capsuleId,
-      user_id: designatedUser.id,
+      user_id: designatedUserId,
       full_name: data.full_name.trim(),
       email: normalizedEmail,
       relationship: data.relationship?.trim() || null,
