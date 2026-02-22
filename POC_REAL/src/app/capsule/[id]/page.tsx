@@ -1,10 +1,11 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useCapsuleContents } from '@/hooks/useCapsuleContents'
 import { useDesignatedPersons } from '@/hooks/useDesignatedPersons'
 import { useCapsules } from '@/hooks/useCapsules'
+import { createClient } from '@/lib/supabase/client'
 import { buildCapsuleZipName, buildContentEntryName, buildMetadataPayload } from '@/lib/capsuleExport'
 import { CapsuleIcon } from '@/components/icons/CapsuleIcons'
 import { CapsuleCalendar } from '@/components/capsule/CapsuleCalendar'
@@ -14,7 +15,7 @@ import { ComingSoon } from '@/components/ui/ComingSoon'
 import { ExpiryUrgencyBanner } from '@/components/receiver/ExpiryUrgencyBanner'
 import { buildCapsuleEmailTemplates } from '@/lib/recipientExperience'
 import { ArrowLeft, Camera, Video, Mic, FileText, Share2, Users, Download, X } from 'lucide-react'
-import type { CapsuleType } from '@/types'
+import { normalizeCapsuleType, type CapsuleType } from '@/types'
 import type { MediaItem } from '@/types/media'
 
 function typeLabel(type: string) {
@@ -47,6 +48,9 @@ export default function CapsuleDetailPage() {
   const [closeStatus, setCloseStatus] = useState<string | null>(null)
   const [showShare, setShowShare] = useState(false)
   const [shareUrl, setShareUrl] = useState<string | null>(null)
+  const [creatorName, setCreatorName] = useState<string | null>(null)
+  const supabaseRef = useRef(createClient())
+  const supabase = supabaseRef.current
 
   const capsule = capsules.find(c => c.id === id)
   const isReceiverMode = Boolean(
@@ -56,6 +60,24 @@ export default function CapsuleDetailPage() {
     capsule.creator_id &&
     capsule.creator_id !== capsule.owner_id
   )
+
+  useEffect(() => {
+    const fetchCreatorName = async () => {
+      if (!isReceiverMode || !capsule?.creator_id) {
+        setCreatorName(null)
+        return
+      }
+
+      const { data } = await supabase
+        .from('users')
+        .select('full_name')
+        .eq('id', capsule.creator_id)
+        .maybeSingle()
+      setCreatorName(data?.full_name || null)
+    }
+
+    void fetchCreatorName()
+  }, [capsule?.creator_id, isReceiverMode, supabase])
 
   const mediaItems: MediaItem[] = useMemo(() => {
     return contents.map(c => ({
@@ -254,12 +276,12 @@ export default function CapsuleDetailPage() {
             <ArrowLeft size={20} />
           </button>
           <div className='flex items-center gap-2'>
-            <CapsuleIcon type={capsule.type.replace('_', '-') as CapsuleType} size={20} />
+            <CapsuleIcon type={normalizeCapsuleType(capsule.type) as CapsuleType} size={20} />
             <div>
               <h1 className='text-lg font-medium text-nuclea-text'>{capsule.title || 'Sin título'}</h1>
               {isReceiverMode && (
                 <p className='text-xs text-nuclea-text-muted mt-0.5'>
-                  Regalo de {capsule.creator_id}
+                  {creatorName ? `Regalo de ${creatorName}` : 'Cápsula recibida como regalo'}
                 </p>
               )}
             </div>

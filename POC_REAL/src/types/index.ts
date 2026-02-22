@@ -1,4 +1,5 @@
 export type CapsuleType = 'legacy' | 'together' | 'social' | 'pet' | 'life-chapter' | 'origin'
+export type CapsuleTypeInput = CapsuleType | 'life_chapter'
 
 export type OnboardingStep = 1 | 2 | 3 | 4
 
@@ -47,3 +48,11 @@ export const CAPSULE_TYPES: CapsuleTypeInfo[] = [
     description: 'Un espacio donde conservar recuerdos, palabras, imágenes y mensajes que acompañan cada etapa de su vida.',
   },
 ]
+
+export function normalizeCapsuleType(value: string | null | undefined): CapsuleType {
+  if (value === 'life_chapter') return 'life-chapter'
+  if (value === 'legacy' || value === 'together' || value === 'social' || value === 'pet' || value === 'life-chapter' || value === 'origin') {
+    return value
+  }
+  return 'legacy'
+}

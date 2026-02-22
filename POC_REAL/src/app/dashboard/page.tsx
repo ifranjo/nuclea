@@ -6,7 +6,7 @@ import { BottomNav } from '@/components/ui/BottomNav'
 import { Plus, LogOut, Gift } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { CapsuleType } from '@/types'
+import { normalizeCapsuleType, type CapsuleType } from '@/types'
 
 function formatBytes(bytes: number) {
   const mb = bytes / (1024 * 1024)
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-nuclea-secondary flex items-center justify-center">
-                      <CapsuleIcon type={capsule.type.replace('_', '-') as CapsuleType} size={20} />
+                      <CapsuleIcon type={normalizeCapsuleType(capsule.type) as CapsuleType} size={20} />
                     </div>
                     <div>
                       <h3 className="font-medium text-nuclea-text text-sm">{capsule.title || 'Sin título'}</h3>

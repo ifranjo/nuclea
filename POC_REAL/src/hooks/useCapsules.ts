@@ -101,7 +101,7 @@ export function useCapsules(userId?: string) {
       return { capsule: null, error: new Error('Not authenticated') }
     }
 
-    const shareToken = crypto.randomUUID().slice(0, 8)
+    const shareToken = crypto.randomUUID()
     const { data: capsule, error } = await supabase
       .from('capsules')
       .insert({
@@ -163,7 +163,7 @@ export function useCapsules(userId?: string) {
 
     if (currentToken) return { shareToken: currentToken, error: null }
 
-    const shareToken = crypto.randomUUID().slice(0, 8)
+    const shareToken = crypto.randomUUID()
     const { error } = await supabase
       .from('capsules')
       .update({ share_token: shareToken })

@@ -1,14 +1,11 @@
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { CapsuleIcon } from '@/components/icons/CapsuleIcons'
 import { ExpiryUrgencyBanner } from '@/components/receiver/ExpiryUrgencyBanner'
 import { ReceiverActionOptions } from '@/components/receiver/ReceiverActionOptions'
-import type { CapsuleType } from '@/types'
+import { normalizeCapsuleType, type CapsuleType } from '@/types'
 
 async function getCapsuleByToken(token: string) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const supabase = createAdminClient()
   const { data: capsule } = await supabase.from('capsules').select('*').eq('share_token', token).single()
   if (!capsule) return null
   const { data: contents } = await supabase.from('contents').select('*').eq('capsule_id', capsule.id).order('captured_at', { ascending: false })
@@ -50,7 +47,7 @@ export default async function SharePage({ params, searchParams }: SharePageProps
       <header className="bg-white border-b border-nuclea-border px-6 py-4 text-center">
         <p className="text-xs text-nuclea-text-muted tracking-[0.2em] mb-1">NUCLEA</p>
         <div className="flex items-center justify-center gap-2">
-          <CapsuleIcon type={capsule.type.replace('_', '-') as CapsuleType} size={18} />
+          <CapsuleIcon type={normalizeCapsuleType(capsule.type) as CapsuleType} size={18} />
           <h1 className="text-lg font-medium text-nuclea-text">{capsule.title}</h1>
         </div>
         <p className="text-sm text-nuclea-text-secondary mt-1">
