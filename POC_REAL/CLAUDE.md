@@ -4,7 +4,7 @@
 
 POC_REAL is the functional backend POC for NUCLEA — same UI as POC_INTERNA but wired to a real Supabase local instance (Docker). 5 test users (Simpson family), seed images, real auth, real uploads, real persistence. Includes a production-grade beta invitation system.
 
-**Last session:** 15 Feb 2026 | Commit: `2522b30` | All QA: 11/11 PASS
+**Last session:** 22 Feb 2026 | Commit: `6f1a711` | Both apps build clean, tsc clean
 
 ## Stack
 
@@ -18,7 +18,7 @@ POC_REAL is the functional backend POC for NUCLEA — same UI as POC_INTERNA but
 | Auth | Supabase email/password + OTP magic links (beta) |
 | Storage | Supabase Storage (capsule-contents bucket) |
 | State | React hooks + `useRef(createClient())` pattern |
-| Build | 22 routes, clean |
+| Build | 30 routes, clean (zero warnings) |
 
 ## Quick Start
 
@@ -108,17 +108,38 @@ http://localhost:54323 — browse tables, run SQL, manage auth users.
 
 ## RLS
 
-Disabled for POC simplicity (`00002_disable_rls.sql`). Do NOT deploy to production without re-enabling.
+Migration `00012_enable_rls_production.sql` provides full RLS policies for all tables + storage bucket. Currently disabled in dev (`00002_disable_rls.sql`). Apply `00012` before production deploy.
 
-## Pending Items
+## Capsule Status Lifecycle
 
+`capsule_status` enum: `draft` → `active` → `closed` → `downloaded` / `sent` → `claimed` → `experience_active` → `expiring_soon` → `expired` / `archived`
+
+Dashboard `statusBadge()` handles all 10 states with Spanish labels and color-coded badges.
+
+## Production Readiness (22 Feb 2026)
+
+### Completed
+- RLS policies migration (00012) with helper functions
+- Atomic rate limiter (RPC upsert, no race condition)
+- Share page column whitelist (no secret exposure)
+- All browser dialogs replaced with inline UI
+- Loading skeletons (dashboard, capsule, settings, share)
+- Error boundaries on all routes
+- SEO metadata (noindex, OG tags, proper titles)
+- Accessibility (form labels, ARIA roles, viewport zoom)
+- Spanish copy fixes (accents across all files)
+- Dead code cleanup
+- database.types.ts regenerated from schema
+- Status badge drift fixed (all 10 states)
+- Console statements removed from API routes
+
+### Pending Items
 - Deploy to Vercel (needs Supabase Cloud, not local Docker)
-- Enable RLS with proper policies
 - Fix seed.ts to set file_size_bytes on uploads
 - Implement ZIP export on "Cerrar y descargar"
 - Admin UI for beta invitations (currently API-only)
-- Test file upload flow via Playwright
+- Email delivery service for transactional emails
 
 ---
 
-*Last updated: 2026-02-15*
+*Last updated: 2026-02-22*
