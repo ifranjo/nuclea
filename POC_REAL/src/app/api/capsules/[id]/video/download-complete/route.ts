@@ -218,7 +218,6 @@ export async function POST(
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    console.error('Supabase video download complete error:', error)
     return NextResponse.json({ error: 'No se pudo registrar la descarga' }, { status: 500 })
   }
 }

@@ -113,7 +113,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    console.error('Trust decision error:', error)
     return NextResponse.json({ error: 'No se pudo registrar la decisión' }, { status: 500 })
   }
 }

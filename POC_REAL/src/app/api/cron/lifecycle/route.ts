@@ -330,8 +330,7 @@ export async function POST(request: NextRequest) {
       completedVideoPurges,
       trustContactNotifications,
     })
-  } catch (error) {
-    console.error('Supabase lifecycle cron error:', error)
+  } catch {
     return NextResponse.json({ error: 'Cron execution failed' }, { status: 500 })
   }
 }

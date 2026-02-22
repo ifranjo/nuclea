@@ -114,7 +114,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    console.error('Supabase WhatsApp opt-in error:', error)
     return NextResponse.json({ error: 'No se pudo registrar el opt-in' }, { status: 500 })
   }
 }

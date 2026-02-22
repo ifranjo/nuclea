@@ -117,8 +117,7 @@ export async function POST(
       receiverEmail: update.receiver_email,
       invitationUrl,
     })
-  } catch (error) {
-    console.error('Capsule send error:', error)
+  } catch {
     return NextResponse.json({ error: 'No se pudo enviar la cápsula' }, { status: 500 })
   }
 }

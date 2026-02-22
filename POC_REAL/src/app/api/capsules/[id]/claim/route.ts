@@ -108,8 +108,7 @@ export async function POST(
       receiverId: update.receiver_id,
       ownershipTransferred: true,
     })
-  } catch (error) {
-    console.error('Supabase capsule claim error:', error)
+  } catch {
     return NextResponse.json({ error: 'No se pudo reclamar la cápsula' }, { status: 500 })
   }
 }
