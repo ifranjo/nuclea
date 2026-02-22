@@ -43,7 +43,7 @@ export default function TermsPage() {
                 <li>• Las condiciones del servicio pueden actualizarse</li>
               </ul>
               <p className="text-sm text-[#6B6B6B] leading-relaxed mb-3">
-                Durante la fase beta, todos los planes son gratuitos. Te notificaremos con antelación antes de cualquier transición a planes de pago.
+                Durante la fase beta no existe suscripción. El único pago previsto es puntual para desbloquear la descarga del Video Regalo completo cuando esa opción esté activa.
               </p>
               <p className="text-sm text-[#6B6B6B] leading-relaxed">
                 Tu participación en la beta nos ayuda a construir un servicio mejor. Agradecemos tu confianza y paciencia.
@@ -88,13 +88,13 @@ export default function TermsPage() {
         {/* Section 4 */}
         <section className="border-b border-[#E5E5E5] pb-6 mb-6">
           <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">
-            4. Planes y pagos
+            4. Pago del Video Regalo
           </h3>
           <p className="text-sm text-[#6B6B6B] leading-relaxed mb-3">
-            NUCLEA ofrece diferentes planes de suscripción. Los precios están indicados en euros e incluyen IVA. Las suscripciones se renuevan automáticamente salvo que las canceles con al menos 48 horas de antelación al siguiente período de facturación.
+            NUCLEA funciona sin planes de suscripción en este modelo. El acceso al mini-trailer es gratuito y la descarga del Video Regalo completo puede requerir un pago único.
           </p>
           <p className="text-sm text-[#6B6B6B] leading-relaxed">
-            El plan EverLife es un pago único que no se renueva. Incluye almacenamiento garantizado de por vida de la cápsula.
+            Este pago no se renueva automáticamente y se realiza una sola vez por cada Video Regalo desbloqueado.
           </p>
         </section>
 
@@ -130,7 +130,7 @@ export default function TermsPage() {
             7. Cancelación y reembolsos
           </h3>
           <p className="text-sm text-[#6B6B6B] leading-relaxed">
-            Puedes cancelar tu suscripción en cualquier momento. Mantendrás acceso hasta el final del período ya pagado. No se realizan reembolsos por períodos parciales, salvo lo requerido por la legislación aplicable.
+            Al tratarse de pagos únicos, no existe cancelación de suscripción. Los posibles reembolsos se gestionarán según la legislación aplicable y las condiciones mostradas en el momento del pago.
           </p>
         </section>
 

@@ -497,6 +497,65 @@ async function seed() {
   }
 
   // -----------------------------------------------------------------------
+  // Step 9 — Create a v4 receiver capsule (Homer → Bart, status: sent)
+  // -----------------------------------------------------------------------
+  console.log('\n🎁 Creating v4 receiver capsule (Homer → Bart)...')
+  try {
+    const homerId = userIdMap['homer@nuclea.test']
+    const bartId = userIdMap['bart@nuclea.test']
+    const token = shareToken()
+    const sentAt = new Date().toISOString()
+
+    const { data, error } = await supabase
+      .from('capsules')
+      .insert({
+        owner_id: homerId,
+        creator_id: homerId,
+        receiver_id: null,
+        receiver_email: 'bart@nuclea.test',
+        type: 'legacy',
+        status: 'sent',
+        title: 'Para mi hijo Bart',
+        description: 'Todo lo que quiero que sepas cuando ya no esté.',
+        share_token: token,
+        sent_at: sentAt,
+        video_regalo_status: 'none',
+      })
+      .select('id')
+      .single()
+
+    if (error) throw error
+    capsuleIdMap['Para mi hijo Bart'] = data.id
+    console.log(`  ✓ "Para mi hijo Bart" (sent) → ${data.id.slice(0, 8)}... [receiver_email: bart@nuclea.test]`)
+
+    // Add a note from Homer
+    await supabase.from('contents').insert({
+      capsule_id: data.id,
+      created_by: homerId,
+      type: 'text',
+      text_content: 'Bart, sé que no soy el padre perfecto, pero cada día intento ser mejor por ti.',
+      title: 'Carta para Bart',
+      file_size_bytes: 82,
+      mime_type: 'text/plain',
+      captured_at: sentAt,
+    })
+    console.log('  ✓ Added note from Homer')
+
+    // Add Maggie as trust contact for this capsule
+    await supabase.from('designated_persons').insert({
+      capsule_id: data.id,
+      user_id: userIdMap['maggie@nuclea.test'],
+      full_name: 'Maggie Simpson',
+      email: 'maggie@nuclea.test',
+      relationship: 'Hermana',
+      decision: 'pending',
+    })
+    console.log('  ✓ Maggie added as trust contact')
+  } catch (err) {
+    console.error('  ❌ Failed to create v4 receiver capsule:', err)
+  }
+
+  // -----------------------------------------------------------------------
   // Summary
   // -----------------------------------------------------------------------
   console.log('\n' + '='.repeat(60))

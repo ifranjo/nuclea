@@ -1,26 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { applyLifecycleEvent, computeClaimDeadline, type GiftLifecycleState } from '@/lib/lifecycle/state-machine'
+import {
+  buildClaimHandoffUpdate,
+  canUserClaimCapsule,
+  type ClaimIdentity,
+  type ClaimableCapsuleSnapshot,
+} from '@/lib/lifecycle/claim-handoff'
+import { isInvitationTokenMatch } from '@/lib/lifecycle/send-flow'
 
-function normalizeState(value: unknown): GiftLifecycleState {
-  const allowed: GiftLifecycleState[] = [
-    'draft',
-    'sent',
-    'claimed',
-    'continued',
-    'video_purchased',
-    'video_downloaded',
-    'video_purged',
-    'expired',
-    'deleted',
-  ]
-  return typeof value === 'string' && allowed.includes(value as GiftLifecycleState)
-    ? value as GiftLifecycleState
-    : 'sent'
+interface ClaimBody {
+  invitation_token?: string
 }
 
-async function resolveCurrentUserProfileId(): Promise<string | null> {
+async function resolveCurrentUserIdentity(): Promise<ClaimIdentity | null> {
   const serverClient = await createServerSupabaseClient()
   const { data: { user } } = await serverClient.auth.getUser()
   if (!user) return null
@@ -32,28 +25,40 @@ async function resolveCurrentUserProfileId(): Promise<string | null> {
     .eq('auth_id', user.id)
     .maybeSingle()
 
-  return profile?.id || null
+  if (!profile?.id) return null
+
+  return {
+    profileId: profile.id,
+    email: user.email || null,
+  }
 }
 
 export async function POST(
-  _request: NextRequest,
-  context: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const profileId = await resolveCurrentUserProfileId()
-    if (!profileId) {
+    const identity = await resolveCurrentUserIdentity()
+    if (!identity) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const capsuleId = context.params?.id
+    const { id: capsuleId } = await context.params
     if (!capsuleId) {
       return NextResponse.json({ error: 'Capsula invalida' }, { status: 400 })
+    }
+
+    let body: ClaimBody = {}
+    try {
+      body = await request.json() as ClaimBody
+    } catch {
+      body = {}
     }
 
     const admin = createAdminClient()
     const { data: capsule } = await admin
       .from('capsules')
-      .select('id, owner_id, gift_state')
+      .select('id, owner_id, creator_id, receiver_id, receiver_email, gift_state, gift_claimed_at, gift_expires_at, invitation_token_hash')
       .eq('id', capsuleId)
       .maybeSingle()
 
@@ -61,40 +66,50 @@ export async function POST(
       return NextResponse.json({ error: 'Capsula no encontrada' }, { status: 404 })
     }
 
-    if (capsule.owner_id !== profileId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const snapshot: ClaimableCapsuleSnapshot = {
+      ownerId: capsule.owner_id,
+      creatorId: capsule.creator_id,
+      receiverId: capsule.receiver_id,
+      receiverEmail: capsule.receiver_email,
+      giftState: capsule.gift_state,
+      giftClaimedAt: capsule.gift_claimed_at,
+      giftExpiresAt: capsule.gift_expires_at,
+    }
+
+    if (!canUserClaimCapsule(snapshot, identity)) {
+      return NextResponse.json({ error: 'No autorizado para reclamar esta capsula' }, { status: 403 })
+    }
+
+    if (!isInvitationTokenMatch((body.invitation_token || '').trim(), capsule.invitation_token_hash)) {
+      return NextResponse.json({ error: 'Invitacion invalida o expirada' }, { status: 403 })
     }
 
     const now = new Date()
-    const deadline = computeClaimDeadline(now)
-    const currentState = normalizeState(capsule.gift_state)
-
-    let nextState = currentState
-    try {
-      nextState = applyLifecycleEvent(currentState, 'claim')
-    } catch {
-      nextState = 'claimed'
+    const update = buildClaimHandoffUpdate(snapshot, identity, now)
+    const updatePayload = {
+      ...update,
+      invitation_token_hash: null,
     }
 
-    await admin
+    const { error: updateError } = await admin
       .from('capsules')
-      .update({
-        gift_state: nextState,
-        gift_claimed_at: now.toISOString(),
-        gift_expires_at: deadline.toISOString(),
-        lifecycle_last_activity_at: now.toISOString(),
-      })
+      .update(updatePayload)
       .eq('id', capsuleId)
+
+    if (updateError) {
+      throw updateError
+    }
 
     return NextResponse.json({
       ok: true,
-      state: nextState,
-      claimedAt: now.toISOString(),
-      expiresAt: deadline.toISOString(),
+      state: update.gift_state,
+      claimedAt: update.gift_claimed_at,
+      expiresAt: update.gift_expires_at,
+      receiverId: update.receiver_id,
+      ownershipTransferred: true,
     })
   } catch (error) {
     console.error('Supabase capsule claim error:', error)
     return NextResponse.json({ error: 'No se pudo reclamar la capsula' }, { status: 500 })
   }
 }
-

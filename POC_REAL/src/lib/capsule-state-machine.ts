@@ -1,11 +1,15 @@
 /**
  * capsule-state-machine.ts
- * Pure state machine for capsule lifecycle transitions.
+ * Pure state machine for capsule lifecycle transitions (v4 receiver model).
  * No external dependencies — safe to import anywhere (server, client, tests).
  *
- * Status graph:
+ * Status graph (v4):
  *   draft → active
- *   active → closed | archived
+ *   active → sent | closed | archived
+ *   sent → claimed | expired
+ *   claimed → experience_active | archived
+ *   experience_active → expiring_soon | closed | archived
+ *   expiring_soon → closed | expired | archived
  *   closed → downloaded | expired
  *   downloaded → archived
  *   expired → archived
@@ -19,6 +23,10 @@
 export const CAPSULE_STATUSES = [
   'draft',
   'active',
+  'sent',
+  'claimed',
+  'experience_active',
+  'expiring_soon',
   'closed',
   'downloaded',
   'expired',
@@ -31,11 +39,22 @@ export type CapsuleStatus = typeof CAPSULE_STATUSES[number]
 // Mutability
 // ---------------------------------------------------------------------------
 
-/** Statuses whose content can still be edited. */
-export const MUTABLE_STATUSES: readonly CapsuleStatus[] = ['draft', 'active'] as const
+/** Statuses where the CREATOR can still edit content. */
+export const CREATOR_MUTABLE_STATUSES: readonly CapsuleStatus[] = ['draft', 'active'] as const
 
-/** Statuses that are locked — no edits, no deletions. */
+/** Statuses where the RECEIVER can add content (Continuar Herencia). */
+export const RECEIVER_MUTABLE_STATUSES: readonly CapsuleStatus[] = ['claimed', 'experience_active'] as const
+
+/** All mutable statuses (union). */
+export const MUTABLE_STATUSES: readonly CapsuleStatus[] = [
+  ...CREATOR_MUTABLE_STATUSES,
+  ...RECEIVER_MUTABLE_STATUSES,
+] as const
+
+/** Statuses that are locked — no edits by anyone. */
 export const IMMUTABLE_STATUSES: readonly CapsuleStatus[] = [
+  'sent',
+  'expiring_soon',
   'closed',
   'downloaded',
   'expired',
@@ -46,17 +65,17 @@ export const IMMUTABLE_STATUSES: readonly CapsuleStatus[] = [
 // Transition map
 // ---------------------------------------------------------------------------
 
-/**
- * Maps each status to the set of statuses it can legally transition to.
- * `archived` maps to an empty array — it is a terminal state.
- */
 const TRANSITIONS: Record<CapsuleStatus, readonly CapsuleStatus[]> = {
-  draft:      ['active'],
-  active:     ['closed', 'archived'],
-  closed:     ['downloaded', 'expired'],
-  downloaded: ['archived'],
-  expired:    ['archived'],
-  archived:   [],
+  draft:             ['active'],
+  active:            ['sent', 'closed', 'archived'],
+  sent:              ['claimed', 'expired'],
+  claimed:           ['experience_active', 'archived'],
+  experience_active: ['expiring_soon', 'closed', 'archived'],
+  expiring_soon:     ['closed', 'expired', 'archived'],
+  closed:            ['downloaded', 'expired'],
+  downloaded:        ['archived'],
+  expired:           ['archived'],
+  archived:          [],
 }
 
 // ---------------------------------------------------------------------------
@@ -79,43 +98,46 @@ export class CapsuleTransitionError extends Error {
 // Public API
 // ---------------------------------------------------------------------------
 
-/**
- * Returns true when moving from `from` to `to` is a permitted transition.
- */
-export function isValidTransition(
-  from: CapsuleStatus,
-  to: CapsuleStatus,
-): boolean {
+export function isValidTransition(from: CapsuleStatus, to: CapsuleStatus): boolean {
   return (TRANSITIONS[from] as readonly string[]).includes(to)
 }
 
-/**
- * Attempts the transition and returns the new status.
- * Throws `CapsuleTransitionError` when the transition is not permitted.
- */
-export function transitionCapsule(
-  from: CapsuleStatus,
-  to: CapsuleStatus,
-): CapsuleStatus {
+export function transitionCapsule(from: CapsuleStatus, to: CapsuleStatus): CapsuleStatus {
   if (!isValidTransition(from, to)) {
     throw new CapsuleTransitionError(from, to)
   }
   return to
 }
 
-/**
- * Returns all statuses that `status` can legally transition to.
- * Returns an empty array for terminal states.
- */
 export function getAvailableTransitions(status: CapsuleStatus): CapsuleStatus[] {
   return [...TRANSITIONS[status]]
 }
 
-/**
- * Returns true when a capsule in `status` may have its content mutated
- * (title, description, media, collaborators, etc.).
- * Only `draft` and `active` are mutable.
- */
 export function isMutableStatus(status: CapsuleStatus): boolean {
   return (MUTABLE_STATUSES as readonly string[]).includes(status)
+}
+
+export function isCreatorMutable(status: CapsuleStatus): boolean {
+  return (CREATOR_MUTABLE_STATUSES as readonly string[]).includes(status)
+}
+
+export function isReceiverMutable(status: CapsuleStatus): boolean {
+  return (RECEIVER_MUTABLE_STATUSES as readonly string[]).includes(status)
+}
+
+/** True when the capsule is in the receiver's hands (post-send). */
+export function isReceiverPhase(status: CapsuleStatus): boolean {
+  return ['sent', 'claimed', 'experience_active', 'expiring_soon'].includes(status)
+}
+
+/** Calculate experience expiry date from claim timestamp. */
+export function calculateExpiryDate(claimedAt: Date, days = 30): Date {
+  const expiry = new Date(claimedAt)
+  expiry.setDate(expiry.getDate() + days)
+  return expiry
+}
+
+/** Days remaining in experience period. Negative = expired. */
+export function daysRemaining(expiresAt: Date, now = new Date()): number {
+  return Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
 }

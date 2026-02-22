@@ -1,10 +1,10 @@
 'use client'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function RegistroPage() {
+function RegistroForm() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -16,6 +16,8 @@ export default function RegistroPage() {
   const [loading, setLoading] = useState(false)
   const { signUp } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get('redirect')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +40,7 @@ export default function RegistroPage() {
       setError('Error al crear la cuenta. Inténtalo de nuevo.')
       setLoading(false)
     } else {
-      router.push('/dashboard')
+      router.push(redirect || '/dashboard')
     }
   }
 
@@ -125,9 +127,17 @@ export default function RegistroPage() {
 
         <p className="text-center text-sm text-nuclea-text-secondary mt-6">
           ¿Ya tienes cuenta?{' '}
-          <Link href="/login" className="text-nuclea-gold hover:underline">Entrar</Link>
+          <Link href={redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login'} className="text-nuclea-gold hover:underline">Entrar</Link>
         </p>
       </div>
     </div>
+  )
+}
+
+export default function RegistroPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <RegistroForm />
+    </Suspense>
   )
 }

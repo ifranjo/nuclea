@@ -12,6 +12,7 @@
     "test:ceo": "node tests/ceo_bug_verification_final.mjs",
     "test:beta": "node tests/beta_qa.mjs",
     "test:upload": "node tests/upload_flow_e2e.mjs",
+    "test:send-claim": "node tests/smoke_send_claim.mjs",
     "test:playwright": "playwright test",
     "test:install": "playwright install chromium"
   },
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
+    "@playwright/test": "^1.58.2",
     "@types/file-saver": "^2.0.7",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",

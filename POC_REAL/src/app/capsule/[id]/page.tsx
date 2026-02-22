@@ -11,8 +11,6 @@ import { CapsuleCalendar } from '@/components/capsule/CapsuleCalendar'
 import { AddPersonModal } from '@/components/capsule/AddPersonModal'
 import { BottomNav } from '@/components/ui/BottomNav'
 import { ComingSoon } from '@/components/ui/ComingSoon'
-import { ExpiryUrgencyBanner } from '@/components/receiver/ExpiryUrgencyBanner'
-import { ReceiverActionOptions } from '@/components/receiver/ReceiverActionOptions'
 import { buildCapsuleEmailTemplates } from '@/lib/recipientExperience'
 import { ArrowLeft, Camera, Video, Mic, FileText, Share2, Users, Download, X } from 'lucide-react'
 import type { CapsuleType } from '@/types'
@@ -258,9 +256,12 @@ export default function CapsuleDetailPage() {
       </header>
 
       <div className='px-6 py-6 space-y-6'>
-        <ExpiryUrgencyBanner createdAt={capsule.created_at} />
-
-        <ReceiverActionOptions capsuleId={capsule.id} />
+        <div className='rounded-xl border border-nuclea-border bg-white p-4'>
+          <p className='text-xs uppercase tracking-wide text-nuclea-text-muted'>Vista creador</p>
+          <p className='mt-2 text-sm text-nuclea-text-secondary'>
+            Las acciones del receptor (reclamar, mini-trailer, pago y descarga) viven en el enlace compartido.
+          </p>
+        </div>
 
         <div className='bg-white rounded-xl border border-nuclea-border p-4'>
           <CapsuleCalendar items={mediaItems} onSelectDate={setSelectedDate} selectedDate={selectedDate} />

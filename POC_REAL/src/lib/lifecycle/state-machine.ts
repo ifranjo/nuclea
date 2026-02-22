@@ -42,11 +42,8 @@ const ALLOWED_EVENT_SOURCES: Record<GiftLifecycleEvent, GiftLifecycleState[]> = 
 }
 
 export function isValidLifecycleTransition(from: GiftLifecycleState, to: GiftLifecycleState): boolean {
-  return Object.entries(EVENT_TARGET).some(([, target]) => {
-    if (target !== to) return false
-    const event = Object.keys(EVENT_TARGET).find((key) => EVENT_TARGET[key as GiftLifecycleEvent] === to)
-    if (!event) return false
-    return ALLOWED_EVENT_SOURCES[event as GiftLifecycleEvent].includes(from)
+  return (Object.keys(ALLOWED_EVENT_SOURCES) as GiftLifecycleEvent[]).some((event) => {
+    return EVENT_TARGET[event] === to && ALLOWED_EVENT_SOURCES[event].includes(from)
   })
 }
 
@@ -64,3 +61,14 @@ export function computeClaimDeadline(claimedAt: Date): Date {
   return deadline
 }
 
+export function canPurchaseVideoGift(state: GiftLifecycleState): boolean {
+  return ['claimed', 'continued'].includes(state)
+}
+
+export function canAddContentAfterClaim(state: GiftLifecycleState): boolean {
+  return ['continued', 'video_purchased', 'video_downloaded', 'video_purged'].includes(state)
+}
+
+export function canDownloadPurchasedVideo(state: GiftLifecycleState): boolean {
+  return state === 'video_purchased'
+}

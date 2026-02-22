@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { applyLifecycleEvent, type GiftLifecycleState } from '@/lib/lifecycle/state-machine'
+import {
+  applyLifecycleEvent,
+  canDownloadPurchasedVideo,
+  type GiftLifecycleState,
+} from '@/lib/lifecycle/state-machine'
 import {
   computeNextRetryAt,
   isRetryableStorageError,
@@ -89,7 +93,7 @@ async function resolveCurrentUserProfileId(): Promise<{ authId: string; profileI
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const identity = await resolveCurrentUserProfileId()
@@ -97,7 +101,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const capsuleId = context.params?.id
+    const { id: capsuleId } = await context.params
     if (!capsuleId) {
       return NextResponse.json({ error: 'Capsula invalida' }, { status: 400 })
     }
@@ -107,7 +111,7 @@ export async function POST(
 
     const { data: capsule } = await admin
       .from('capsules')
-      .select('id, owner_id, gift_state, video_gift_path')
+      .select('id, owner_id, receiver_id, gift_state, video_gift_path')
       .eq('id', capsuleId)
       .maybeSingle()
 
@@ -115,12 +119,20 @@ export async function POST(
       return NextResponse.json({ error: 'Capsula no encontrada' }, { status: 404 })
     }
 
-    if (capsule.owner_id !== identity.profileId) {
+    if (capsule.owner_id !== identity.profileId && capsule.receiver_id !== identity.profileId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const storagePath = body.storagePath || capsule.video_gift_path
     const now = new Date()
+    const currentState = normalizeState(capsule.gift_state)
+    const alreadyUnlocked = ['video_downloaded', 'video_purged'].includes(currentState)
+
+    if (!canDownloadPurchasedVideo(currentState) && !alreadyUnlocked) {
+      return NextResponse.json({
+        error: 'El Video Regalo requiere pago unico antes de descargar.',
+      }, { status: 409 })
+    }
 
     const { data: existingJob } = await admin
       .from('video_purge_jobs')
@@ -140,7 +152,6 @@ export async function POST(
 
     const attempts = Number(existingJob?.attempts || 0) + 1
     const maxAttempts = Number(existingJob?.max_attempts || 5)
-    const currentState = normalizeState(capsule.gift_state)
 
     let purgeStatus: 'deleted' | 'pending_retry' | 'failed' | 'not_configured' = 'not_configured'
     let lastError: string | null = null
@@ -211,4 +222,3 @@ export async function POST(
     return NextResponse.json({ error: 'No se pudo registrar la descarga' }, { status: 500 })
   }
 }
-

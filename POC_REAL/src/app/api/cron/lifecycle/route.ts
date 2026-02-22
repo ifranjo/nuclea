@@ -7,6 +7,7 @@ import {
   isRetryableStorageError,
   shouldGiveUpRetrying,
 } from '@/lib/lifecycle/video-purge-retry'
+import { computeTrustContactNotifyBeforeIso } from '@/lib/lifecycle/trust-contact-window'
 
 function isCronAuthorized(request: NextRequest): boolean {
   const secret = process.env.CRON_SECRET
@@ -38,23 +39,72 @@ async function runExpirySweep(nowIso: string): Promise<number> {
   const admin = createAdminClient()
   const { data: due } = await admin
     .from('capsules')
-    .select('id')
+    .select('id, owner_id, title, trust_contacts_notified_at')
     .lte('gift_expires_at', nowIso)
     .in('gift_state', ['sent', 'claimed', 'continued', 'video_purchased'])
     .limit(200)
 
-  const ids = (due || []).map((row) => row.id)
-  if (ids.length === 0) return 0
+  const dueCapsules = due || []
+  let expired = 0
 
-  await admin
-    .from('capsules')
-    .update({
-      gift_state: 'expired',
-      lifecycle_last_activity_at: nowIso,
-    })
-    .in('id', ids)
+  for (const capsule of dueCapsules) {
+    if (!capsule.id) continue
 
-  return ids.length
+    if (!capsule.trust_contacts_notified_at) {
+      const { data: contacts } = await admin
+        .from('designated_persons')
+        .select('id, full_name, email, phone, whatsapp_opt_in_at')
+        .eq('capsule_id', capsule.id)
+
+      for (const contact of contacts || []) {
+        const contactName = contact.full_name || 'contacto'
+        if (contact.email) {
+          await queueNotification(admin, {
+            userId: capsule.owner_id,
+            capsuleId: capsule.id,
+            channel: 'email',
+            recipient: contact.email,
+            template: 'trust-contact-expiry',
+            payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+          })
+        }
+
+        if (contact.phone) {
+          await queueNotification(admin, {
+            userId: capsule.owner_id,
+            capsuleId: capsule.id,
+            channel: 'sms',
+            recipient: contact.phone,
+            template: 'trust-contact-expiry',
+            payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+          })
+
+          if (contact.whatsapp_opt_in_at) {
+            await queueNotification(admin, {
+              userId: capsule.owner_id,
+              capsuleId: capsule.id,
+              channel: 'whatsapp',
+              recipient: contact.phone,
+              template: 'trust-contact-expiry',
+              payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+            })
+          }
+        }
+      }
+    }
+
+    await admin
+      .from('capsules')
+      .update({
+        gift_state: 'expired',
+        trust_contacts_notified_at: nowIso,
+        lifecycle_last_activity_at: nowIso,
+      })
+      .eq('id', capsule.id)
+    expired += 1
+  }
+
+  return expired
 }
 
 async function runVideoPurgeQueue(now: Date): Promise<number> {
@@ -143,13 +193,15 @@ async function runVideoPurgeQueue(now: Date): Promise<number> {
 async function runTrustContactsSweep(now: Date): Promise<number> {
   const admin = createAdminClient()
   const nowIso = now.toISOString()
-  const inactivityDays = Number(process.env.TRUST_CONTACT_INACTIVITY_DAYS || 120)
-  const thresholdIso = new Date(now.getTime() - inactivityDays * 24 * 60 * 60 * 1000).toISOString()
+  const lookaheadHours = Number(process.env.TRUST_CONTACT_NOTIFY_BEFORE_HOURS || 72)
+  const thresholdIso = computeTrustContactNotifyBeforeIso(now, lookaheadHours)
 
   const { data: capsules } = await admin
     .from('capsules')
-    .select('id, owner_id, title')
-    .lte('lifecycle_last_activity_at', thresholdIso)
+    .select('id, owner_id, title, gift_expires_at, gift_state')
+    .gt('gift_expires_at', nowIso)
+    .lte('gift_expires_at', thresholdIso)
+    .in('gift_state', ['claimed', 'continued', 'video_purchased'])
     .neq('type', 'social')
     .is('trust_contacts_notified_at', null)
     .limit(200)
@@ -172,8 +224,13 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
           capsuleId: capsule.id,
           channel: 'email',
           recipient: contact.email,
-          template: 'trust-contact-inactivity',
-          payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+          template: 'trust-contact-expiry-warning',
+          payload: {
+            capsuleTitle: capsule.title || 'Capsula',
+            contactName,
+            expiresAt: capsule.gift_expires_at,
+            lookaheadHours,
+          },
         })
       }
 
@@ -183,8 +240,13 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
           capsuleId: capsule.id,
           channel: 'sms',
           recipient: contact.phone,
-          template: 'trust-contact-inactivity',
-          payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+          template: 'trust-contact-expiry-warning',
+          payload: {
+            capsuleTitle: capsule.title || 'Capsula',
+            contactName,
+            expiresAt: capsule.gift_expires_at,
+            lookaheadHours,
+          },
         })
 
         if (contact.whatsapp_opt_in_at) {
@@ -193,8 +255,13 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
             capsuleId: capsule.id,
             channel: 'whatsapp',
             recipient: contact.phone,
-            template: 'trust-contact-inactivity',
-            payload: { capsuleTitle: capsule.title || 'Capsula', contactName },
+            template: 'trust-contact-expiry-warning',
+            payload: {
+              capsuleTitle: capsule.title || 'Capsula',
+              contactName,
+              expiresAt: capsule.gift_expires_at,
+              lookaheadHours,
+            },
           })
         }
       }
@@ -204,7 +271,6 @@ async function runTrustContactsSweep(now: Date): Promise<number> {
       .from('capsules')
       .update({
         trust_contacts_notified_at: nowIso,
-        lifecycle_last_activity_at: nowIso,
       })
       .eq('id', capsule.id)
     notifiedCapsules += 1
@@ -221,11 +287,9 @@ export async function POST(request: NextRequest) {
   try {
     const now = new Date()
     const nowIso = now.toISOString()
-    const [expiredCapsules, completedVideoPurges, trustContactNotifications] = await Promise.all([
-      runExpirySweep(nowIso),
-      runVideoPurgeQueue(now),
-      runTrustContactsSweep(now),
-    ])
+    const trustContactNotifications = await runTrustContactsSweep(now)
+    const expiredCapsules = await runExpirySweep(nowIso)
+    const completedVideoPurges = await runVideoPurgeQueue(now)
 
     return NextResponse.json({
       ok: true,
@@ -239,4 +303,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Cron execution failed' }, { status: 500 })
   }
 }
-

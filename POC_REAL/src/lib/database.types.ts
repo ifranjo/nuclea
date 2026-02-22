@@ -177,78 +177,125 @@ export type Database = {
       }
       capsules: {
         Row: {
+          claimed_at: string | null
           closed_at: string | null
           cover_image_url: string | null
           created_at: string
+          creator_id: string | null
           description: string | null
+          experience_expires_at: string | null
           gift_claimed_at: string | null
           gift_expires_at: string | null
           gift_state: string
           id: string
+          invitation_token_hash: string | null
           lifecycle_last_activity_at: string
           owner_id: string
+          receiver_email: string | null
+          receiver_id: string | null
+          sent_at: string | null
           share_token: string | null
           status: Database["public"]["Enums"]["capsule_status"]
           storage_used_bytes: number
           title: string | null
           trust_contacts_notified_at: string | null
+          trust_notified_at: string | null
           type: Database["public"]["Enums"]["capsule_type"]
           updated_at: string
           video_downloaded_at: string | null
           video_gift_path: string | null
           video_purge_status: string | null
           video_purged_at: string | null
+          video_regalo_paid_at: string | null
+          video_regalo_status: string | null
+          video_regalo_url: string | null
         }
         Insert: {
+          claimed_at?: string | null
           closed_at?: string | null
           cover_image_url?: string | null
           created_at?: string
+          creator_id?: string | null
           description?: string | null
+          experience_expires_at?: string | null
           gift_claimed_at?: string | null
           gift_expires_at?: string | null
           gift_state?: string
           id?: string
+          invitation_token_hash?: string | null
           lifecycle_last_activity_at?: string
           owner_id: string
+          receiver_email?: string | null
+          receiver_id?: string | null
+          sent_at?: string | null
           share_token?: string | null
           status?: Database["public"]["Enums"]["capsule_status"]
           storage_used_bytes?: number
           title?: string | null
           trust_contacts_notified_at?: string | null
+          trust_notified_at?: string | null
           type: Database["public"]["Enums"]["capsule_type"]
           updated_at?: string
           video_downloaded_at?: string | null
           video_gift_path?: string | null
           video_purge_status?: string | null
           video_purged_at?: string | null
+          video_regalo_paid_at?: string | null
+          video_regalo_status?: string | null
+          video_regalo_url?: string | null
         }
         Update: {
+          claimed_at?: string | null
           closed_at?: string | null
           cover_image_url?: string | null
           created_at?: string
+          creator_id?: string | null
           description?: string | null
+          experience_expires_at?: string | null
           gift_claimed_at?: string | null
           gift_expires_at?: string | null
           gift_state?: string
           id?: string
+          invitation_token_hash?: string | null
           lifecycle_last_activity_at?: string
           owner_id?: string
+          receiver_email?: string | null
+          receiver_id?: string | null
+          sent_at?: string | null
           share_token?: string | null
           status?: Database["public"]["Enums"]["capsule_status"]
           storage_used_bytes?: number
           title?: string | null
           trust_contacts_notified_at?: string | null
+          trust_notified_at?: string | null
           type?: Database["public"]["Enums"]["capsule_type"]
           updated_at?: string
           video_downloaded_at?: string | null
           video_gift_path?: string | null
           video_purge_status?: string | null
           video_purged_at?: string | null
+          video_regalo_paid_at?: string | null
+          video_regalo_status?: string | null
+          video_regalo_url?: string | null
         }
         Relationships: [
           {
+            foreignKeyName: "capsules_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "capsules_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capsules_receiver_id_fkey"
+            columns: ["receiver_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -364,9 +411,12 @@ export type Database = {
         Row: {
           capsule_id: string
           created_at: string
+          decided_at: string | null
+          decision: string | null
           email: string
           full_name: string
           id: string
+          notified_at: string | null
           phone: string | null
           relationship: string | null
           user_id: string
@@ -376,9 +426,12 @@ export type Database = {
         Insert: {
           capsule_id: string
           created_at?: string
+          decided_at?: string | null
+          decision?: string | null
           email: string
           full_name: string
           id?: string
+          notified_at?: string | null
           phone?: string | null
           relationship?: string | null
           user_id: string
@@ -388,9 +441,12 @@ export type Database = {
         Update: {
           capsule_id?: string
           created_at?: string
+          decided_at?: string | null
+          decision?: string | null
           email?: string
           full_name?: string
           id?: string
+          notified_at?: string | null
           phone?: string | null
           relationship?: string | null
           user_id?: string
@@ -637,6 +693,10 @@ export type Database = {
         | "downloaded"
         | "expired"
         | "archived"
+        | "sent"
+        | "claimed"
+        | "experience_active"
+        | "expiring_soon"
       capsule_type:
         | "legacy"
         | "together"
@@ -783,6 +843,10 @@ export const Constants = {
         "downloaded",
         "expired",
         "archived",
+        "sent",
+        "claimed",
+        "experience_active",
+        "expiring_soon",
       ],
       capsule_type: [
         "legacy",

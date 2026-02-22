@@ -92,7 +92,8 @@ function assert(condition, msg) {
     // Should show error, NOT crash
     const hasNuclea = body.includes('NUCLEA')
     const hasError = body.includes('Error') || body.includes('no válido') || body.includes('conexión') || body.includes('error')
-    const hasCrash = body.includes('500') || body.includes('Internal Server Error') || body.includes('Application error')
+    const visibleText = await page.evaluate(() => document.body.innerText)
+    const hasCrash = visibleText.includes('500') || visibleText.includes('Internal Server Error') || visibleText.includes('Application error')
 
     console.log(`  Has NUCLEA branding: ${hasNuclea}`)
     console.log(`  Has error message: ${hasError}`)

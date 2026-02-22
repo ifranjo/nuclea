@@ -1,6 +1,6 @@
 'use client'
 
-import { getExpiryBannerModel } from '@/lib/recipientExperience'
+type UrgencyLevel = 'calm' | 'warning' | 'critical' | 'expired'
 
 const BANNER_STYLES = {
   calm: {
@@ -25,24 +25,35 @@ const BANNER_STYLES = {
   },
 } as const
 
-interface ExpiryUrgencyBannerProps {
-  createdAt: string
+function computeUrgency(expiresAt: string): { level: UrgencyLevel; daysRemaining: number } {
+  const now = Date.now()
+  const expires = new Date(expiresAt).getTime()
+  const daysRemaining = Math.ceil((expires - now) / (1000 * 60 * 60 * 24))
+
+  if (daysRemaining <= 0) return { level: 'expired', daysRemaining: 0 }
+  if (daysRemaining <= 3) return { level: 'critical', daysRemaining }
+  if (daysRemaining <= 7) return { level: 'warning', daysRemaining }
+  return { level: 'calm', daysRemaining }
 }
 
-export function ExpiryUrgencyBanner({ createdAt }: ExpiryUrgencyBannerProps) {
-  const model = getExpiryBannerModel(createdAt)
-  const style = BANNER_STYLES[model.level]
+interface ExpiryUrgencyBannerProps {
+  expiresAt: string
+}
+
+export function ExpiryUrgencyBanner({ expiresAt }: ExpiryUrgencyBannerProps) {
+  const { level, daysRemaining } = computeUrgency(expiresAt)
+  const style = BANNER_STYLES[level]
 
   return (
     <div className={`rounded-xl border p-4 ${style.wrap}`}>
       <p className={`text-sm font-semibold ${style.title}`}>Estado del regalo</p>
-      {model.level === 'expired' ? (
+      {level === 'expired' ? (
         <p className={`mt-1 text-sm ${style.copy}`}>
           El periodo de 30 dias ha finalizado. Esta capsula ya no esta disponible.
         </p>
       ) : (
         <p className={`mt-1 text-sm ${style.copy}`}>
-          Te quedan <strong>{model.daysRemaining} dias</strong> dentro del periodo de {model.windowDays} dias para decidir.
+          Te quedan <strong>{daysRemaining} dias</strong> dentro del periodo de 30 dias para decidir.
         </p>
       )}
     </div>

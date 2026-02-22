@@ -70,7 +70,7 @@ function LoginForm() {
 
         <p className="text-center text-sm text-nuclea-text-secondary mt-6">
           ¿No tienes cuenta?{' '}
-          <Link href="/registro" className="text-nuclea-gold hover:underline">Regístrate</Link>
+          <Link href={redirect ? `/registro?redirect=${encodeURIComponent(redirect)}` : '/registro'} className="text-nuclea-gold hover:underline">Regístrate</Link>
         </p>
 
         <div className="mt-10 pt-6 border-t border-nuclea-border">
