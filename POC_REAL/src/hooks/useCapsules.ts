@@ -16,7 +16,7 @@ function toUserFacingErrorMessage(error: unknown, fallback: string): string {
 }
 
 function assertCapsuleMutable(status: string): void {
-  const immutableStates = ['closed', 'downloaded', 'expired', 'archived']
+  const immutableStates = ['closed', 'downloaded', 'expired', 'archived', 'sent', 'claimed', 'experience_active', 'expiring_soon']
   if (immutableStates.includes(status)) {
     throw new Error(`Capsule is ${status} and cannot be modified`)
   }

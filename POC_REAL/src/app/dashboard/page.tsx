@@ -23,15 +23,31 @@ function typeLabel(type: string) {
 
 function statusBadge(status: string) {
   const colors: Record<string, string> = {
-    active: 'bg-green-100 text-green-700',
-    draft: 'bg-gray-100 text-gray-600',
-    closed: 'bg-amber-100 text-amber-700',
+    draft: 'bg-neutral-100 text-neutral-600',
+    active: 'bg-emerald-50 text-emerald-700',
+    closed: 'bg-neutral-100 text-neutral-500',
+    downloaded: 'bg-neutral-100 text-neutral-500',
+    sent: 'bg-blue-50 text-blue-700',
+    claimed: 'bg-amber-50 text-amber-700',
+    experience_active: 'bg-purple-50 text-purple-700',
+    expiring_soon: 'bg-orange-50 text-orange-700',
+    expired: 'bg-neutral-100 text-neutral-400',
+    archived: 'bg-neutral-100 text-neutral-400',
   }
   const labels: Record<string, string> = {
-    active: 'Activa', draft: 'Borrador', closed: 'Cerrada',
+    draft: 'Borrador',
+    active: 'Activa',
+    closed: 'Cerrada',
+    downloaded: 'Descargada',
+    sent: 'Enviada',
+    claimed: 'Reclamada',
+    experience_active: 'Experiencia activa',
+    expiring_soon: 'Por expirar',
+    expired: 'Expirada',
+    archived: 'Archivada',
   }
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-full ${colors[status] || 'bg-gray-100 text-gray-600'}`}>
+    <span className={`text-xs px-2 py-0.5 rounded-full ${colors[status] || 'bg-neutral-100 text-neutral-600'}`}>
       {labels[status] || status}
     </span>
   )
