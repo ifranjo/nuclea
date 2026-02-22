@@ -1,0 +1,41 @@
+'use client'
+
+import { useEffect } from 'react'
+import Link from 'next/link'
+
+interface ErrorProps {
+  error: Error & { digest?: string }
+  reset: () => void
+}
+
+export default function CapsuleDetailError({ error, reset }: ErrorProps) {
+  useEffect(() => {
+    console.error('[capsule-detail-error]', error)
+  }, [error])
+
+  return (
+    <main className="min-h-[100dvh] bg-nuclea-bg flex items-center justify-center px-6">
+      <div className="max-w-md w-full rounded-2xl border border-nuclea-border bg-white p-6 shadow-[0_20px_40px_rgba(15,15,20,0.08)]">
+        <h1 className="font-display text-3xl text-nuclea-text mb-3">Error en la cápsula</h1>
+        <p className="text-nuclea-text-secondary text-sm leading-relaxed mb-6">
+          Ocurrió un error al cargar el detalle de la cápsula. Puedes reintentar o volver a la selección.
+        </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => reset()}
+            className="px-4 py-2 bg-transparent border-[1.5px] border-nuclea-text rounded-lg text-sm font-medium text-nuclea-text hover:bg-nuclea-text hover:text-white transition-all"
+          >
+            Reintentar
+          </button>
+          <Link
+            href="/onboarding?step=4"
+            className="px-4 py-2 bg-transparent border border-nuclea-border rounded-lg text-sm text-nuclea-text-secondary hover:text-nuclea-text transition-colors"
+          >
+            Volver a selección
+          </Link>
+        </div>
+      </div>
+    </main>
+  )
+}
