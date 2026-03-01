@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUCLEA — Guía de Lanzamiento Beta</title>
+  <style>
+    :root {
+      --bg-page: #FDFDFB;
+      --bg-code: #F5F5F0;
+      --bg-note: #F0F0EB;
+      --bg-nav: #F7F7F4;
+      --border-heavy: #2C2C2C;
+      --border-light: #D4D4CF;
+      --text-primary: #1A1A1A;
+      --text-secondary: #4A4A4A;
+      --text-tertiary: #6A6A6A;
+      --copy-btn: #4A7C59;
+      --green: #2D6A4F;
+      --amber: #B8860B;
+      --red: #C0392B;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg-page); color: var(--text-primary); line-height: 1.6; }
+    .doc-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    .doc-sidebar { background: var(--bg-nav); border-right: 1px solid var(--border-light); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.5rem; }
+    .doc-content { padding: 3rem 4rem; max-width: 900px; }
+    @media (max-width: 900px) { .doc-layout { grid-template-columns: 1fr; } .doc-sidebar { display: none; } .doc-content { padding: 2rem 1.5rem; } }
+    @media print { .doc-sidebar { display: none; } .doc-layout { grid-template-columns: 1fr; } .doc-content { padding: 1rem; } .copy-btn { display: none; } }
+
+    .sidebar-logo { font-size: 1.1rem; font-weight: 300; letter-spacing: 0.3em; color: var(--text-primary); margin-bottom: 0.25rem; }
+    .sidebar-sub { font-size: 0.7rem; color: var(--text-tertiary); margin-bottom: 2rem; }
+    .sidebar-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 1rem; }
+    .nav-section { margin-bottom: 1.25rem; }
+    .nav-section-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 0.4rem; }
+    .nav-link { display: block; padding: 0.3rem 0; font-size: 0.82rem; color: var(--text-secondary); text-decoration: none; border-left: 2px solid transparent; padding-left: 0.75rem; transition: all 0.15s; }
+    .nav-link:hover { color: var(--text-primary); }
+    .nav-link.active { color: var(--text-primary); border-left-color: var(--border-heavy); font-weight: 500; }
+
+    h1 { font-size: 2rem; font-weight: 300; letter-spacing: 0.15em; border-bottom: 2px solid var(--border-heavy); padding-bottom: 0.75rem; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 0.9rem; color: var(--text-tertiary); margin-bottom: 2.5rem; }
+    h2 { font-size: 1.3rem; font-weight: 500; margin-top: 3rem; margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 1.05rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    h4 { font-size: 0.95rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+    p { margin-bottom: 0.75rem; font-size: 0.92rem; color: var(--text-secondary); }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; font-size: 0.92rem; color: var(--text-secondary); }
+    li { margin-bottom: 0.35rem; }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.85rem; }
+    th { background: var(--bg-note); padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border-light); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); }
+    td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+
+    .status { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 3px; }
+    .status-pass { background: #E8F5E9; color: var(--green); }
+    .status-pending { background: #FFF8E1; color: var(--amber); }
+    .status-fail { background: #FFEBEE; color: var(--red); }
+    .status-off { background: var(--bg-note); color: var(--text-tertiary); }
+
+    .prompt-block { background: var(--bg-code); border: 1px solid var(--border-light); border-radius: 4px; margin: 1rem 0; overflow: hidden; }
+    .prompt-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.8rem; background: var(--bg-note); border-bottom: 1px solid var(--border-light); }
+    .prompt-label { font-size: 0.75rem; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; }
+    .copy-btn { background: var(--copy-btn); color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600; cursor: pointer; letter-spacing: 0.04em; }
+    .copy-btn:hover { opacity: 0.85; }
+    .copy-btn.copied { background: #2D6A4F; }
+    .prompt-content { padding: 0.8rem; font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; color: var(--text-primary); }
+
+    .note-box { background: var(--bg-note); border-left: 3px solid var(--amber); padding: 0.8rem 1rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+    .note-box p { margin: 0; font-size: 0.85rem; }
+    .note-box strong { color: var(--text-primary); }
+    .note-box.critical { border-left-color: var(--red); }
+    .note-box.success { border-left-color: var(--green); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin: 1.5rem 0; }
+    .kpi-card { background: var(--bg-note); border: 1px solid var(--border-light); border-radius: 6px; padding: 1rem; text-align: center; }
+    .kpi-value { font-size: 1.6rem; font-weight: 300; color: var(--text-primary); }
+    .kpi-label { font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.25rem; }
+
+    code { background: var(--bg-code); padding: 0.15rem 0.35rem; border-radius: 3px; font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 0.82rem; }
+
+    .checklist { list-style: none; margin-left: 0; padding: 0; }
+    .checklist li { padding: 0.4rem 0; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; }
+    .checklist li:last-child { border-bottom: none; }
+    .check-box { width: 16px; height: 16px; border: 1.5px solid var(--border-light); border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; cursor: pointer; }
+    .check-box.done { background: var(--green); border-color: var(--green); color: white; }
+
+    .step-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--text-primary); color: white; font-size: 0.7rem; font-weight: 600; margin-right: 0.4rem; flex-shrink: 0; }
+
+    .cmd-block { background: var(--bg-code); border: 1px solid var(--border-light); border-radius: 4px; padding: 0.6rem 0.8rem; margin: 0.5rem 0 1rem; font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 0.8rem; line-height: 1.5; overflow-x: auto; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+    .footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border-light); font-size: 0.75rem; color: var(--text-tertiary); }
+  </style>
+</head>
+<body>
+  <div class="doc-layout">
+    <aside class="doc-sidebar" id="sidebar">
+      <div class="sidebar-logo">NUCLEA</div>
+      <div class="sidebar-sub">Beta Launch Guide</div>
+      <div class="sidebar-title">Febrero 2026</div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Contexto</div>
+        <a href="#estado-actual" class="nav-link active">1. Estado Actual</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Infraestructura</div>
+        <a href="#supabase-cloud" class="nav-link">2. Supabase Cloud</a>
+        <a href="#vercel" class="nav-link">3. Vercel Deployment</a>
+        <a href="#email" class="nav-link">4. Email (Resend)</a>
+        <a href="#env-vars" class="nav-link">5. Variables de Entorno</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Operaciones</div>
+        <a href="#beta-gate" class="nav-link">6. Beta Gate</a>
+        <a href="#verificacion" class="nav-link">7. Verificaci&oacute;n Post-Deploy</a>
+        <a href="#admin-panel" class="nav-link">8. Admin Panel</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Referencia</div>
+        <a href="#prompts" class="nav-link">9. Prompts Claude Web</a>
+        <a href="#checklist" class="nav-link">10. Checklist Final</a>
+      </div>
+    </aside>
+
+    <main class="doc-content">
+      <h1>NUCLEA</h1>
+      <p class="subtitle">Gu&iacute;a de Lanzamiento Beta &mdash; De local Docker a producci&oacute;n &mdash; Febrero 2026</p>
+
+      <!-- ================================================================ -->
+      <!-- 1. ESTADO ACTUAL -->
+      <!-- ================================================================ -->
+      <h2 id="estado-actual">1. Estado Actual</h2>
+
+      <p>NUCLEA tiene tres aplicaciones en el repositorio. Solo <strong>POC_REAL</strong> se despliega a producci&oacute;n para la beta cerrada.</p>
+
+      <table>
+        <thead>
+          <tr><th>App</th><th>Puerto</th><th>Backend</th><th>Prop&oacute;sito</th><th>Despliegue</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>PREREUNION_ANDREA/</code></td>
+            <td>3000</td>
+            <td>Firebase</td>
+            <td>Web p&uacute;blica (producci&oacute;n futura)</td>
+            <td><span class="status status-off">No aplica</span></td>
+          </tr>
+          <tr>
+            <td><code>POC_INTERNA/app/</code></td>
+            <td>3001</td>
+            <td>Ninguno</td>
+            <td>Demo UI (onboarding)</td>
+            <td><span class="status status-off">No aplica</span></td>
+          </tr>
+          <tr>
+            <td><code>POC_REAL/</code></td>
+            <td>3002</td>
+            <td>Supabase (Docker local)</td>
+            <td>POC funcional &mdash; beta cerrada</td>
+            <td><span class="status status-pending">Pendiente</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>POC_REAL &mdash; Lo que ya est&aacute; hecho</h3>
+
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-value">12</div><div class="kpi-label">Migraciones SQL</div></div>
+        <div class="kpi-card"><div class="kpi-value">30</div><div class="kpi-label">Rutas (app + API)</div></div>
+        <div class="kpi-card"><div class="kpi-value">12</div><div class="kpi-label">Tablas con RLS</div></div>
+        <div class="kpi-card"><div class="kpi-value">5</div><div class="kpi-label">Usuarios de prueba</div></div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>&Aacute;rea</th><th>Estado</th><th>Detalle</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Autenticaci&oacute;n</td><td><span class="status status-pass">Completo</span></td><td>Email/password + OTP magic links para beta</td></tr>
+          <tr><td>CRUD de c&aacute;psulas</td><td><span class="status status-pass">Completo</span></td><td>Crear, editar, eliminar, calendario, uploads</td></tr>
+          <tr><td>Upload de archivos</td><td><span class="status status-pass">Completo</span></td><td>Supabase Storage con signed URLs (1h expiraci&oacute;n)</td></tr>
+          <tr><td>Compartir c&aacute;psulas</td><td><span class="status status-pass">Completo</span></td><td>Token p&uacute;blico, vista de solo lectura</td></tr>
+          <tr><td>Row Level Security</td><td><span class="status status-pass">Completo</span></td><td>Migraci&oacute;n 00012: pol&iacute;ticas en 12 tablas + storage</td></tr>
+          <tr><td>Sistema beta</td><td><span class="status status-pass">Completo</span></td><td>Invitaciones, OTP, gate middleware, audit log</td></tr>
+          <tr><td>Admin UI</td><td><span class="status status-pass">Completo</span></td><td><code>/admin/beta</code> &mdash; invitar, revocar, auditar</td></tr>
+          <tr><td>SEO &amp; accesibilidad</td><td><span class="status status-pass">Completo</span></td><td>noindex, OG tags, ARIA, labels, viewport</td></tr>
+          <tr><td>Error boundaries</td><td><span class="status status-pass">Completo</span></td><td>Todas las rutas con error.tsx</td></tr>
+          <tr><td>Loading skeletons</td><td><span class="status status-pass">Completo</span></td><td>Dashboard, capsule, settings, share</td></tr>
+          <tr><td>Despliegue nube</td><td><span class="status status-pending">Pendiente</span></td><td>Supabase Cloud + Vercel</td></tr>
+          <tr><td>Email transaccional</td><td><span class="status status-pending">Pendiente</span></td><td>Resend SDK instalado, falta API key + DNS</td></tr>
+          <tr><td>Export ZIP</td><td><span class="status status-pending">Pendiente</span></td><td>&laquo;Cerrar y descargar&raquo; c&aacute;psula</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Stack t&eacute;cnico</h3>
+      <table>
+        <thead><tr><th>Componente</th><th>Tecnolog&iacute;a</th><th>Versi&oacute;n</th></tr></thead>
+        <tbody>
+          <tr><td>Framework</td><td>Next.js</td><td>15.x</td></tr>
+          <tr><td>React</td><td>React</td><td>19</td></tr>
+          <tr><td>Backend</td><td>Supabase (PostgreSQL + Auth + Storage)</td><td>2.49+</td></tr>
+          <tr><td>Estilos</td><td>Tailwind CSS</td><td>3.4</td></tr>
+          <tr><td>Animaciones</td><td>Framer Motion</td><td>11.15</td></tr>
+          <tr><td>Validaci&oacute;n</td><td>Zod</td><td>3.25</td></tr>
+          <tr><td>Email</td><td>Resend SDK</td><td>6.9</td></tr>
+          <tr><td>Tests</td><td>Playwright</td><td>1.58</td></tr>
+        </tbody>
+      </table>
+
+
+      <!-- ================================================================ -->
+      <!-- 2. SUPABASE CLOUD -->
+      <!-- ================================================================ -->
+      <h2 id="supabase-cloud">2. Supabase Cloud</h2>
+
+      <p>Supabase Cloud reemplaza el Docker local. Todos los datos se almacenan en la UE (Frankfurt) para cumplimiento RGPD.</p>
+
+      <h3>Pasos</h3>
+      <ol>
+        <li><span class="step-num">1</span> Ir a <code>supabase.com/dashboard</code> y crear un nuevo proyecto.</li>
+        <li><span class="step-num">2</span> <strong>Regi&oacute;n</strong>: seleccionar <code>eu-west-1</code> (Frankfurt) para cumplimiento RGPD.</li>
+        <li><span class="step-num">3</span> Apuntar el <strong>project ref</strong> (visible en la URL: <code>supabase.com/dashboard/project/&lt;ref&gt;</code>).</li>
+        <li><span class="step-num">4</span> Guardar desde Settings &gt; API: <strong>Project URL</strong>, <strong>anon key</strong> y <strong>service role key</strong>.</li>
+      </ol>
+
+      <h3>Vincular y subir migraciones</h3>
+      <div class="cmd-block">cd POC_REAL
+npx supabase login
+npx supabase link --project-ref &lt;tu-project-ref&gt;
+npx supabase db push</div>
+
+      <div class="note-box">
+        <p><strong>Sobre RLS:</strong> La migraci&oacute;n <code>00002</code> desactiva RLS para desarrollo local. La migraci&oacute;n <code>00012</code> reactiva RLS en las 12 tablas con pol&iacute;ticas de producci&oacute;n. Como las migraciones se ejecutan en orden, el estado final siempre tiene <strong>RLS activo</strong>.</p>
+      </div>
+
+      <h3>Verificar en el dashboard</h3>
+      <ul>
+        <li><strong>Storage</strong>: El bucket <code>capsule-contents</code> debe existir con <code>public = false</code>.</li>
+        <li><strong>Auth &gt; Providers</strong>: Email habilitado (por defecto).</li>
+        <li><strong>Auth &gt; URL Configuration</strong>:
+          <ul>
+            <li>Site URL: <code>https://tu-dominio.vercel.app</code></li>
+            <li>Redirect URLs: <code>https://tu-dominio.vercel.app/**</code> y <code>http://localhost:3002/**</code></li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Tablas resultantes (12)</h3>
+      <table>
+        <thead><tr><th>Tabla</th><th>Prop&oacute;sito</th><th>RLS</th></tr></thead>
+        <tbody>
+          <tr><td><code>users</code></td><td>Perfiles de usuario (FK a auth.uid)</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>capsules</code></td><td>Metadatos de c&aacute;psulas, share_token</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>contents</code></td><td>Archivos multimedia y notas de texto</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>collaborators</code></td><td>Acceso compartido a c&aacute;psulas</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>designated_persons</code></td><td>Personas de confianza (herederos)</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>notification_outbox</code></td><td>Cola de notificaciones por email</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>notification_optins</code></td><td>Preferencias de notificaci&oacute;n</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>video_purge_jobs</code></td><td>Cola de limpieza de v&iacute;deos</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>beta_invitations</code></td><td>Invitaciones con token_hash SHA-256</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>beta_access</code></td><td>Gate de acceso por usuario</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>beta_audit_log</code></td><td>Log de todos los eventos beta</td><td><span class="status status-pass">Activo</span></td></tr>
+          <tr><td><code>beta_rate_limits</code></td><td>L&iacute;mite 5 intentos / 15 min por IP</td><td><span class="status status-pass">Activo</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Prompt para Claude Web</h3>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Supabase Cloud Setup</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Estoy desplegando mi app Next.js 15 que usa Supabase local (Docker) a producci&oacute;n. Necesito:
+1. Crear un proyecto en Supabase Cloud en la regi&oacute;n eu-west-1 (Frankfurt) para cumplir con RGPD
+2. Tengo 12 migraciones SQL locales que debo aplicar. La migraci&oacute;n 00002 desactiva RLS pero la 00012 lo reactiva &mdash; el estado final debe tener RLS activo en todas las tablas
+3. Mi bucket de storage "capsule-contents" debe ser PRIVADO (la app usa signed URLs con 1h de expiraci&oacute;n)
+4. Necesito configurar los redirect URLs de autenticaci&oacute;n para mi dominio de Vercel
+5. Las tablas son: users, capsules, contents, collaborators, designated_persons, notification_outbox, notification_optins, video_purge_jobs, beta_invitations, beta_access, beta_audit_log, beta_rate_limits
+
+Dame los pasos exactos en el dashboard de Supabase y los comandos CLI para vincular y subir las migraciones.</div>
+      </div>
+
+
+      <!-- ================================================================ -->
+      <!-- 3. VERCEL DEPLOYMENT -->
+      <!-- ================================================================ -->
+      <h2 id="vercel">3. Vercel Deployment</h2>
+
+      <p>Vercel sirve la app Next.js 15 como serverless. La app est&aacute; en un monorepo, as&iacute; que hay que configurar el Root Directory.</p>
+
+      <h3>Pasos</h3>
+      <ol>
+        <li><span class="step-num">1</span> Ir a <code>vercel.com/new</code> e importar el repositorio de GitHub (<code>ifranjo/nuclea</code>).</li>
+        <li><span class="step-num">2</span> <strong>Root Directory</strong>: establecer como <code>POC_REAL</code>.</li>
+        <li><span class="step-num">3</span> <strong>Framework Preset</strong>: Next.js (auto-detected).</li>
+        <li><span class="step-num">4</span> <strong>Build Command</strong>: <code>next build</code> (por defecto).</li>
+        <li><span class="step-num">5</span> <strong>Install Command</strong>: <code>npm ci</code> (por defecto).</li>
+        <li><span class="step-num">6</span> A&ntilde;adir todas las variables de entorno (ver secci&oacute;n 5).</li>
+        <li><span class="step-num">7</span> Deploy desde la rama <code>master</code>.</li>
+      </ol>
+
+      <h3>Cron Job</h3>
+      <p>El archivo <code>vercel.json</code> registra un cron job:</p>
+      <table>
+        <thead><tr><th>Ruta</th><th>Horario</th><th>Prop&oacute;sito</th></tr></thead>
+        <tbody>
+          <tr><td><code>/api/cron/lifecycle</code></td><td><code>0 3 * * *</code> (3am UTC)</td><td>Expiraci&oacute;n de c&aacute;psulas, notificaciones a personas de confianza, cola de purga de v&iacute;deos</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note-box">
+        <p><strong>Plan Vercel:</strong> El plan Hobby soporta 1 cron job (solo diario). Si se necesita mayor frecuencia, habr&aacute; que actualizar al plan Pro.</p>
+      </div>
+
+      <h3>Generar secrets</h3>
+      <div class="cmd-block"># Generar CRON_SECRET
+openssl rand -hex 32
+
+# Generar ADMIN_API_SECRET
+openssl rand -hex 32</div>
+
+      <h3>Prompt para Claude Web</h3>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Vercel Deploy Next.js + Supabase</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Necesito desplegar mi app Next.js 15 en Vercel. La app est&aacute; en un monorepo en la carpeta POC_REAL/. Usa Supabase Cloud como backend. Necesito:
+1. Configurar el Root Directory como POC_REAL
+2. Tengo un vercel.json con un cron job: /api/cron/lifecycle que debe ejecutarse a las 3am UTC diariamente
+3. Necesito configurar estas variables de entorno: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, BETA_GATE_ENABLED=true, CRON_SECRET, NEXT_PUBLIC_APP_URL, ADMIN_API_SECRET, RESEND_API_KEY, EMAIL_FROM
+4. El framework es Next.js (auto-detected)
+5. Deploy debe ser desde la rama master
+
+Dame los pasos exactos en el dashboard de Vercel incluyendo c&oacute;mo generar los secrets con openssl.</div>
+      </div>
+
+
+      <!-- ================================================================ -->
+      <!-- 4. EMAIL (RESEND) -->
+      <!-- ================================================================ -->
+      <h2 id="email">4. Email (Resend)</h2>
+
+      <p>NUCLEA necesita enviar emails transaccionales: invitaciones beta, notificaciones de expiraci&oacute;n, avisos a personas de confianza. El SDK de Resend ya est&aacute; instalado en <code>package.json</code> (<code>resend ^6.9.2</code>).</p>
+
+      <h3>Por qu&eacute; Resend</h3>
+      <table>
+        <thead><tr><th>Criterio</th><th>Resend</th><th>Alternativa (SendGrid)</th></tr></thead>
+        <tbody>
+          <tr><td>Cumplimiento EU</td><td>Servidores en EU disponibles</td><td>Principalmente US</td></tr>
+          <tr><td>Free tier</td><td>100 emails/d&iacute;a (suficiente para beta)</td><td>100 emails/d&iacute;a</td></tr>
+          <tr><td>SDK Next.js</td><td>SDK oficial, integraci&oacute;n nativa</td><td>SDK gen&eacute;rico</td></tr>
+          <tr><td>Setup</td><td>3 minutos con dominio verificado</td><td>M&aacute;s configuraci&oacute;n</td></tr>
+          <tr><td>RGPD</td><td>DPA disponible, datos en EU</td><td>DPA disponible</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Pasos de configuraci&oacute;n</h3>
+      <ol>
+        <li><span class="step-num">1</span> Crear cuenta en <code>resend.com</code>.</li>
+        <li><span class="step-num">2</span> A&ntilde;adir dominio <code>nuclea.app</code> en Settings &gt; Domains.</li>
+        <li><span class="step-num">3</span> Configurar registros DNS: SPF, DKIM, DMARC (Resend proporciona los valores).</li>
+        <li><span class="step-num">4</span> Generar API key en Settings &gt; API Keys.</li>
+        <li><span class="step-num">5</span> A&ntilde;adir <code>RESEND_API_KEY</code> y <code>EMAIL_FROM=NUCLEA &lt;noreply@nuclea.app&gt;</code> a Vercel.</li>
+        <li><span class="step-num">6</span> Verificar env&iacute;o con un test: <code>curl -X POST https://tu-dominio.vercel.app/api/beta/invite</code>.</li>
+      </ol>
+
+      <div class="note-box">
+        <p><strong>Emails del sistema:</strong> Supabase Cloud usa su propio servicio para los emails de autenticaci&oacute;n (OTP, magic links). Resend se usa solo para emails transaccionales de la aplicaci&oacute;n (invitaciones, notificaciones). Son dos canales distintos.</p>
+      </div>
+
+      <h3>Prompt para Claude Web</h3>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Configurar Resend para emails transaccionales</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Mi app Next.js env&iacute;a emails transaccionales en espa&ntilde;ol (invitaciones beta, notificaciones de expiraci&oacute;n de c&aacute;psulas, avisos a personas de confianza). Necesito:
+1. Configurar Resend como servicio de email
+2. Verificar mi dominio nuclea.app para mejorar la entregabilidad
+3. El sender ser&aacute; "NUCLEA &lt;noreply@nuclea.app&gt;"
+4. Ya tengo el c&oacute;digo de integraci&oacute;n con Resend SDK &mdash; solo necesito la API key y configurar DNS (SPF, DKIM, DMARC)
+5. Cumplimiento RGPD: los emails se env&iacute;an desde servidores EU
+
+Dame los pasos para: crear cuenta Resend, generar API key, configurar DNS records, y verificar que funciona.</div>
+      </div>
+
+
+      <!-- ================================================================ -->
+      <!-- 5. VARIABLES DE ENTORNO -->
+      <!-- ================================================================ -->
+      <h2 id="env-vars">5. Variables de Entorno</h2>
+
+      <p>Todas las variables necesarias en Vercel para que POC_REAL funcione en producci&oacute;n.</p>
+
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Origen</th><th>Valor ejemplo</th><th>Secreto</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>NEXT_PUBLIC_SUPABASE_URL</code></td>
+            <td>Supabase Dashboard &gt; Settings &gt; API</td>
+            <td><code>https://abcdef123.supabase.co</code></td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></td>
+            <td>Supabase Dashboard &gt; Settings &gt; API</td>
+            <td><code>eyJhbGciOiJIUzI1NiIs...</code></td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+            <td>Supabase Dashboard &gt; Settings &gt; API</td>
+            <td><code>eyJhbGciOiJIUzI1NiIs...</code></td>
+            <td><strong>S&iacute;</strong></td>
+          </tr>
+          <tr>
+            <td><code>BETA_GATE_ENABLED</code></td>
+            <td>Manual</td>
+            <td><code>true</code></td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>CRON_SECRET</code></td>
+            <td><code>openssl rand -hex 32</code></td>
+            <td><code>a1b2c3d4e5f6...</code> (64 chars hex)</td>
+            <td><strong>S&iacute;</strong></td>
+          </tr>
+          <tr>
+            <td><code>NEXT_PUBLIC_APP_URL</code></td>
+            <td>Dominio de Vercel</td>
+            <td><code>https://nuclea-beta.vercel.app</code></td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><code>ADMIN_API_SECRET</code></td>
+            <td><code>openssl rand -hex 32</code></td>
+            <td><code>f7e8d9c0b1a2...</code> (64 chars hex)</td>
+            <td><strong>S&iacute;</strong></td>
+          </tr>
+          <tr>
+            <td><code>RESEND_API_KEY</code></td>
+            <td>Resend Dashboard &gt; API Keys</td>
+            <td><code>re_1234abcd...</code></td>
+            <td><strong>S&iacute;</strong></td>
+          </tr>
+          <tr>
+            <td><code>EMAIL_FROM</code></td>
+            <td>Manual</td>
+            <td><code>NUCLEA &lt;noreply@nuclea.app&gt;</code></td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note-box critical">
+        <p><strong>Seguridad:</strong> <code>SUPABASE_SERVICE_ROLE_KEY</code> tiene acceso total a la base de datos (bypasa RLS). Nunca exponerlo en el cliente. En Vercel, marcarlo como &laquo;Sensitive&raquo; y solo disponible para Production/Preview.</p>
+      </div>
+
+      <h3>Generar los secrets de una vez</h3>
+      <div class="cmd-block"># Ejecutar en terminal (bash/PowerShell con openssl)
+echo "CRON_SECRET=$(openssl rand -hex 32)"
+echo "ADMIN_API_SECRET=$(openssl rand -hex 32)"</div>
+
+
+      <!-- ================================================================ -->
+      <!-- 6. BETA GATE -->
+      <!-- ================================================================ -->
+      <h2 id="beta-gate">6. Beta Gate</h2>
+
+      <p>El sistema de beta gate controla qui&eacute;n puede acceder a la aplicaci&oacute;n. Solo los usuarios con acceso beta concedido pueden usar las rutas protegidas.</p>
+
+      <h3>C&oacute;mo funciona</h3>
+      <ol>
+        <li><strong>Variable de control:</strong> <code>BETA_GATE_ENABLED=true</code> en las variables de entorno. Si es <code>false</code> o no existe, todas las rutas son accesibles (modo desarrollo).</li>
+        <li><strong>Middleware:</strong> El archivo <code>src/middleware.ts</code> intercepta cada petici&oacute;n:
+          <ul>
+            <li>Rutas p&uacute;blicas (<code>/login</code>, <code>/registro</code>, <code>/onboarding</code>, <code>/share/*</code>, <code>/beta/*</code>): acceso libre.</li>
+            <li>Rutas protegidas (<code>/dashboard</code>, <code>/capsule/*</code>, <code>/settings</code>): requieren autenticaci&oacute;n + acceso beta.</li>
+          </ul>
+        </li>
+        <li><strong>Verificaci&oacute;n:</strong> El middleware busca en <code>users</code> el <code>auth_id</code> del usuario autenticado, luego comprueba si tiene un registro en <code>beta_access</code> con <code>enabled = true</code>.</li>
+        <li><strong>Redirecci&oacute;n:</strong> Si no tiene acceso beta, redirige a <code>/beta/waitlist</code> (p&aacute;gina de espera).</li>
+        <li><strong>Fail closed:</strong> Si hay cualquier error de base de datos durante la verificaci&oacute;n, se redirige a waitlist (nunca se concede acceso por error).</li>
+      </ol>
+
+      <h3>Flujo de invitaci&oacute;n beta</h3>
+      <table>
+        <thead><tr><th>Paso</th><th>Acci&oacute;n</th><th>Endpoint</th></tr></thead>
+        <tbody>
+          <tr><td><span class="step-num">1</span></td><td>Admin env&iacute;a invitaci&oacute;n por email</td><td><code>POST /api/beta/invite</code></td></tr>
+          <tr><td><span class="step-num">2</span></td><td>Usuario recibe enlace con token</td><td><code>/beta/accept?t=&lt;token&gt;</code></td></tr>
+          <tr><td><span class="step-num">3</span></td><td>Usuario introduce su email, recibe OTP</td><td><code>POST /api/beta/accept</code></td></tr>
+          <tr><td><span class="step-num">4</span></td><td>Verifica OTP, queda autenticado</td><td>Supabase Auth (magic link)</td></tr>
+          <tr><td><span class="step-num">5</span></td><td>Se concede acceso beta</td><td><code>POST /api/beta/complete</code></td></tr>
+          <tr><td><span class="step-num">6</span></td><td>Accede al dashboard</td><td><code>/dashboard</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Seguridad del token</h3>
+      <ul>
+        <li>Generado con <code>crypto.randomBytes(32)</code> (256 bits).</li>
+        <li>Solo se almacena el <strong>hash SHA-256</strong> en la tabla <code>beta_invitations</code> (nunca el token en claro).</li>
+        <li>Rate limit: 5 intentos cada 15 minutos por IP (tabla <code>beta_rate_limits</code>).</li>
+        <li>Cada token tiene fecha de expiraci&oacute;n configurable.</li>
+      </ul>
+
+
+      <!-- ================================================================ -->
+      <!-- 7. VERIFICACION POST-DEPLOY -->
+      <!-- ================================================================ -->
+      <h2 id="verificacion">7. Verificaci&oacute;n Post-Deploy</h2>
+
+      <p>Ejecutar estas 9 comprobaciones despu&eacute;s de cada despliegue. Sustituir <code>TU_DOMINIO</code> por el dominio real de Vercel.</p>
+
+      <h3>7.1. Auth callback</h3>
+      <p>Verificar que la URL de redirecci&oacute;n de Supabase coincide con el dominio de Vercel.</p>
+      <div class="cmd-block"># En Supabase Dashboard > Authentication > URL Configuration
+# Site URL debe ser: https://TU_DOMINIO.vercel.app
+# Redirect URLs debe incluir: https://TU_DOMINIO.vercel.app/**</div>
+
+      <h3>7.2. RLS activo</h3>
+      <p>Ejecutar en Supabase SQL Editor:</p>
+      <div class="cmd-block">SELECT tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public'
+ORDER BY tablename;</div>
+      <p>Todas las tablas deben mostrar <code>rowsecurity = true</code>.</p>
+
+      <h3>7.3. Storage privado</h3>
+      <p>En Supabase Dashboard &gt; Storage, verificar que el bucket <code>capsule-contents</code> tiene <code>public = false</code>.</p>
+
+      <h3>7.4. Beta gate funcional</h3>
+      <div class="cmd-block"># Acceder sin sesi&oacute;n beta &mdash; debe redirigir a /beta/waitlist
+curl -sI https://TU_DOMINIO.vercel.app/dashboard | grep -i location</div>
+
+      <h3>7.5. Cron endpoint</h3>
+      <div class="cmd-block">curl -X POST https://TU_DOMINIO.vercel.app/api/cron/lifecycle \
+  -H "x-cron-secret: TU_CRON_SECRET" \
+  -w "\nHTTP Status: %{http_code}\n"</div>
+      <p>Debe devolver <code>200</code>.</p>
+
+      <h3>7.6. Registro de usuario</h3>
+      <p>Crear una cuenta manualmente en <code>/registro</code>. Confirmar email. Verificar que aparece un registro en la tabla <code>users</code>.</p>
+
+      <h3>7.7. Invitaci&oacute;n beta</h3>
+      <div class="cmd-block">curl -X POST https://TU_DOMINIO.vercel.app/api/beta/invite \
+  -H "Content-Type: application/json" \
+  -H "x-admin-key: TU_ADMIN_API_SECRET" \
+  -d '{"email": "test@example.com", "cohort": "c1-launch"}' \
+  -w "\nHTTP Status: %{http_code}\n"</div>
+      <p>Debe devolver <code>200</code> con el token de invitaci&oacute;n.</p>
+
+      <h3>7.8. Upload de archivos</h3>
+      <p>Iniciar sesi&oacute;n, crear una c&aacute;psula, subir una imagen. Verificar en Supabase Storage que aparece bajo <code>capsule-contents/{capsule_id}/</code>.</p>
+
+      <h3>7.9. P&aacute;gina de compartir</h3>
+      <div class="cmd-block"># Abrir en modo inc&oacute;gnito (sin sesi&oacute;n)
+# Debe renderizar la c&aacute;psula en solo lectura
+curl -sI https://TU_DOMINIO.vercel.app/share/TOKEN_DE_PRUEBA | grep -i "200\|301\|302"</div>
+
+      <h3>Prompt para Claude Web</h3>
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Verificar deploy NUCLEA en producci&oacute;n</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Acabo de desplegar mi app NUCLEA (Next.js 15 + Supabase) en Vercel. Necesito verificar que todo funciona:
+1. Auth: el callback de Supabase redirige correctamente al dominio de Vercel
+2. RLS: todas las tablas tienen Row Level Security activo (SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public')
+3. Storage: el bucket capsule-contents es privado
+4. Beta gate: las rutas protegidas redirigen a /beta/waitlist sin acceso beta
+5. Cron: /api/cron/lifecycle responde 200 con el header x-cron-secret
+6. Registro: puedo crear una cuenta y aparece en la tabla users
+7. Invitaci&oacute;n beta: POST /api/beta/invite crea invitaci&oacute;n y env&iacute;a email
+8. Upload: puedo subir una imagen a una c&aacute;psula
+9. Share: /share/&lt;token&gt; funciona sin autenticaci&oacute;n
+
+El dominio es [MI_DOMINIO].vercel.app. Dame comandos curl y pasos manuales para verificar cada punto.</div>
+      </div>
+
+
+      <!-- ================================================================ -->
+      <!-- 8. ADMIN PANEL -->
+      <!-- ================================================================ -->
+      <h2 id="admin-panel">8. Admin Panel</h2>
+
+      <p>La interfaz de administraci&oacute;n est&aacute; en <code>/admin/beta</code>. Requiere autenticaci&oacute;n con la API key de admin.</p>
+
+      <h3>Acceso</h3>
+      <ol>
+        <li>Navegar a <code>https://TU_DOMINIO.vercel.app/admin</code>.</li>
+        <li>Introducir la <code>ADMIN_API_SECRET</code> cuando se solicite.</li>
+        <li>Se redirige autom&aacute;ticamente a <code>/admin/beta</code>.</li>
+      </ol>
+
+      <h3>Funcionalidades</h3>
+      <table>
+        <thead><tr><th>Pesta&ntilde;a</th><th>Funcionalidad</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Invitaciones</strong></td>
+            <td>Enviar nuevas invitaciones por email, ver estado (pendiente, aceptada, expirada, revocada), reenviar invitaci&oacute;n</td>
+          </tr>
+          <tr>
+            <td><strong>Acceso</strong></td>
+            <td>Ver usuarios con acceso beta (nombre, email, cohorte, fecha), revocar acceso individual</td>
+          </tr>
+          <tr>
+            <td><strong>Auditor&iacute;a</strong></td>
+            <td>Log cronol&oacute;gico de todos los eventos: invitaci&oacute;n enviada, aceptada, completada, revocada. Incluye IP y user agent</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Endpoints API del admin</h3>
+      <table>
+        <thead><tr><th>M&eacute;todo</th><th>Endpoint</th><th>Header</th><th>Acci&oacute;n</th></tr></thead>
+        <tbody>
+          <tr><td>POST</td><td><code>/api/beta/invite</code></td><td><code>x-admin-key</code></td><td>Crear invitaci&oacute;n</td></tr>
+          <tr><td>GET</td><td><code>/api/beta/invite</code></td><td><code>x-admin-key</code></td><td>Listar invitaciones</td></tr>
+          <tr><td>POST</td><td><code>/api/beta/invite/resend</code></td><td><code>x-admin-key</code></td><td>Reenviar invitaci&oacute;n</td></tr>
+          <tr><td>POST</td><td><code>/api/beta/invite/revoke</code></td><td><code>x-admin-key</code></td><td>Revocar invitaci&oacute;n</td></tr>
+          <tr><td>POST</td><td><code>/api/beta/revoke</code></td><td><code>x-admin-key</code></td><td>Revocar acceso beta</td></tr>
+          <tr><td>GET</td><td><code>/api/beta/access</code></td><td><code>x-admin-key</code></td><td>Listar accesos</td></tr>
+          <tr><td>GET</td><td><code>/api/beta/audit</code></td><td><code>x-admin-key</code></td><td>Log de auditor&iacute;a</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note-box">
+        <p><strong>Autenticaci&oacute;n admin:</strong> Todas las llamadas API requieren el header <code>x-admin-key</code> con el valor de <code>ADMIN_API_SECRET</code>. El admin panel env&iacute;a este header autom&aacute;ticamente despu&eacute;s de autenticarse.</p>
+      </div>
+
+
+      <!-- ================================================================ -->
+      <!-- 9. PROMPTS CLAUDE WEB -->
+      <!-- ================================================================ -->
+      <h2 id="prompts">9. Prompts Claude Web</h2>
+
+      <p>Colecci&oacute;n completa de prompts listos para usar en Claude Web (claude.ai). Cada uno es autocontenido y produce instrucciones paso a paso. Copiar y pegar directamente.</p>
+
+      <h3>Infraestructura</h3>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Supabase Cloud Setup</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Estoy desplegando mi app Next.js 15 que usa Supabase local (Docker) a producci&oacute;n. Necesito:
+1. Crear un proyecto en Supabase Cloud en la regi&oacute;n eu-west-1 (Frankfurt) para cumplir con RGPD
+2. Tengo 12 migraciones SQL locales que debo aplicar. La migraci&oacute;n 00002 desactiva RLS pero la 00012 lo reactiva &mdash; el estado final debe tener RLS activo en todas las tablas
+3. Mi bucket de storage "capsule-contents" debe ser PRIVADO (la app usa signed URLs con 1h de expiraci&oacute;n)
+4. Necesito configurar los redirect URLs de autenticaci&oacute;n para mi dominio de Vercel
+5. Las tablas son: users, capsules, contents, collaborators, designated_persons, notification_outbox, notification_optins, video_purge_jobs, beta_invitations, beta_access, beta_audit_log, beta_rate_limits
+
+Dame los pasos exactos en el dashboard de Supabase y los comandos CLI para vincular y subir las migraciones.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Vercel Deploy Next.js + Supabase</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Necesito desplegar mi app Next.js 15 en Vercel. La app est&aacute; en un monorepo en la carpeta POC_REAL/. Usa Supabase Cloud como backend. Necesito:
+1. Configurar el Root Directory como POC_REAL
+2. Tengo un vercel.json con un cron job: /api/cron/lifecycle que debe ejecutarse a las 3am UTC diariamente
+3. Necesito configurar estas variables de entorno: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, BETA_GATE_ENABLED=true, CRON_SECRET, NEXT_PUBLIC_APP_URL, ADMIN_API_SECRET, RESEND_API_KEY, EMAIL_FROM
+4. El framework es Next.js (auto-detected)
+5. Deploy debe ser desde la rama master
+
+Dame los pasos exactos en el dashboard de Vercel incluyendo c&oacute;mo generar los secrets con openssl.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Configurar Resend para emails transaccionales</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Mi app Next.js env&iacute;a emails transaccionales en espa&ntilde;ol (invitaciones beta, notificaciones de expiraci&oacute;n de c&aacute;psulas, avisos a personas de confianza). Necesito:
+1. Configurar Resend como servicio de email
+2. Verificar mi dominio nuclea.app para mejorar la entregabilidad
+3. El sender ser&aacute; "NUCLEA &lt;noreply@nuclea.app&gt;"
+4. Ya tengo el c&oacute;digo de integraci&oacute;n con Resend SDK &mdash; solo necesito la API key y configurar DNS (SPF, DKIM, DMARC)
+5. Cumplimiento RGPD: los emails se env&iacute;an desde servidores EU
+
+Dame los pasos para: crear cuenta Resend, generar API key, configurar DNS records, y verificar que funciona.</div>
+      </div>
+
+      <h3>Personalizaci&oacute;n</h3>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Personalizar email OTP de Supabase</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">En mi proyecto Supabase Cloud necesito personalizar la plantilla del email de OTP/magic link para que tenga branding de NUCLEA:
+- Logo: texto "NUCLEA" en Cormorant Garamond
+- Color de fondo: blanco
+- Bot&oacute;n CTA: negro con texto blanco, border-radius 8px
+- Texto en espa&ntilde;ol de Espa&ntilde;a: "Tu enlace de acceso a NUCLEA"
+- Footer: "&copy; 2026 NUCLEA. Barcelona, Espa&ntilde;a."
+- Sin emojis
+
+Dame el HTML de la plantilla que debo pegar en Supabase Dashboard > Authentication > Email Templates > Magic Link.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Configurar dominio personalizado en Vercel</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Tengo mi app desplegada en Vercel como poc-real.vercel.app. Quiero usar mi dominio personalizado nuclea.app (o un subdominio como beta.nuclea.app). Necesito:
+1. Configurar el dominio en Vercel
+2. Actualizar los DNS records
+3. SSL autom&aacute;tico de Vercel
+4. Actualizar NEXT_PUBLIC_APP_URL en las variables de entorno
+5. Actualizar los Redirect URLs en Supabase Auth
+
+Dame los pasos exactos para mi registrador de dominio y Vercel dashboard.</div>
+      </div>
+
+      <h3>Operaciones</h3>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Verificar deploy NUCLEA en producci&oacute;n</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Acabo de desplegar mi app NUCLEA (Next.js 15 + Supabase) en Vercel. Necesito verificar que todo funciona:
+1. Auth: el callback de Supabase redirige correctamente al dominio de Vercel
+2. RLS: todas las tablas tienen Row Level Security activo (SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public')
+3. Storage: el bucket capsule-contents es privado
+4. Beta gate: las rutas protegidas redirigen a /beta/waitlist sin acceso beta
+5. Cron: /api/cron/lifecycle responde 200 con el header x-cron-secret
+6. Registro: puedo crear una cuenta y aparece en la tabla users
+7. Invitaci&oacute;n beta: POST /api/beta/invite crea invitaci&oacute;n y env&iacute;a email
+8. Upload: puedo subir una imagen a una c&aacute;psula
+9. Share: /share/&lt;token&gt; funciona sin autenticaci&oacute;n
+
+El dominio es [MI_DOMINIO].vercel.app. Dame comandos curl y pasos manuales para verificar cada punto.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Monitorizar errores en producci&oacute;n Next.js</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Mi app Next.js 15 est&aacute; desplegada en Vercel. Quiero configurar monitorizaci&oacute;n de errores para producci&oacute;n:
+1. Opciones: Sentry vs Vercel Analytics vs LogRocket
+2. Mi app ya tiene error.tsx boundaries en todas las rutas
+3. Necesito alertas cuando: un API route devuelve 500, un cron job falla, un email no se env&iacute;a
+4. Presupuesto: free tier es suficiente para beta cerrada (&lt;50 usuarios)
+5. Stack: Next.js 15 + Supabase + Resend
+
+&iquest;Cu&aacute;l es la opci&oacute;n m&aacute;s simple de configurar para una beta cerrada? Dame los pasos.</div>
+      </div>
+
+      <h3>Negocio</h3>
+
+      <div class="prompt-block">
+        <div class="prompt-header">
+          <span class="prompt-label">Prompt: Preparar primera cohorte de invitaciones beta</span>
+          <button class="copy-btn" onclick="copyPrompt(this)">Copiar</button>
+        </div>
+        <div class="prompt-content">Soy la CEO de NUCLEA, una plataforma de legado digital. Voy a lanzar la beta cerrada a 20 usuarios iniciales. Necesito:
+1. Redactar un email de invitaci&oacute;n personal (no el autom&aacute;tico del sistema, sino uno previo de contexto)
+2. Criterios para seleccionar los 20 primeros usuarios (early adopters ideales)
+3. Un plan de onboarding: qu&eacute; hacer los primeros 7 d&iacute;as despu&eacute;s de que acepten
+4. M&eacute;tricas a trackear: activaci&oacute;n, retenci&oacute;n, c&aacute;psulas creadas, uploads
+5. Plantilla de feedback survey para enviar a los 7 d&iacute;as
+
+Todo en espa&ntilde;ol de Espa&ntilde;a. Tono c&aacute;lido, personal, nada corporativo. NUCLEA es un producto emocional sobre preservar memorias.</div>
+      </div>
+
+
+      <!-- ================================================================ -->
+      <!-- 10. CHECKLIST FINAL -->
+      <!-- ================================================================ -->
+      <h2 id="checklist">10. Checklist Final</h2>
+
+      <p>Lista completa de tareas agrupadas por fase. Marcar cada una al completarla.</p>
+
+      <h3>Pre-Deploy</h3>
+      <ul class="checklist">
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Crear proyecto en Supabase Cloud (regi&oacute;n eu-west-1)</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Vincular proyecto local: <code>npx supabase link</code></li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Subir migraciones: <code>npx supabase db push</code></li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Verificar RLS activo en las 12 tablas (SQL Editor)</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Verificar bucket <code>capsule-contents</code> privado</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Configurar Site URL y Redirect URLs en Supabase Auth</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Crear cuenta en Resend y verificar dominio <code>nuclea.app</code></li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Configurar DNS: SPF, DKIM, DMARC</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Generar secrets: <code>CRON_SECRET</code>, <code>ADMIN_API_SECRET</code></li>
+      </ul>
+
+      <h3>Deploy</h3>
+      <ul class="checklist">
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Importar repositorio en Vercel</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Configurar Root Directory como <code>POC_REAL</code></li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> A&ntilde;adir todas las variables de entorno (9 variables)</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Deploy desde rama <code>master</code></li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Verificar build exitoso en Vercel dashboard</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Actualizar <code>NEXT_PUBLIC_APP_URL</code> con el dominio asignado</li>
+      </ul>
+
+      <h3>Post-Deploy</h3>
+      <ul class="checklist">
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Auth callback: redirige correctamente al dominio de Vercel</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Beta gate: <code>/dashboard</code> redirige a <code>/beta/waitlist</code> sin acceso</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Cron: <code>/api/cron/lifecycle</code> responde 200</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Registro: crear cuenta, verificar fila en <code>users</code></li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Invitaci&oacute;n beta: <code>POST /api/beta/invite</code> funciona</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Upload: subir imagen a c&aacute;psula, verificar en Storage</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Share: <code>/share/&lt;token&gt;</code> funciona sin autenticaci&oacute;n</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Personalizar plantilla OTP de Supabase con branding NUCLEA</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Env&iacute;o de email de prueba con Resend</li>
+      </ul>
+
+      <h3>Negocio (Andrea)</h3>
+      <ul class="checklist">
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Seleccionar primera cohorte de 20 usuarios</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Redactar email personal de invitaci&oacute;n</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Enviar invitaciones desde <code>/admin/beta</code></li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Preparar encuesta de feedback (d&iacute;a 7)</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Configurar dominio personalizado (<code>beta.nuclea.app</code>)</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Configurar monitorizaci&oacute;n de errores (Sentry / Vercel Analytics)</li>
+      </ul>
+
+      <h3>Opcional (mejora continua)</h3>
+      <ul class="checklist">
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Implementar export ZIP (&laquo;Cerrar y descargar&raquo;)</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Configurar SMTP personalizado en Supabase (reemplazar emails por defecto)</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Actualizar a Vercel Pro si se necesitan m&aacute;s cron jobs</li>
+        <li><span class="check-box" onclick="this.classList.toggle('done')"></span> Seed de datos de prueba en cloud (Simpson family)</li>
+      </ul>
+
+
+      <!-- ================================================================ -->
+      <!-- FOOTER -->
+      <!-- ================================================================ -->
+      <div class="footer">
+        <p>NUCLEA &mdash; Gu&iacute;a de Lanzamiento Beta &mdash; Generado: febrero 2026</p>
+        <p>Repositorio: <code>ifranjo/nuclea</code> &middot; Rama: <code>master</code> &middot; App: <code>POC_REAL/</code></p>
+        <p>Documento confidencial bajo NDA. No distribuir fuera del equipo fundador.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Copy prompt to clipboard
+    function copyPrompt(btn) {
+      const content = btn.closest('.prompt-block').querySelector('.prompt-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        btn.textContent = 'Copiado';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copiar';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Scroll-aware sidebar navigation
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('.nav-link');
+      const sections = [];
+
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          const el = document.getElementById(href.slice(1));
+          if (el) sections.push({ el, link });
+        }
+      });
+
+      function updateActive() {
+        let current = sections[0];
+        for (const s of sections) {
+          if (s.el.getBoundingClientRect().top <= 120) current = s;
+        }
+        links.forEach(l => l.classList.remove('active'));
+        if (current) current.link.classList.add('active');
+      }
+
+      window.addEventListener('scroll', updateActive, { passive: true });
+      updateActive();
+    });
+  </script>
+</body>
+</html>
