@@ -56,3 +56,7 @@ screenshots/**/*.png
 !screenshots/ceo_qa/.gitkeep
 !screenshots/beta_qa/.gitkeep
 !screenshots/upload_qa/.gitkeep
+
+# Ephemeral test artifacts
+test-*.png
+logs/
