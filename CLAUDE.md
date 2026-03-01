@@ -9,11 +9,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Run production app | `cd PREREUNION_ANDREA && npm run dev` (port 3000) |
 | Run POC UI | `cd POC_INTERNA/app && npm run dev` (port 3001) |
 | Run POC Real | `cd POC_REAL && npx supabase start && npm run dev` (port 3002) |
-| Run unit tests | `npm run test:unit` (PREREUNION_ANDREA) |
-| Run E2E tests | `npm run test:e2e` (POC_REAL, needs dev server) |
-| Lint all | `npm run lint` (per app) |
+| Run unit tests (prod) | `cd PREREUNION_ANDREA && npm run test:unit` |
+| Run unit tests (POC Real) | `cd POC_REAL && npx tsx --test src/lib/**/*.test.ts src/lib/lifecycle/*.test.ts src/lib/trust/*.test.ts` |
+| Run E2E tests | `cd POC_REAL && npm run test:e2e` (needs dev server on :3002) |
+| Lint | `npm run lint` (per app) |
 | Typecheck | `npx tsc --noEmit` (per app) |
-| Build verify | `npx next build` (all 3 apps build clean, zero warnings) |
+| Build verify | `npx next build` (per app, all build clean) |
+| Regen DB types | `cd POC_REAL && npm run db:types` |
 
 ## Project Overview
 
@@ -45,14 +47,17 @@ cd PREREUNION_ANDREA && npm install
 npm run dev                    # localhost:3000
 npm run build                  # Production build (Turbopack)
 npm run lint                   # ESLint
-npm run test:unit              # Unit tests (tsx --test, node:test runner)
+npm run test:unit              # Unit tests (tsx --test src/lib/*.test.ts)
+npm run test:e2e               # Playwright E2E suite
 npm run smoke:routes           # Runtime route smoke tests (9 routes)
 npm run smoke:routes:ci        # Build + smoke tests (CI mode)
 npm run check:ontology         # Capsule type drift detection
 npm run quality:prm-008        # Lighthouse audit
 npm run quality:prm-008:full   # Full quality suite (Lighthouse + bundle)
 npm run deploy                 # Vercel deploy (--prod)
-npx tsc --noEmit               # Typecheck (used in CI)
+npx tsc --noEmit               # Typecheck
+# Bundle analysis:
+$env:ANALYZE='true'; npx next build --webpack
 ```
 
 ### POC App — UI only (POC_INTERNA/app)
@@ -63,9 +68,11 @@ npm run dev                    # localhost:3001
 npm run build                  # Production build
 npm run lint                   # ESLint
 npm run autocheck              # Lint + build + runtime flow + PDF alignment
+npm run autocheck:pdf          # PDF alignment check only
 npm run heal:session           # Stop on first successful autocheck
 npm run heal:stability         # 3 full autocheck iterations
-npx tsc --noEmit               # Typecheck (used in CI)
+npm run heal:insights          # Rebuild trend data from healing history
+npx tsc --noEmit               # Typecheck
 ```
 
 Visual regression tests (requires dev server on :3001):
@@ -79,36 +86,55 @@ node screenshots/capture_onboarding.js    # Playwright screenshot capture
 ```bash
 cd POC_REAL && npm install
 npx supabase start             # Docker must be running
-npx supabase db reset           # Apply migrations
-npx tsx scripts/seed.ts         # Seed 5 test users + capsules + images
+npx supabase db reset           # Apply all 12 migrations
+npm run seed                   # Seed 5 test users + capsules + images
 npx tsx scripts/seed-beta.ts    # Grant beta access to test users
 npm run dev                    # localhost:3002
 # Supabase Studio: http://localhost:54323
+# Inbucket (email testing): http://localhost:54324
 
+# Testing
+npm run test:e2e               # Playwright E2E suite (5 spec files)
+npm run test:e2e:headed        # E2E with visible browser
+npm run test:e2e:ui            # Playwright UI mode
 npm run test:ceo               # CEO bug verification tests
 npm run test:beta              # Beta QA tests
 npm run test:upload            # Upload flow e2e tests
-npm run test:playwright        # Full Playwright test suite
-npm run test:e2e               # Playwright E2E suite (35 tests, 5 specs)
-npm run test:e2e:headed        # E2E with visible browser
+npm run test:send-claim        # Smoke send/claim flow
+npm run test:health            # Healthcheck
 npm run test:install           # Install Playwright Chromium
+
+# Soak testing (Windows PowerShell)
+npm run soak:dry-run           # 6-minute soak test
+npm run soak:10h               # 10-hour soak runner
+npm run soak:20h               # 20-hour soak runner
+
+# Schema
+npm run db:types               # Regen src/lib/database.types.ts from local schema
+npm run typecheck              # tsc --noEmit
 ```
 
 ## CI Pipeline
 
-`.github/workflows/quality-gates.yml` runs on push to master and PRs:
+`.github/workflows/quality-gates.yml` runs on push to `master`/`main`, PRs, and `workflow_dispatch`:
 
 1. **docs-governance** — `node docs/scripts/check-source-of-truth-coverage.mjs`
 2. **prereunion-quality** — lint → typecheck → ontology drift → build (Turbopack) → smoke routes → bundle analysis (Webpack)
-3. **poc-quality** — lint → typecheck → build
+3. **poc-quality** — lint → typecheck → build (POC_INTERNA)
+4. **poc-real-quality** — lint → typecheck → unit tests → build (POC_REAL)
+5. **poc-real-smoke-stack** — starts Supabase Docker stack, resets DB, seeds, starts app, runs `smoke_send_claim.mjs` (depends on poc-real-quality)
 
 Node 20, `npm ci` for installs.
 
+## Code Style
+
+- TypeScript `strict` mode; explicit types at module boundaries
+- 2-space indentation, single quotes, no semicolons in TS/TSX
+- `@/*` path alias → `./src/*` in all apps
+- Components: `PascalCase.tsx`, hooks: `useX.ts`, API routes: `src/app/api/**/route.ts`
+- Commits: Conventional Commits — `feat(scope):`, `fix(scope):`, `chore(scope):`, `test(scope):`
+
 ## Architecture
-
-### Path Alias
-
-All apps: `@/*` → `./src/*`
 
 ### Type System (`src/types/index.ts`)
 
@@ -134,15 +160,46 @@ PREREUNION_ANDREA uses Zod schemas (`src/lib/api-validation.ts`) on all API rout
 
 | Route | Method | Auth | Purpose |
 |-------|--------|------|---------|
-| `/api/consent/biometric` | POST | Bearer | Sign biometric consent |
-| `/api/consent/biometric` | GET | Bearer | Get consent status |
-| `/api/consent/biometric` | DELETE | Bearer | Revoke consent |
+| `/api/consent/biometric` | POST/GET/DELETE | Bearer | Sign/check/revoke biometric consent |
 | `/api/capsules` | GET/POST | Bearer | List/create capsules |
 | `/api/waitlist` | GET/POST | No | Waitlist management |
+| `/api/waitlist/unsubscribe` | DELETE | No | Unsubscribe from waitlist |
+| `/api/privacy/export` | GET | Bearer | GDPR data export |
+| `/api/privacy/account` | DELETE | Bearer | Account deletion |
+| `/api/cron/lifecycle` | GET | Internal | Capsule lifecycle transitions |
+| `/api/cron/biometric-cleanup` | GET | Internal | Expired consent cleanup |
+| `/api/notifications/whatsapp/opt-in` | POST | Bearer | WhatsApp notification opt-in |
 
-### Legal Pages
+### Key API Routes (POC_REAL)
 
-PREREUNION_ANDREA: `/privacidad`, `/terminos`, `/consentimiento`, `/contacto` (server components)
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/capsules/[id]/send` | POST | Send capsule to designated person |
+| `/api/capsules/[id]/claim` | POST | Claim a received capsule |
+| `/api/capsules/[id]/video/download-complete` | POST | Mark video download complete |
+| `/api/trust/decision` | POST | Trust decision processing |
+| `/api/cron/lifecycle` | POST | Lifecycle state transitions |
+| `/api/notifications/whatsapp/opt-in` | POST | WhatsApp opt-in |
+| `/api/beta/*` | Various | Beta invitation system (invite, accept, complete, access, audit, revoke, resend) |
+
+### POC_REAL Lifecycle Engine
+
+`src/lib/lifecycle/` — capsule state machine with 10 states:
+`draft → active → closed → downloaded / sent → claimed → experience_active → expiring_soon → expired / archived`
+
+Key modules:
+- `state-machine.ts` — state transition rules
+- `send-flow.ts` — capsule delivery
+- `claim-handoff.ts` — recipient claim process
+- `trust-contact-window.ts` / `trust-contact-links.ts` — trust verification
+- `video-purge-retry.ts` — video cleanup with retry
+- `notifications.ts` — notification dispatch
+
+`src/lib/trust/` — designated person identity verification and trust decisions
+
+### Email (POC_REAL)
+
+Implemented via Resend SDK (`src/lib/email.ts` + `email-templates.ts`). Transactional email is functional, not pending.
 
 ### Backend Stack Transition
 
@@ -169,6 +226,17 @@ SUPABASE_SERVICE_ROLE_KEY=<from supabase start>
 BETA_GATE_ENABLED=true|false
 ```
 
+### Supabase Local Ports
+| Service | Port |
+|---------|------|
+| API | 54321 |
+| DB (PostgreSQL 17) | 54322 |
+| Studio | 54323 |
+| Inbucket (email test UI) | 54324 |
+| Analytics | 54327 |
+
+Storage limit: 50MiB/file. JWT expiry: 3600s. Email confirmations disabled locally.
+
 ## Critical Patterns & Gotchas
 
 ### Supabase Client (POC_REAL)
@@ -186,6 +254,12 @@ BETA_GATE_ENABLED=true|false
 - `useAuth` does NOT auto-create profiles — only explicit registration flows do
 - Consent persistence: always include `termsAcceptedAt`, `privacyAcceptedAt`, `consentVersion`, `consentSource`
 - Dates: `serverTimestamp()` on write, `.toDate()` on read
+- `FIREBASE_PRIVATE_KEY` may have escaped newlines — preserve restoration logic in API handlers
+
+### Playwright (POC_REAL)
+- Config enforces `workers: 1`, `fullyParallel: false`, 60s test timeout
+- `reducedMotion: 'reduce'` set globally
+- `webServer.timeout` is 30s
 
 ## POC Work Rules
 
@@ -207,7 +281,7 @@ BETA_GATE_ENABLED=true|false
 
 ## Workspace Migration
 
-The repo is being reorganized. See `docs/plans/2026-02-15-repo-reorganization-plan.md` for the full plan.
+The repo is being reorganized. See `docs/plans/2026-02-15-repo-reorganization-plan.md` for the full plan. Empty scaffold dirs already exist in `apps/`.
 
 | Current Path | Target Path |
 |---|---|
@@ -224,36 +298,9 @@ The repo is being reorganized. See `docs/plans/2026-02-15-repo-reorganization-pl
 - **Firebase SDK bundle**: 489KB vendor (tree-shaking limited)
 - **No Jest/Vitest**: Unit tests use `node:test` runner via `tsx --test`
 
-## Production Readiness (22 Feb 2026)
+## Remaining for Deploy
 
-### All 3 Apps — Build Clean
-- `PREREUNION_ANDREA`: 19 routes, `npx next build` zero warnings, tsc clean
-- `POC_INTERNA`: 10 routes, `npx next build` zero warnings, tsc clean
-- `POC_REAL`: 30 routes, `npx next build` zero warnings, tsc clean
-
-### Test Coverage
-- **Unit tests**: 14/14 passing (PREREUNION_ANDREA)
-- **Smoke tests**: 9/9 passing (PREREUNION_ANDREA)
-- **E2E tests**: 35 Playwright tests (POC_REAL — auth, dashboard, capsule, share, onboarding)
-
-### Security Hardening (this session)
-- RLS migration 00012 ready for production (POC_REAL)
-- Atomic rate limiter (no race condition)
-- Share page column whitelist (no secret exposure)
-- All API routes use Zod validation (including WhatsApp opt-in)
-- Error boundaries on all routes across all 3 apps
-- Loading skeletons on key routes across all 3 apps
-
-### Accessibility (this session)
-- htmlFor/id pairs on all forms
-- aria-labels on all icon-only buttons
-- role=dialog on modals, role=progressbar on progress bars
-- Viewport zoom enabled (WCAG 1.4.4)
-- MotionConfig reducedMotion support
-
-### Remaining for Deploy
 - Supabase Cloud setup (migrate from local Docker)
 - Vercel deployment for POC_REAL
 - Apply RLS migration 00012 in production
-- Email delivery service for transactional emails
-- ZIP export feature (implemented, needs live testing)
+- ZIP export live testing (implemented via jszip + file-saver)
