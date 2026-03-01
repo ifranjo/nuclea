@@ -7,6 +7,32 @@
  */
 
 import { requireInfrastructure } from './healthcheck.mjs'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+function loadEnvLocal() {
+  const dirname = path.dirname(fileURLToPath(import.meta.url))
+  const envPath = path.resolve(dirname, '../.env.local')
+  if (!fs.existsSync(envPath)) return
+
+  const raw = fs.readFileSync(envPath, 'utf8')
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const idx = trimmed.indexOf('=')
+    if (idx === -1) continue
+    const key = trimmed.slice(0, idx).trim()
+    if (!key || process.env[key]) continue
+    let value = trimmed.slice(idx + 1).trim()
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1)
+    }
+    process.env[key] = value
+  }
+}
+
+loadEnvLocal()
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || 'http://127.0.0.1:54321'
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || ''
@@ -89,7 +115,8 @@ async function main() {
       'Env setup',
       'Missing NEXT_PUBLIC_SUPABASE_ANON_KEY and/or SUPABASE_SERVICE_ROLE_KEY in .env.local'
     )
-    process.exit(1)
+    process.exitCode = 1
+    return
   }
 
   // Step 1: Login as Homer (creator)
@@ -257,10 +284,10 @@ async function main() {
   if (failed > 0) console.log(`❌ Failed: ${failed}`)
   console.log('='.repeat(50))
 
-  process.exit(failed > 0 ? 1 : 0)
+  process.exitCode = failed > 0 ? 1 : 0
 }
 
 main().catch(err => {
   console.error('\n💥 Smoke test crashed:', err)
-  process.exit(1)
+  process.exitCode = 1
 })

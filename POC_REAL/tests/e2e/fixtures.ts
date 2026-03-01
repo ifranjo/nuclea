@@ -2,9 +2,14 @@ import { type Page } from '@playwright/test'
 
 /**
  * Reusable login helper for E2E tests.
+ * Clears cookies before login to ensure fresh session.
  * Uses form-based login which properly sets Supabase SSR cookies.
  */
 export async function loginAs(page: Page, email: string, password: string) {
+  // Clear existing session to avoid stale state
+  await page.context().clearCookies()
+  await page.context().clearPermissions()
+
   await page.goto('/login')
   await page.waitForLoadState('networkidle')
 

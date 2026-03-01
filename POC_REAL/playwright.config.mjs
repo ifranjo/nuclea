@@ -5,6 +5,7 @@ export default defineConfig({
   timeout: 60000,
   retries: process.env.CI ? 1 : 0,
   fullyParallel: false,
+  workers: 1, // Force single worker for test isolation
   reporter: [['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:3002',
